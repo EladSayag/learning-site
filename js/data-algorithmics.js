@@ -25,17 +25,15 @@
 //      slogan; bare-topic-name titles; two meatier exercises in the array beyond the inline one):
 //      algo-stacks, algo-linked-lists (the two style-template reference lessons),
 //      algo-red-black-trees, algo-b-trees, algo-splay-trees, algo-skip-lists,
-//      algo-bloom-filters, algo-priority-queue-adt, algo-fibonacci-heap.
+//      algo-bloom-filters, algo-priority-queue-adt, algo-fibonacci-heap, algo-van-emde-boas,
+//      algo-segment-fenwick-trees. This completes Data Structures category A (all former
+//      placeholder-only nodes now have full content) as of 2026-09-01, batch 3.
 //   2b. Lessons with full content but written BEFORE the style template above was settled (denser
 //      academic tone, no try-it-yourself/remark/slogan structure yet) — need a restyling pass, NOT a
 //      rewrite of the underlying material: algo-queues, algo-what-is-a-data-structure, algo-kd-trees,
-//      algo-suffix-trees-arrays, algo-persistent-data-structures. CORRECTION (verified 2026-09-01
-//      after batch 1): algo-kd-trees does NOT have the try-it-yourself/remark/slogan structure —
-//      an earlier status note claiming it was already current-style was wrong. It still needs the
-//      restyling pass like the other four in this bucket.
+//      algo-suffix-trees-arrays, algo-persistent-data-structures.
 //   3. PLACEHOLDER NODES ONLY — wired into the DAG with correct prerequisites, but content still to
 //      be written in a follow-up pass:
-//        Data Structures: algo-van-emde-boas, algo-segment-fenwick-trees.
 //        Algorithms (CLRS Part II, "Sorting and Order Statistics" — the material this chapter was
 //          missing): algo-heapsort, algo-linear-time-sorting, algo-order-statistics-selection.
 //        Graph Algorithms (deliberately beyond a first course, per request): algo-dfs, algo-bfs
@@ -43,11 +41,11 @@
 //          algo-scc-tarjan, algo-bridges-articulation (pre-existing), plus new ones —
 //          algo-max-flow-ford-fulkerson, algo-bipartite-matching, algo-all-pairs-shortest-paths,
 //          algo-2sat-scc, algo-eulerian-path-hierholzer.
-//      NEXT UP when resuming this pass: finish Data Structures category A (still-placeholder
-//      lessons) in DAG order — algo-van-emde-boas, then algo-segment-fenwick-trees (batch 2 wrote
-//      algo-bloom-filters, algo-priority-queue-adt, and algo-fibonacci-heap in current style; those
-//      three are done). Only after ALL of Data Structures (both bucket 2 and 2b above) is done should
-//      the pass move to Graph Algorithms placeholders (algo-dfs first, in the DAG order listed above).
+//      NEXT UP when resuming this pass: Data Structures category A (bucket 2) is now fully done.
+//      Move to category B — the restyling pass over bucket 2b, in this order: algo-queues,
+//      algo-what-is-a-data-structure, algo-kd-trees, algo-suffix-trees-arrays,
+//      algo-persistent-data-structures. Only after ALL of Data Structures (both bucket 2 and 2b) is
+//      done should the pass move to Graph Algorithms placeholders (algo-dfs first, in DAG order).
 
 const ALGORITHMICS_SUBJECT = {
   id: "algorithmics",
@@ -762,14 +760,68 @@ const ALGORITHMICS_SUBJECT = {
         },
         {
           id: "algo-van-emde-boas",
-          title: "Van Emde Boas Trees: O(log log u) Integer Priority Queues",
+          title: "Van Emde Boas Trees",
           section: "Heaps",
           prerequisites: ["algo-priority-queue-adt", "algo-hashing-universal-families"],
           estMinutes: 35,
           content: `
-            <p><em>Placeholder — content for this lesson hasn't been written yet (recursive √u-splitting of a bounded universe {0,…,u−1} into clusters plus a summary structure; why it needs an integer universe rather than comparison-based keys; the hash-table-backed sparse variant that brings space down from O(u) to O(n). Source: CLRS 3rd ed. Ch 20). Will be built out after we settle on lesson design.</em></p>
+            <p>A van Emde Boas tree is a priority queue for the one case a comparison-based heap can't exploit: keys that are small integers. Given that the universe is exactly {0, 1, …, u−1}, it gets insert, delete, and successor down to O(log log u) — provably impossible for any structure that only compares keys, since comparison sorting is Ω(n log n).</p>
+            <svg viewBox="0 0 480 230" width="100%" height="230" style="max-width:480px;display:block;margin:0.8rem auto;" role="img" aria-label="A VEB(16) box holding min 2 and max 14, with an arrow down to a small summary structure marking clusters 0, 2, and 3 as nonempty, and arrows down to four cluster boxes VEB(4), of which cluster 1 is empty">
+              <g font-size="12" text-anchor="middle">
+                <rect x="150" y="10" width="180" height="40" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="240" y="35" fill="var(--text)" font-weight="600">VEB(16): min=2, max=14</text>
+                <line x1="200" y1="50" x2="130" y2="88" stroke="var(--border)" stroke-width="1.5"/>
+                <rect x="40" y="90" width="180" height="34" rx="6" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="130" y="98" fill="var(--text-muted)" font-size="10">summary: VEB(4)</text>
+                <circle cx="70" cy="112" r="7" fill="var(--accent)"/>
+                <circle cx="105" cy="112" r="7" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <circle cx="140" cy="112" r="7" fill="var(--accent)"/>
+                <circle cx="175" cy="112" r="7" fill="var(--accent)"/>
+                <line x1="280" y1="50" x2="280" y2="140" stroke="var(--border)" stroke-width="1.5"/>
+                <rect x="20" y="145" width="100" height="60" rx="6" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="70" y="163" fill="var(--text)" font-size="11">cluster 0</text>
+                <text x="70" y="180" fill="var(--text-muted)" font-size="10">VEB(4)</text>
+                <text x="70" y="196" fill="var(--text-muted)" font-size="10">{2, 3}</text>
+                <rect x="130" y="145" width="100" height="60" rx="6" fill="none" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="3,3"/>
+                <text x="180" y="163" fill="var(--text-muted)" font-size="11">cluster 1</text>
+                <text x="180" y="180" fill="var(--text-muted)" font-size="10">VEB(4)</text>
+                <text x="180" y="196" fill="var(--text-muted)" font-size="10">empty</text>
+                <rect x="240" y="145" width="100" height="60" rx="6" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="290" y="163" fill="var(--text)" font-size="11">cluster 2</text>
+                <text x="290" y="180" fill="var(--text-muted)" font-size="10">VEB(4)</text>
+                <text x="290" y="196" fill="var(--text-muted)" font-size="10">{9}</text>
+                <rect x="350" y="145" width="100" height="60" rx="6" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="400" y="163" fill="var(--text)" font-size="11">cluster 3</text>
+                <text x="400" y="180" fill="var(--text-muted)" font-size="10">VEB(4)</text>
+                <text x="400" y="196" fill="var(--text-muted)" font-size="10">{14}</text>
+              </g>
+            </svg>
+            <p>The design is recursion on the universe size, not on the key set. Split each key x into a cluster index <code>high(x) = ⌊x / √u⌋</code> and a position within that cluster <code>low(x) = x mod √u</code>. A VEB structure of universe size u then holds three things: a <code>min</code> and <code>max</code> field storing actual values, a <code>summary</code> — itself a VEB structure of size √u, tracking which of the √u clusters are nonempty — and √u <code>cluster</code> structures, each a VEB of size √u holding the low bits of whatever fell into it. Recursing on √u instead of on the n keys is what buys the bound: the recursion depth is the number of times you can take a square root of u before reaching a base case, which is <code>log₂(log₂ u)</code>.</p>
+            <p>One trick makes the recursion actually cheap rather than just shallow: <code>min</code> is never inserted into the substructures. When inserting into an empty VEB, just set <code>min = max = x</code> and stop — no recursive call at all. When inserting into a nonempty one, if x is smaller than the current min, swap x with min first, so it's the <em>old</em> min that gets pushed down into a cluster. Either way, the value that actually recurses ends up going into a single cluster (updating its low bits) and, only if that cluster was previously empty, into the summary (to mark it nonempty) — and inserting into an empty structure is the O(1) base case again. So the recursion never runs deeper than one real cluster-insert plus one possible summary-insert per level, both of which are the same VEB operation one level down, giving the recurrence <code>T(u) = T(√u) + O(1)</code>.</p>
+            <p>Two things the picture doesn't show, worth naming as variants:</p>
+            <ul>
+              <li><strong>Deletion</strong> mirrors insertion's asymmetry: removing the current min means pulling up the new minimum from whatever cluster holds it (a successor query one level down), then deleting that value from the cluster and, if the cluster is now empty, from the summary — still O(log log u), just with more bookkeeping than insertion.</li>
+              <li><strong>Hash-table-backed (van Emde Boas + hashing)</strong> — the scheme above allocates all √u cluster slots up front, so a structure over universe u costs Θ(u) space even holding a single element. Replacing the array of cluster pointers with a <a href="#/subject/algorithmics/data-structures/algo-hashing-universal-families">hash table</a> keyed by cluster index, storing only clusters that actually have something in them, brings space down to O(n) while keeping insert/delete/successor at expected O(log log u).</li>
+            </ul>
+            <p><strong>Remark:</strong> the universe u must be fixed and known in advance (and, for the clean recursion, a power of a power of two) — this is not a general-purpose replacement for a balanced BST, it's the right tool specifically when keys are, say, 32-bit integers or IDs from a bounded range.</p>
+            <table class="mini-table">
+              <tr><th>Operation</th><th>Cost</th><th>Why</th></tr>
+              <tr><td>Minimum / maximum</td><td>O(1)</td><td>cached directly in the top structure's min/max fields</td></tr>
+              <tr><td>Insert / delete</td><td>O(log log u)</td><td>the min-elision trick limits real recursive work to one cluster and, sometimes, the summary, per level</td></tr>
+              <tr><td>Successor / predecessor</td><td>O(log log u)</td><td>check the current cluster, else consult the summary for the next nonempty one — same one-level-down recursion</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> given x, how does successor(x) find the next key present in a VEB structure in O(log log u) time?</p>
+            <details><summary>Solution</summary>
+              <p>If x &lt; max, the answer lives in this structure. First check whether x's own cluster, <code>high(x)</code>, holds something bigger than <code>low(x)</code> — if so, the successor is that cluster's successor of <code>low(x)</code>, recombined as <code>high(x)·√u + (successor within cluster)</code>. If that cluster has nothing bigger, the answer must be the <em>minimum</em> of some later cluster — and finding which later cluster is nonempty is exactly a successor query on <code>summary</code>, one level down, applied to <code>high(x)</code>. Either branch makes exactly one recursive call into a structure of size √u, so the recursion is the same <code>T(u) = T(√u) + O(1)</code> as insertion, and it bottoms out at O(log log u).</p>
+            </details>
+            <p><strong>Remark:</strong> O(log log u) beats the <a href="#/subject/algorithmics/data-structures/algo-fibonacci-heap">Fibonacci heap</a>'s O(log n) decrease-key and any comparison-based structure outright, but only when u is small enough that log log u actually beats log n in practice (u in the billions still gives log log u ≈ 5) and the Θ(u)-or-hashed space cost is acceptable — for arbitrary comparable keys with no bound on their range, none of this applies.</p>
+            <p><strong>Further reading:</strong> CLRS, 3rd ed., Ch. 20 (the full recursive structure, including the deletion case analysis); van Emde Boas, P., "Preserving Order in a Forest in Less Than Logarithmic Time," FOCS 1975 (the original result); van Emde Boas, P., Kaas, R., & Zijlstra, E., "Design and Implementation of an Efficient Priority Queue," <em>Mathematical Systems Theory</em>, 10(1), 1977 (the full recursive construction as taught today); Mehlhorn, K. & Näher, S., "Bounded Ordered Dictionaries in O(log log N) Time and O(n) Space," <em>Information Processing Letters</em>, 35(4), 1990 (the hash-table-backed O(n)-space variant).</p>
+            <p><em>The whole idea in one line: split the universe by square roots instead of comparing keys, and recursion depth becomes log log u instead of log n.</em></p>
           `,
-          exercises: []
+          exercises: [
+            "Solve the recurrence T(u) = T(√u) + O(1) exactly: substitute m = log₂ u to turn the square-root recursion into a halving recursion, and show the solution is Θ(log log u). Then explain in one sentence why a universe of u = 2^32 gives log log u ≈ 5 in practice.",
+            "The naive recursive scheme allocates one cluster slot per possible cluster index up front. Prove this costs Θ(u) space regardless of how many keys n are actually stored, even for n = 1. Then describe precisely how replacing the cluster array with a hash table changes each of insert, delete, and successor, and argue why the O(log log u) time bound survives (in expectation) even though lookups are now hashed rather than direct-indexed."
+          ]
         },
         {
           id: "algo-dynamic-arrays-amortization",
@@ -817,14 +869,62 @@ const ALGORITHMICS_SUBJECT = {
         },
         {
           id: "algo-segment-fenwick-trees",
-          title: "Segment Trees and Fenwick Trees: Range Queries",
+          title: "Segment Trees and Fenwick Trees",
           section: "Range Query Structures",
           prerequisites: ["algo-binary-heaps"],
           estMinutes: 30,
           content: `
-            <p><em>Placeholder — content for this lesson hasn't been written yet (a segment tree is an implicit array-indexed complete binary tree — the same 2i+1/2i+2 layout as the heap lesson — answering range-aggregate queries in O(log n) via divide-and-conquer; a Fenwick/binary-indexed tree gets prefix sums in O(log n) with far less code via the lowbit trick. Sources: CLRS 3rd ed. Ch 14 for the general augmenting-structure technique; Fenwick, "A New Data Structure for Cumulative Frequency Tables," Software: Practice and Experience, 1994; de Berg, Cheong, van Kreveld & Overmars, "Computational Geometry: Algorithms and Applications," 3rd ed., §10.3, for the geometric range-query form). Will be built out after we settle on lesson design.</em></p>
+            <p>These two structures answer the same question: given an array that changes over time, compute an aggregate — sum, minimum, maximum, gcd — over an arbitrary range [l, r) in less than the O(n) it takes to just walk the range every time. Both get updates and range queries down to O(log n).</p>
+            <svg viewBox="0 0 460 190" width="100%" height="190" style="max-width:460px;display:block;margin:0.8rem auto;" role="img" aria-label="A segment tree over the array 1, 3, 5, 7: the root covers indices 0 to 3 with sum 16, splitting into a left child covering 0 to 1 with sum 4 and a right child covering 2 to 3 with sum 12, each splitting further into the four leaves holding 1, 3, 5, and 7">
+              <g font-size="12" text-anchor="middle">
+                <line x1="230" y1="40" x2="120" y2="90" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="230" y1="40" x2="340" y2="90" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="120" y1="106" x2="60" y2="150" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="120" y1="106" x2="180" y2="150" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="340" y1="106" x2="280" y2="150" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="340" y1="106" x2="400" y2="150" stroke="var(--border)" stroke-width="1.5"/>
+                <rect x="160" y="10" width="140" height="34" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="230" y="32" fill="var(--text)">[0,3]  sum=16</text>
+                <rect x="55" y="76" width="130" height="34" rx="6" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="120" y="98" fill="var(--text)" font-size="11">[0,1]  sum=4</text>
+                <rect x="275" y="76" width="130" height="34" rx="6" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="340" y="98" fill="var(--text)" font-size="11">[2,3]  sum=12</text>
+                <rect x="30" y="152" width="60" height="32" rx="4" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="60" y="172" fill="var(--text-muted)" font-size="11">[0,0]=1</text>
+                <rect x="150" y="152" width="60" height="32" rx="4" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="180" y="172" fill="var(--text-muted)" font-size="11">[1,1]=3</text>
+                <rect x="250" y="152" width="60" height="32" rx="4" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="280" y="172" fill="var(--text-muted)" font-size="11">[2,2]=5</text>
+                <rect x="370" y="152" width="60" height="32" rx="4" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="400" y="172" fill="var(--text-muted)" font-size="11">[3,3]=7</text>
+              </g>
+            </svg>
+            <p>The design is divide-and-conquer, precomputed. Each node of a segment tree stores the aggregate of a fixed range, and every range that ever gets queried decomposes into O(log n) of these precomputed nodes — never more, because a node's range is always exactly the union of its two children's ranges, the same halving structure as merge sort's recursion tree. A range query walks down from the root, at each node either taking the whole precomputed aggregate (if the node's range sits entirely inside the query) or recursing into one or both children (if it straddles the boundary); a point update walks a single root-to-leaf path, recombining every ancestor's aggregate on the way back up. Both are O(log n) for the same reason a heap's sift is: only one path, or a small fixed number of paths, is ever touched.</p>
+            <p>Same idea, three implementations with different trade-offs:</p>
+            <ul>
+              <li><strong>Array-backed segment tree</strong> — store the tree implicitly in an array with node i's children at 2i+1, 2i+2, exactly the <a href="#/subject/algorithmics/data-structures/algo-binary-heaps">binary heap</a>'s layout, sized about 4n to stay a power of two. Simple, cache-friendlier than pointers, the standard choice.</li>
+              <li><strong>Lazy propagation</strong> — extends the same tree to handle <em>range</em> updates (add v to every element in [l, r)) in O(log n) too, instead of O(n): a pending update is parked at the highest node it fully covers and only pushed down to children the next time a query actually needs to look inside them.</li>
+              <li><strong>Fenwick tree (binary indexed tree)</strong> — a completely different, much smaller structure for the special case of prefix-invertible aggregates like sum or xor. One array of size n, no explicit tree at all: index i is responsible for a range of size <code>lowbit(i) = i &amp; −i</code>, so a point update walks up by repeatedly adding the lowbit, and a prefix query walks down by repeatedly subtracting it — both O(log n), in a handful of lines and a much smaller constant factor than a segment tree.</li>
+            </ul>
+            <p><strong>Remark:</strong> a Fenwick tree's compactness comes from a narrower contract — it only works for aggregates with an inverse (sum and xor, not min or max), whereas a segment tree's combine function just needs to be associative, which is why min/max/gcd range queries always go through a segment tree, never a Fenwick tree.</p>
+            <table class="mini-table">
+              <tr><th>Operation</th><th>Segment tree</th><th>Fenwick tree</th><th>Why</th></tr>
+              <tr><td>Point update</td><td>O(log n)</td><td>O(log n)</td><td>one root-to-leaf path, or one lowbit-climbing chain, is recombined</td></tr>
+              <tr><td>Range query</td><td>O(log n)</td><td>O(log n)</td><td>the range decomposes into O(log n) precomputed pieces either way</td></tr>
+              <tr><td>Range update (add v to a range)</td><td>O(log n) with lazy propagation</td><td>O(log n) with a second Fenwick tree</td><td>both need one extra trick beyond the base structure to avoid touching every element</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> given an array of n distinct numbers, how would you count the number of inversions (pairs i &lt; j with a[i] &gt; a[j]) in O(n log n) time using a Fenwick tree?</p>
+            <details><summary>Solution</summary>
+              <p>Coordinate-compress the values to ranks 1..n. Build a Fenwick tree of size n, initially all zero, supporting point-update (add 1 at a rank) and prefix-sum-query (count of ranks ≤ k inserted so far). Sweep the array from right to left; for each element, first query the prefix sum up to <code>rank(a[i]) − 1</code> — that count is exactly the number of elements already seen (i.e. to the right of i) with a smaller value, which is precisely the number of inversions with this i as the left index — add it to the running total, then insert <code>rank(a[i])</code>. Each element does one O(log n) query and one O(log n) update, for O(n log n) total: the same bound as the merge-sort-based approach, but built from the "count how many smaller things I've seen so far" primitive instead of a modified merge step.</p>
+            </details>
+            <p><strong>Remark:</strong> both structures answer only <em>fixed-index-range</em> queries over an array laid out in advance — a <a href="#/subject/algorithmics/data-structures/algo-bst-balance">balanced BST</a> augmented with subtree aggregates (an order-statistics tree) answers a similar family of queries over a dynamic, arbitrarily-ordered key set, at the cost of pointer-chasing instead of array indexing; reach for a segment or Fenwick tree specifically when the index range is fixed and known ahead of time.</p>
+            <p><strong>Further reading:</strong> CLRS, 3rd ed., Ch. 14 (augmenting data structures — the general technique of attaching extra information to a balanced structure, of which range-aggregate trees are one instance); Fenwick, P.M., "A New Data Structure for Cumulative Frequency Tables," <em>Software: Practice and Experience</em>, 24(3), 1994 (the original binary indexed tree paper); de Berg, Cheong, van Kreveld & Overmars, <em>Computational Geometry: Algorithms and Applications</em>, 3rd ed., §10.3 (the segment tree in its original geometric range-query setting).</p>
+            <p><em>The whole idea in one line: precompute every canonical range once, and any longer range is just a handful of them stitched together.</em></p>
           `,
-          exercises: []
+          exercises: [
+            "Implement lazy propagation for a range-add / range-sum-query segment tree: give the exact pending-update field, the push-down rule applied before recursing into children, and the push-up rule applied after. Prove that both range-update and range-query still cost O(log n) despite the deferred work.",
+            "Prove that any range [l, r) over an array of size n decomposes into O(log n) canonical segment-tree nodes during a query, by induction on the recursion. Then derive the exact worst-case count of such nodes as a function of n (it is not simply ⌈log₂ n⌉ — work out why a query can touch roughly twice that many)."
+          ]
         },
         {
           id: "algo-tries",
