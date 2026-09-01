@@ -6,7 +6,10 @@
 // field-by-field doc (id/title/section/prerequisites/estMinutes/content/exercises); same rules
 // apply here, ids just use the "algo-" prefix instead of "phys-".
 //
-// STATUS (2026-09-01, batch 6): this file now covers Data Structures / Algorithms / Graph Algorithms only.
+// STATUS (2026-09-01, batch 7): THE ENTIRE FILE IS NOW COMPLETE. Every lesson in every chapter
+// (Data Structures, Algorithms, Graph Algorithms) has full content — no placeholders remain
+// anywhere in js/data-algorithmics.js. There is no NEXT UP; this authoring pass is finished.
+// This file covers Data Structures / Algorithms / Graph Algorithms only.
 // The five chapters that used to follow "graph-algorithms" here (numerical-linear-algebra,
 // optimization, probability-statistics, time-series, classical-ml) were moved verbatim to
 // js/data-datascience.js / DATASCIENCE_SUBJECT — that material is numerical linear algebra, convex
@@ -53,19 +56,15 @@
 //      (algo-amortized-potential-method, algo-sorting-lower-bound-mergesort, algo-randomized-quicksort,
 //      algo-binary-search-invariants, algo-divide-and-conquer, algo-dynamic-programming,
 //      algo-greedy-matroids) remain bucket-1 material, out of scope for this pass.
-//   3. PLACEHOLDER NODES ONLY — wired into the DAG with correct prerequisites, but content still to
-//      be written in a follow-up pass:
-//        Graph Algorithms (deliberately beyond a first course, per request), remaining after batch 6:
-//          algo-scc-tarjan, algo-bridges-articulation, algo-2sat-scc, algo-eulerian-path-hierholzer,
-//          algo-max-flow-ford-fulkerson, algo-bipartite-matching, algo-all-pairs-shortest-paths.
-//      NEXT UP when resuming this pass: Graph Algorithms placeholders, in this DAG order:
-//      algo-scc-tarjan, algo-bridges-articulation, algo-2sat-scc, algo-eulerian-path-hierholzer,
-//      algo-max-flow-ford-fulkerson, algo-bipartite-matching, algo-all-pairs-shortest-paths. Start
-//      with algo-scc-tarjan (it now has a full-style algo-scc-kosaraju lesson right before it to
-//      follow for both content — single-pass low-link algorithm, disc[v]/low[v], stack-based SCC
-//      popping when low[v] == disc[v] — and cross-linking). This is the only remaining category —
-//      once these seven are done, the entire file is complete and the header should say so instead
-//      of naming a NEXT UP.
+//   2e. NEW full-style content written in Graph Algorithms as of 2026-09-01, batch 7 (same template as
+//      bucket 2/2b/2c/2d), finishing the last remaining placeholders in the whole file: algo-scc-tarjan
+//      (title trimmed to bare "Tarjan's Algorithm"; section set to "SCC family" alongside Kosaraju's),
+//      algo-bridges-articulation, algo-2sat-scc, algo-eulerian-path-hierholzer,
+//      algo-max-flow-ford-fulkerson (title trimmed from "Maximum Flow: Ford-Fulkerson and
+//      Edmonds-Karp" to bare "Maximum Flow"), algo-bipartite-matching, and
+//      algo-all-pairs-shortest-paths (title trimmed from "All-Pairs Shortest Paths: Floyd-Warshall and
+//      Johnson" to bare "All-Pairs Shortest Paths"). No placeholder nodes remain anywhere in this file
+//      — see the STATUS line above.
 
 const ALGORITHMICS_SUBJECT = {
   id: "algorithmics",
@@ -1616,14 +1615,57 @@ return hi                          # the least k with P(k) true</code></pre>
         },
         {
           id: "algo-scc-tarjan",
-          title: "Strongly Connected Components II: Tarjan's Algorithm",
-          section: "DFS family",
+          title: "Tarjan's Algorithm",
+          section: "SCC family",
           prerequisites: ["algo-scc-kosaraju"],
-          estMinutes: 35,
+          estMinutes: 30,
           content: `
-            <p><em>Placeholder — new node in the DAG (single-pass low-link algorithm: disc[v]/low[v], the stack-based mechanism for popping a completed SCC when low[v] == disc[v]). Will be built out after we settle on lesson design.</em></p>
+            <p>Tarjan's algorithm finds a graph's strongly connected components in a single depth-first search, without ever building the transpose graph that <a href="#/subject/algorithmics/graph-algorithms/algo-scc-kosaraju">Kosaraju's algorithm</a> needs — useful whenever you want SCCs to fall out of a traversal you're already running, rather than as a separate two-pass step.</p>
+            <svg viewBox="0 0 380 210" width="100%" height="210" style="max-width:400px;display:block;margin:0.8rem auto;" role="img" aria-label="Three vertices X, Y, Z forming a cycle with disc and low values shown, plus a stack holding X, Y, Z">
+              <defs><marker id="tjarrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker></defs>
+              <line x1="90" y1="55" x2="150" y2="55" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#tjarrow)"/>
+              <line x1="150" y1="70" x2="100" y2="130" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#tjarrow)"/>
+              <line x1="90" y1="120" x2="80" y2="70" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#tjarrow)"/>
+              <circle cx="70" cy="55" r="18" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="170" cy="55" r="18" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="110" cy="140" r="18" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <text x="70" y="59" text-anchor="middle" fill="var(--text)" font-size="13">X</text>
+              <text x="170" y="59" text-anchor="middle" fill="var(--text)" font-size="13">Y</text>
+              <text x="110" y="144" text-anchor="middle" fill="var(--text)" font-size="13">Z</text>
+              <text x="70" y="30" text-anchor="middle" fill="var(--text-muted)" font-size="10">disc 1 / low 1</text>
+              <text x="170" y="30" text-anchor="middle" fill="var(--text-muted)" font-size="10">disc 2 / low 1</text>
+              <text x="110" y="180" text-anchor="middle" fill="var(--text-muted)" font-size="10">disc 3 / low 1</text>
+              <rect x="250" y="20" width="110" height="150" fill="none" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="4,3"/>
+              <text x="305" y="12" text-anchor="middle" fill="var(--text-muted)" font-size="11">stack</text>
+              <text x="305" y="45" text-anchor="middle" fill="var(--text)" font-size="12">Z</text>
+              <text x="305" y="75" text-anchor="middle" fill="var(--text)" font-size="12">Y</text>
+              <text x="305" y="105" text-anchor="middle" fill="var(--text)" font-size="12">X</text>
+              <text x="305" y="145" text-anchor="middle" fill="var(--accent)" font-size="10">low[X]==disc[X]: pop all → one SCC</text>
+            </svg>
+            <p>The design follows straight from one extra piece of bookkeeping layered onto plain DFS: alongside the usual <code>disc[v]</code> discovery time, track a <strong>low-link</strong> value <code>low[v]</code> — the smallest discovery time reachable from v's DFS subtree using at most one edge back to an ancestor. Every vertex is also pushed onto an explicit stack the moment it's discovered. As the DFS returns from exploring v, low[v] is the minimum of disc[v] itself, low[child] for every tree child, and disc[w] for every back edge (v,w) to a vertex still on the stack. The moment low[v] == disc[v], v is the "root" of a completed SCC — pop the stack down through and including v, and everything popped is exactly that component. This works because low[v] == disc[v] means nothing in v's subtree can reach any vertex discovered earlier than v, so v's subtree can't be part of some larger, still-open component.</p>
+            <ul>
+              <li><strong>Tarjan's algorithm</strong> — the single-pass, disc/low, explicit-stack approach above; the standard choice in competitive programming, since it needs no transpose graph.</li>
+              <li><strong>Gabow's path-based algorithm</strong> — a second single-pass variant using two stacks instead of numeric low-link values; some implementers find the bookkeeping easier to get exactly right, at the same asymptotic cost.</li>
+              <li><strong><a href="#/subject/algorithmics/graph-algorithms/algo-scc-kosaraju">Kosaraju's algorithm</a></strong> — the two-pass alternative, conceptually simpler at the cost of an explicit transpose graph and a second full traversal.</li>
+            </ul>
+            <p><strong>Remark:</strong> the stack in Tarjan's algorithm is not the DFS recursion stack — it's a second, separate stack tracking which discovered vertices are still "unresolved" into a component, and a vertex must additionally be marked as on-stack so a back edge can be told apart from a cross edge to an already-finished, different component.</p>
+            <table class="mini-table">
+              <tr><th></th><th>Passes</th><th>Extra structure</th><th>Time</th></tr>
+              <tr><td>Kosaraju</td><td>2 (G, then G<sup>T</sup>)</td><td>the transpose graph G<sup>T</sup></td><td>O(V+E)</td></tr>
+              <tr><td>Tarjan</td><td>1</td><td>one auxiliary stack, one low-link per vertex</td><td>O(V+E)</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> trace Tarjan's algorithm by hand on the three-vertex cycle X → Y → Z → X from the diagram above, starting DFS at X. What are disc and low for each vertex by the time the algorithm finishes, and when does the stack get popped?</p>
+            <details><summary>Solution</summary>
+              <p>DFS discovers X (disc=1), then Y (disc=2), then Z (disc=3), pushing each onto the stack in that order: stack is [X, Y, Z] from bottom to top. From Z, the edge Z→X is a back edge to X, which is still on the stack, so low[Z] = min(disc[Z], disc[X]) = 1. Z has no more edges, so it finishes with low[Z] (1) ≠ disc[Z] (3) — not yet a component root. Back at Y, low[Y] = min(disc[Y], low[Z]) = 1, also not a root. Back at X, low[X] = min(disc[X], low[Y]) = 1 = disc[X] — X is a component root. Pop the stack down through X: Z, Y, X all come off together, forming one SCC — correctly, since the whole graph is one cycle.</p>
+            </details>
+            <p><strong>Remark:</strong> the disc/low machinery introduced here is reused almost unchanged in the very next lesson, <a href="#/subject/algorithmics/graph-algorithms/algo-bridges-articulation">bridges and articulation points</a>, just run on an undirected graph and read differently, and it's a common building block underneath <a href="#/subject/algorithmics/graph-algorithms/algo-2sat-scc">2-SAT</a> solvers where speed and a single pass genuinely matter.</p>
+            <p><strong>Further reading:</strong> Tarjan, R.E., "Depth-first search and linear graph algorithms," <em>SIAM Journal on Computing</em>, 1(2), 1972 (the original paper — also introduces the low-link idea used again for bridges); CLRS, 3rd ed., Problem 22-4 (works through Tarjan's algorithm as an exercise); Sedgewick & Wayne, <em>Algorithms</em>, 4th ed., §4.2 (companion coverage alongside Kosaraju-Sharir).</p>
+            <p><em>The whole idea in one line: a vertex closes off its own component exactly when nothing below it can reach any further back than itself.</em></p>
           `,
-          exercises: []
+          exercises: [
+            "Prove that low[v] == disc[v] correctly identifies exactly the vertices that are roots of a completed SCC in the DFS-stack sense — i.e. show that if low[v] == disc[v], no vertex in v's subtree that is still on the stack can belong to a different, not-yet-closed component higher up the DFS tree.",
+            "Modify Tarjan's algorithm to run iteratively (explicit DFS stack) instead of recursively, and explain precisely why an iterative version is often preferred in practice even though the recursive version is easier to state — consider what happens on a graph with a path of length 10^6."
+          ]
         },
         {
           id: "algo-bridges-articulation",
@@ -1632,9 +1674,54 @@ return hi                          # the least k with P(k) true</code></pre>
           prerequisites: ["algo-scc-tarjan"],
           estMinutes: 30,
           content: `
-            <p><em>Placeholder — new node in the DAG (reuses Tarjan's low-link idea on undirected DFS trees: (u,v) is a bridge iff low[v] &gt; disc[u]; articulation-point conditions for root vs. non-root). Will be built out after we settle on lesson design.</em></p>
+            <p>Bridges and articulation points find the single points of failure in a graph — the one edge or one vertex whose removal disconnects it — which is exactly the question a network engineer or a power-grid planner actually cares about.</p>
+            <svg viewBox="0 0 360 140" width="100%" height="140" style="max-width:380px;display:block;margin:0.8rem auto;" role="img" aria-label="Two triangles of vertices, ABC and DEF, joined by a single edge C-D; C and D are articulation points and the edge C-D is a bridge">
+              <line x1="50" y1="40" x2="100" y2="40" stroke="var(--border)" stroke-width="1.5"/>
+              <line x1="50" y1="40" x2="75" y2="90" stroke="var(--border)" stroke-width="1.5"/>
+              <line x1="100" y1="40" x2="75" y2="90" stroke="var(--border)" stroke-width="1.5"/>
+              <line x1="91" y1="93" x2="269" y2="93" stroke="var(--accent)" stroke-width="2.5"/>
+              <line x1="260" y1="40" x2="310" y2="40" stroke="var(--border)" stroke-width="1.5"/>
+              <line x1="260" y1="40" x2="285" y2="90" stroke="var(--border)" stroke-width="1.5"/>
+              <line x1="310" y1="40" x2="285" y2="90" stroke="var(--border)" stroke-width="1.5"/>
+              <circle cx="50" cy="40" r="16" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+              <circle cx="100" cy="40" r="16" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+              <circle cx="75" cy="90" r="16" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+              <circle cx="285" cy="90" r="16" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+              <circle cx="260" cy="40" r="16" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+              <circle cx="310" cy="40" r="16" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+              <text x="50" y="44" text-anchor="middle" fill="var(--text)" font-size="12">A</text>
+              <text x="100" y="44" text-anchor="middle" fill="var(--text)" font-size="12">B</text>
+              <text x="75" y="94" text-anchor="middle" fill="var(--text)" font-size="12">C</text>
+              <text x="285" y="94" text-anchor="middle" fill="var(--text)" font-size="12">D</text>
+              <text x="260" y="44" text-anchor="middle" fill="var(--text)" font-size="12">E</text>
+              <text x="310" y="44" text-anchor="middle" fill="var(--text)" font-size="12">F</text>
+              <text x="180" y="82" text-anchor="middle" fill="var(--accent)" font-size="11">bridge</text>
+            </svg>
+            <p>The design follows straight from the same low-link idea used in <a href="#/subject/algorithmics/graph-algorithms/algo-scc-tarjan">Tarjan's algorithm</a>, just run on an undirected graph and read differently: DFS the graph, tracking disc[v] and low[v] exactly as before (low[v] = the earliest discovery time reachable from v's subtree via at most one non-parent edge). For a tree edge (u,v) with v a child of u: (u,v) is a <strong>bridge</strong> iff low[v] &gt; disc[u] — meaning nothing in v's subtree can reach u or anything discovered before u except through this one edge. A vertex u is an <strong>articulation point</strong> under two separate conditions: if u is the DFS root, it's an articulation point iff it has two or more children in the DFS tree (each subtree only connects to the rest of the graph through u); if u is not the root, it's an articulation point iff some child v has low[v] ≥ disc[u] — the same "can't escape without u" condition, just without the strict inequality bridges need, since a vertex can still be a cut point even if the edge to its child isn't itself a bridge.</p>
+            <ul>
+              <li><strong>Bridges</strong> — edges whose removal disconnects the graph; found where low[v] &gt; disc[u] on a tree edge.</li>
+              <li><strong>Articulation points</strong> — vertices whose removal disconnects the graph; found via the root/non-root child conditions above.</li>
+              <li><strong>Biconnected components</strong> — the natural next step: decompose the graph into maximal subgraphs with no articulation point of their own, using a second auxiliary stack of edges alongside the same DFS, producing the graph's block-cut tree.</li>
+            </ul>
+            <p><strong>Remark:</strong> on a graph with parallel edges (a multigraph), the bridge test must exclude the exact edge back to the parent, not just any edge to the parent vertex — otherwise a genuine second parallel edge back to the parent gets miscounted as a back edge that "rescues" the child, hiding a real bridge.</p>
+            <table class="mini-table">
+              <tr><th>Test</th><th>Condition</th></tr>
+              <tr><td>Edge (u,v), v a DFS child of u, is a bridge</td><td>low[v] &gt; disc[u]</td></tr>
+              <tr><td>Root u is an articulation point</td><td>u has ≥ 2 children in the DFS tree</td></tr>
+              <tr><td>Non-root u is an articulation point</td><td>some child v has low[v] ≥ disc[u]</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> a company's server network has a set of always-on connections between machines. Given the network as an undirected graph, how would you find every "critical connection" — a link whose failure would split the network into two pieces that can no longer reach each other?</p>
+            <details><summary>Solution</summary>
+              <p>This is exactly bridge-finding: run one DFS, computing disc[v] and low[v] for every vertex, and report every tree edge (u,v) with low[v] &gt; disc[u]. Non-tree (back) edges are never bridges, since a back edge means there's already an alternate route around it. The whole scan is a single O(V+E) DFS — no need to test each edge individually by removing it and rechecking connectivity, which would cost O(E·(V+E)).</p>
+            </details>
+            <p><strong>Remark:</strong> the same low-link scan that finds bridges is also, structurally, a compressed offline substitute for asking <a href="#/subject/algorithmics/data-structures/algo-union-find">union-find</a> "are these two vertices still connected?" after deleting one edge at a time — union-find handles a stream of additions efficiently but not deletions, which is precisely why this DFS-based approach exists instead. The same disc/low bookkeeping is also the basis for <a href="#/subject/algorithmics/graph-algorithms/algo-scc-tarjan">Tarjan's SCC algorithm</a> one lesson back, adapted from undirected cut structure to directed strong connectivity.</p>
+            <p><strong>Further reading:</strong> Tarjan, R.E., "Depth-first search and linear graph algorithms," <em>SIAM Journal on Computing</em>, 1(2), 1972 (introduces the low-link technique used for both bridges and SCCs); Hopcroft, J., Tarjan, R., "Algorithm 447: Efficient algorithms for graph manipulation," <em>Communications of the ACM</em>, 16(6), 1973 (biconnected components); CLRS, 3rd ed., Problem 22-2 (articulation points, bridges, and biconnected components as a worked exercise).</p>
+            <p><em>The whole idea in one line: a vertex or edge is critical exactly when nothing behind it in the DFS tree can reach in front of it any other way.</em></p>
           `,
-          exercises: []
+          exercises: [
+            "Prove that a non-root vertex u is an articulation point if and only if it has some DFS child v with low[v] ≥ disc[u]. Explain carefully why the root needs a separate condition (≥2 children) instead of the same inequality.",
+            "Describe how to extend the bridge-finding DFS to output the full biconnected-component decomposition of the graph (using an auxiliary stack of edges pushed as they're visited and popped off whenever a biconnected component closes), and explain what the resulting block-cut tree represents."
+          ]
         },
         {
           id: "algo-2sat-scc",
@@ -1643,9 +1730,42 @@ return hi                          # the least k with P(k) true</code></pre>
           prerequisites: ["algo-scc-tarjan"],
           estMinutes: 25,
           content: `
-            <p><em>Placeholder — content for this lesson hasn't been written yet (a genuinely surprising application, usually skipped in a first course: encode each boolean variable x as two nodes x and ¬x in an implication graph, where a clause (a ∨ b) becomes two edges ¬a→b and ¬b→a; the formula is satisfiable iff no variable and its negation lie in the same SCC, and a satisfying assignment falls straight out of the SCC condensation's topological order. Turns an NP-complete-looking problem into a linear-time one, precisely because 2-SAT — unlike general k-SAT — has no genuine choice once you propagate implications). Will be built out after we settle on lesson design.</em></p>
+            <p>2-SAT decides, in linear time, whether a boolean formula built entirely from clauses of at most two literals is satisfiable — and if it is, actually produces a satisfying assignment, using nothing but the SCC machinery from the last two lessons.</p>
+            <svg viewBox="0 0 320 160" width="100%" height="160" style="max-width:340px;display:block;margin:0.8rem auto;" role="img" aria-label="Implication graph for the clause a or b: nodes a, not a, b, not b, with an edge from not a to b and from not b to a">
+              <defs><marker id="satarrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker></defs>
+              <circle cx="60" cy="40" r="20" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <circle cx="60" cy="120" r="20" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <circle cx="260" cy="40" r="20" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <circle cx="260" cy="120" r="20" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <text x="60" y="44" text-anchor="middle" fill="var(--text)" font-size="12">a</text>
+              <text x="60" y="124" text-anchor="middle" fill="var(--text)" font-size="12">¬a</text>
+              <text x="260" y="44" text-anchor="middle" fill="var(--text)" font-size="12">b</text>
+              <text x="260" y="124" text-anchor="middle" fill="var(--text)" font-size="12">¬b</text>
+              <line x1="80" y1="120" x2="240" y2="44" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#satarrow)"/>
+              <line x1="240" y1="116" x2="80" y2="44" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#satarrow)"/>
+              <text x="160" y="70" text-anchor="middle" fill="var(--text-muted)" font-size="10">¬a → b</text>
+              <text x="160" y="100" text-anchor="middle" fill="var(--text-muted)" font-size="10">¬b → a</text>
+            </svg>
+            <p>The design follows from a direct encoding: represent every boolean variable x as <em>two</em> nodes in an <strong>implication graph</strong>, one for x and one for ¬x. A clause (a ∨ b) says "if a is false, b must be true, and vice versa" — logically equivalent to two implications, ¬a→b and ¬b→a — so add exactly those two directed edges for every clause. The whole formula's implications now sit in one graph, and satisfiability reduces to a graph question: the formula is satisfiable iff no variable x has x and ¬x in the same <a href="#/subject/algorithmics/graph-algorithms/algo-scc-tarjan">strongly connected component</a>. If x and ¬x can reach each other, the implication chain forces x→¬x→x→…, i.e. x would have to equal its own negation — a contradiction — and conversely, if every variable's two literals sit in different SCCs, an assignment consistent with every implication provably exists.</p>
+            <p>Reading off that assignment is the second half of the same SCC computation: order the components topologically (Tarjan and Kosaraju both naturally produce this order as a byproduct), and set x = true if x's SCC comes later in that order than ¬x's SCC, false otherwise. This respects every implication automatically, because implications only ever point "forward" in the condensation's topological order.</p>
+            <ul>
+              <li><strong>Implication graph encoding</strong> — the two-node-per-variable, two-edge-per-clause construction above; this is the entire algorithm once SCCs are in hand.</li>
+              <li><strong>Horn-SAT</strong> — a different tractable special case of SAT (clauses with at most one positive literal), solved by unit propagation rather than SCCs; worth knowing 2-SAT and Horn-SAT are two different islands of tractability inside a generally NP-complete problem.</li>
+            </ul>
+            <p><strong>Remark:</strong> the moment a clause has three or more literals this reduction breaks — there's no way to encode "at least one of three literals is true" as a single implication — which is exactly why 3-SAT is NP-complete while 2-SAT is not, making the jump from 2 to 3 literals per clause one of the cleanest tractable/intractable boundaries in the field.</p>
+            <p>The algorithm runs in O(n+m) time for n variables and m clauses: build the implication graph in O(n+m), run one linear-time SCC decomposition, and read off the assignment in one more linear pass.</p>
+            <p><strong>Try it yourself:</strong> a small conference has n talks and needs to assign each to one of two rooms. Some pairs of talks conflict and can't share a room; some pairs are so closely related the organizers want them in the same room. How would you decide, in linear time, whether a valid room assignment exists?</p>
+            <details><summary>Solution</summary>
+              <p>Model each talk i as a boolean variable xᵢ (true = room A, false = room B). A conflict between i and j forbids both being in the same room: "not both A" becomes the clause (¬xᵢ ∨ ¬xⱼ), and "not both B" becomes (xᵢ ∨ xⱼ); together these force different rooms. A "same room" requirement becomes two clauses enforcing xᵢ ↔ xⱼ: (¬xᵢ ∨ xⱼ) and (xᵢ ∨ ¬xⱼ). Every constraint is a clause of exactly two literals, so the whole problem is an instance of 2-SAT — build the implication graph, run SCC decomposition, and a valid assignment exists iff no variable and its negation land in the same component.</p>
+            </details>
+            <p><strong>Remark:</strong> this lesson is the clearest example in the whole graph-algorithms chapter of a problem that looks like it needs backtracking search and instead turns out to be exactly linear-time reachability in disguise — the same SCC machinery from <a href="#/subject/algorithmics/graph-algorithms/algo-scc-kosaraju">Kosaraju's algorithm</a> and <a href="#/subject/algorithmics/graph-algorithms/algo-scc-tarjan">Tarjan's algorithm</a>, pointed at a differently-constructed graph.</p>
+            <p><strong>Further reading:</strong> Aspvall, B., Plass, M.F., Tarjan, R.E., "A linear-time algorithm for testing the truth of certain quantified boolean formulas," <em>Information Processing Letters</em>, 8(3), 1979 (the original linear-time 2-SAT algorithm via strong components); Even, S., Itai, A., Shamir, A., "On the complexity of timetable and multicommodity flow problems," <em>SIAM Journal on Computing</em>, 5(4), 1976 (an earlier related result using the same implication-graph idea).</p>
+            <p><em>The whole idea in one line: "if not this, then that" chains a formula into a graph, and satisfiability becomes "does anything point back at its own negation?"</em></p>
           `,
-          exercises: []
+          exercises: [
+            "Prove formally that a 2-CNF formula is unsatisfiable if and only if some variable x and its negation ¬x lie in the same SCC of the implication graph. (One direction: show that x and ¬x in the same SCC forces x = ¬x under every consistent implication chain. The other: show that if every variable's two literals are in different SCCs, assigning by topological order of the SCCs satisfies every clause.)",
+            "Given a satisfiable 2-SAT instance, is the resulting satisfying assignment from the topological-order rule always unique? Either prove it is, or give a small formula with more than one satisfying assignment and explain what in the SCC structure allows the freedom."
+          ]
         },
         {
           id: "algo-eulerian-path-hierholzer",
@@ -1654,9 +1774,51 @@ return hi                          # the least k with P(k) true</code></pre>
           prerequisites: ["algo-dfs"],
           estMinutes: 22,
           content: `
-            <p><em>Placeholder — content for this lesson hasn't been written yet (an Eulerian circuit — visiting every EDGE exactly once — exists iff the graph is connected and every vertex has even degree (undirected) or in-degree equals out-degree everywhere (directed); Hierholzer's algorithm constructs one in O(E) by splicing together closed walks, a pleasant contrast to the Hamiltonian-path problem's NP-hardness for visiting every VERTEX once. Classical motivation: the Seven Bridges of Königsberg). Will be built out after we settle on lesson design.</em></p>
+            <p>An Eulerian circuit is a walk that uses every edge of a graph exactly once and returns to its start — the original question graph theory was invented to answer, and today the same idea underlies genome assembly and route-planning problems where every road or every DNA fragment must be traversed once.</p>
+            <svg viewBox="0 0 320 150" width="100%" height="150" style="max-width:340px;display:block;margin:0.8rem auto;" role="img" aria-label="Two triangles ABC and CDE sharing vertex C, forming a figure-eight graph where C has degree four and every other vertex has degree two">
+              <line x1="55" y1="35" x2="105" y2="35" stroke="var(--border)" stroke-width="1.5"/>
+              <line x1="55" y1="35" x2="82" y2="85" stroke="var(--border)" stroke-width="1.5"/>
+              <line x1="105" y1="35" x2="82" y2="85" stroke="var(--border)" stroke-width="1.5"/>
+              <line x1="98" y1="85" x2="230" y2="45" stroke="var(--border)" stroke-width="1.5"/>
+              <line x1="230" y1="45" x2="260" y2="95" stroke="var(--border)" stroke-width="1.5"/>
+              <line x1="260" y1="95" x2="94" y2="92" stroke="var(--border)" stroke-width="1.5"/>
+              <circle cx="55" cy="35" r="15" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+              <circle cx="105" cy="35" r="15" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+              <circle cx="85" cy="88" r="18" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+              <circle cx="230" cy="45" r="15" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+              <circle cx="260" cy="95" r="15" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+              <text x="55" y="39" text-anchor="middle" fill="var(--text)" font-size="12">A</text>
+              <text x="105" y="39" text-anchor="middle" fill="var(--text)" font-size="12">B</text>
+              <text x="85" y="92" text-anchor="middle" fill="var(--text)" font-size="12">C</text>
+              <text x="230" y="49" text-anchor="middle" fill="var(--text)" font-size="12">D</text>
+              <text x="260" y="99" text-anchor="middle" fill="var(--text)" font-size="12">E</text>
+              <text x="160" y="130" text-anchor="middle" fill="var(--text-muted)" font-size="10">deg(C) = 4, every other vertex deg 2 — an Eulerian circuit exists</text>
+            </svg>
+            <p>The design follows from a clean existence criterion, provable by a simple parity argument: an undirected graph has an Eulerian circuit iff it is connected (ignoring isolated vertices) and every vertex has even degree. Necessity is easy — every time the circuit passes through a vertex it uses up one incoming and one outgoing edge-slot at that vertex, so the degree used by any closed walk is always even. Sufficiency (that even degree everywhere is also enough) is what <strong>Hierholzer's algorithm</strong> proves constructively: start at any vertex and walk, never reusing an edge, until stuck — because every vertex has even degree, "stuck" can only happen back at the starting vertex, since every other vertex has an equal number of in/out edge-uses and can't run out mid-visit. That gives one closed walk, possibly not covering every edge. If edges remain, some vertex v on the walk already found still has unused edges — splice in a second closed walk starting and ending at v, inserted right at that point in the first walk, and repeat until no edges are left unused.</p>
+            <ul>
+              <li><strong>Eulerian circuit</strong> — a closed walk using every edge once; exists iff connected and every vertex has even degree (undirected), or in-degree equals out-degree at every vertex (directed).</li>
+              <li><strong>Eulerian path</strong> (not necessarily closed) — exists iff exactly two vertices have odd degree (undirected — the path starts at one and ends at the other), or exactly one vertex has out-degree exceeding in-degree by 1 and one has in-degree exceeding out-degree by 1, with all others balanced (directed).</li>
+              <li><strong>De Bruijn graphs</strong> — in genome assembly, each possible k-mer is an edge and each (k−1)-mer is a vertex; reconstructing a genome from overlapping short reads becomes exactly the problem of finding an Eulerian path through this graph.</li>
+            </ul>
+            <p><strong>Remark:</strong> splicing in Hierholzer's algorithm is usually implemented as a single DFS-like pass that only outputs a vertex once all of its edges are exhausted, which naturally produces the final circuit in reverse without needing to explicitly locate and splice sub-walks by hand.</p>
+            <p>This is a pleasant contrast to the superficially similar Hamiltonian path problem (visit every vertex exactly once), which is NP-complete with no known polynomial algorithm — visiting every edge is easy, visiting every vertex is hard, and there is no simple parity trick that resolves the vertex version.</p>
+            <table class="mini-table">
+              <tr><th></th><th>Visits</th><th>Existence test</th><th>Finding one</th></tr>
+              <tr><td>Eulerian circuit</td><td>every edge once</td><td>O(V+E), degree parity check</td><td>O(E), Hierholzer's algorithm</td></tr>
+              <tr><td>Hamiltonian circuit</td><td>every vertex once</td><td>NP-complete</td><td>no known polynomial algorithm</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> the old city of Königsberg had four land areas connected by seven bridges; the classic 1736 puzzle asks whether a walk exists that crosses every bridge exactly once. Model it as a graph and decide.</p>
+            <details><summary>Solution</summary>
+              <p>Each land area is a vertex, each bridge an edge; the seven bridges give this graph vertex degrees of 3, 3, 3, 5. Even one odd-degree vertex is one too many for an Eulerian circuit, and there are four odd-degree vertices here — far more than the two an open Eulerian path would tolerate. So no walk crossing every bridge exactly once exists, closed or open. This is precisely the argument Euler used to found graph theory in 1736, before "graph theory" as a field existed: he showed the answer follows from parity alone, without needing to try any actual routes.</p>
+            </details>
+            <p><strong>Remark:</strong> Hierholzer's algorithm is built on the same "explore, get stuck, backtrack" discipline as plain <a href="#/subject/algorithmics/graph-algorithms/algo-dfs">depth-first search</a> — the difference is what triggers backtracking (running out of unused edges at a vertex, rather than running out of unvisited vertices) and what the walk is required to cover.</p>
+            <p><strong>Further reading:</strong> Euler, L., "Solutio problematis ad geometriam situs pertinentis," <em>Commentarii academiae scientiarum Petropolitanae</em>, 8, 1736 (the original Königsberg bridges paper, and the founding document of graph theory); Hierholzer, C., "Über die Möglichkeit, einen Linienzug ohne Wiederholung und ohne Unterbrechung zu umfahren," <em>Mathematische Annalen</em>, 6, 1873 (the constructive algorithm); Skiena, <em>The Algorithm Design Manual</em>, 3rd ed., §7.13.3 (Eulerian cycles, with the de Bruijn graph application).</p>
+            <p><em>The whole idea in one line: even degree everywhere means you can never get stuck anywhere except back where you started.</em></p>
           `,
-          exercises: []
+          exercises: [
+            "Prove the directed-graph existence criterion for an Eulerian circuit: a connected directed graph (ignoring isolated vertices, and connected in the underlying-undirected sense) has an Eulerian circuit iff in-degree equals out-degree at every vertex. Then state and prove the corresponding criterion for an open Eulerian path.",
+            "Given a set of DNA reads each of length k, describe how to build the de Bruijn graph (vertices = (k−1)-mers, edges = k-mers) and explain precisely why a valid genome reconstruction corresponds to an Eulerian path through it. Then explain, in one paragraph, why repeated k-mers in the genome (which create multi-edges or repeated structure in the graph) make the reconstruction ambiguous even when an Eulerian path exists."
+          ]
         },
         {
           id: "algo-dijkstra",
@@ -1704,14 +1866,51 @@ for (u,v,w) in E:
         },
         {
           id: "algo-all-pairs-shortest-paths",
-          title: "All-Pairs Shortest Paths: Floyd-Warshall and Johnson",
+          title: "All-Pairs Shortest Paths",
           section: "Shortest Paths (general)",
           prerequisites: ["algo-dynamic-programming", "algo-bellman-ford", "algo-dijkstra"],
           estMinutes: 35,
           content: `
-            <p><em>Placeholder — content for this lesson hasn't been written yet (a natural capstone tying together DP, Bellman-Ford, and Dijkstra: Floyd-Warshall is a Θ(V³) DP over "allowed intermediate vertices" that handles negative edges (no negative cycles) with three nested loops and no priority queue at all; Johnson's algorithm instead adds a virtual source and one Bellman-Ford pass to compute vertex potentials that reweight every edge nonnegative, then runs Dijkstra from every vertex, giving O(V² log V + VE) — better than Floyd-Warshall on sparse graphs. Source: CLRS 3rd ed. Ch 25). Will be built out after we settle on lesson design.</em></p>
+            <p>All-pairs shortest paths computes the shortest distance between every pair of vertices at once — useful whenever a system needs to answer "what's the shortest route from X to Y" for many different X, Y pairs, cheaper than running a single-source algorithm from every vertex separately when the graph is dense.</p>
+            <svg viewBox="0 0 300 160" width="100%" height="160" style="max-width:320px;display:block;margin:0.8rem auto;" role="img" aria-label="Vertices i, k, j with a direct edge i to j and a path through k, illustrating the relaxation d of i j equals the minimum of d i j and d i k plus d k j">
+              <defs><marker id="apsparrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker></defs>
+              <line x1="55" y1="120" x2="245" y2="120" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#apsparrow)"/>
+              <line x1="55" y1="105" x2="145" y2="40" stroke="var(--accent)" stroke-width="2" marker-end="url(#apsparrow)"/>
+              <line x1="155" y1="40" x2="245" y2="105" stroke="var(--accent)" stroke-width="2" marker-end="url(#apsparrow)"/>
+              <circle cx="40" cy="120" r="18" fill="none" stroke="var(--text)" stroke-width="2"/>
+              <circle cx="150" cy="30" r="18" fill="none" stroke="var(--text)" stroke-width="2"/>
+              <circle cx="260" cy="120" r="18" fill="none" stroke="var(--text)" stroke-width="2"/>
+              <text x="40" y="124" text-anchor="middle" fill="var(--text)" font-size="13">i</text>
+              <text x="150" y="34" text-anchor="middle" fill="var(--text)" font-size="13">k</text>
+              <text x="260" y="124" text-anchor="middle" fill="var(--text)" font-size="13">j</text>
+              <text x="150" y="145" text-anchor="middle" fill="var(--text-muted)" font-size="11">d[i][j]</text>
+              <text x="80" y="65" text-anchor="middle" fill="var(--accent)" font-size="11">d[i][k]</text>
+              <text x="225" y="65" text-anchor="middle" fill="var(--accent)" font-size="11">d[k][j]</text>
+            </svg>
+            <p>The design is a dynamic program over an unusual dimension: not "path length so far," but which vertices are allowed as intermediate stops. Define d<sub>k</sub>[i][j] as the shortest path from i to j using only vertices {1, …, k} as intermediates (endpoints i, j excepted). d<sub>0</sub>[i][j] is just the direct edge weight (∞ if none). The recurrence considers exactly one new choice at each step — does the shortest path using {1,…,k} actually route through k or not: d<sub>k</sub>[i][j] = min(d<sub>k−1</sub>[i][j], d<sub>k−1</sub>[i][k] + d<sub>k−1</sub>[k][j]). After k reaches V, every vertex has been allowed as an intermediate, so d<sub>V</sub> is the true all-pairs shortest-distance matrix. Because d<sub>k</sub> only ever needs d<sub>k−1</sub>, the whole DP can be computed in place on a single V×V matrix — this is <strong>Floyd-Warshall</strong>, three nested loops and no priority queue at all.</p>
+            <ul>
+              <li><strong>Floyd-Warshall</strong> — the DP above; Θ(V³) time, handles negative edge weights directly (as long as there's no negative cycle), and is often the simplest correct choice on a dense graph.</li>
+              <li><strong>Johnson's algorithm</strong> — add a virtual source connected to every vertex with weight 0, run one <a href="#/subject/algorithmics/graph-algorithms/algo-bellman-ford">Bellman-Ford</a> pass from it to get a potential h(v) for every vertex, reweight every edge to w'(u,v) = w(u,v) + h(u) − h(v) (always nonnegative, by the triangle inequality Bellman-Ford already enforces), then run <a href="#/subject/algorithmics/graph-algorithms/algo-dijkstra">Dijkstra</a> once from every vertex on the reweighted graph. Total O(V² log V + VE) — better than Floyd-Warshall whenever E is small relative to V².</li>
+              <li><strong>Seidel's algorithm</strong> — for unweighted, undirected graphs specifically, a matrix-multiplication-based approach achieving O(V<sup>ω</sup> log V), where ω is the exponent of fast matrix multiplication — asymptotically the fastest known approach in that special case.</li>
+            </ul>
+            <p><strong>Remark:</strong> Floyd-Warshall detects a negative cycle for free — if any diagonal entry d[i][i] goes negative during the DP, the graph has a negative cycle through i, since the shortest "path" from a vertex back to itself should never be worth going below 0.</p>
+            <table class="mini-table">
+              <tr><th>Algorithm</th><th>Complexity</th><th>Best when</th></tr>
+              <tr><td>Floyd-Warshall</td><td>Θ(V³)</td><td>dense graphs, or simplicity matters more than the constant</td></tr>
+              <tr><td>Johnson's algorithm</td><td>O(V² log V + VE)</td><td>sparse graphs (E ≪ V²), possibly with negative edges</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> given a directed graph of flight routes with (possibly negative, e.g. promotional-credit) costs and no negative cycles, how would you precompute, once, the cheapest cost between every pair of airports so that any itinerary query can be answered in O(1) afterward?</p>
+            <details><summary>Solution</summary>
+              <p>Run Floyd-Warshall once: initialize d[i][j] to the direct flight cost between i and j (∞ if none, 0 for i=j), then for k = 1 to V, for every i, j, update d[i][j] = min(d[i][j], d[i][k] + d[k][j]). After the full Θ(V³) run, d[i][j] holds the cheapest cost between every pair, and any later query is a single array lookup. If instead most airports only connect to a handful of others (a sparse route graph), Johnson's algorithm would do the same job faster, at the cost of more moving parts (one Bellman-Ford pass plus V Dijkstra runs) — the right choice depends on how dense the actual route graph is.</p>
+            </details>
+            <p><strong>Remark:</strong> this lesson is a genuine capstone of the shortest-paths material — Floyd-Warshall is <a href="#/subject/algorithmics/algorithms/algo-dynamic-programming">dynamic programming</a> applied directly to graphs, and Johnson's algorithm is nothing more than <a href="#/subject/algorithmics/graph-algorithms/algo-bellman-ford">Bellman-Ford</a> and <a href="#/subject/algorithmics/graph-algorithms/algo-dijkstra">Dijkstra</a> composed, with the reweighting step existing purely to hand Dijkstra a graph it's allowed to run on.</p>
+            <p><strong>Further reading:</strong> Floyd, R.W., "Algorithm 97: Shortest path," <em>Communications of the ACM</em>, 5(6), 1962; Warshall, S., "A theorem on boolean matrices," <em>Journal of the ACM</em>, 9(1), 1962 (the underlying transitive-closure idea Floyd's algorithm generalizes to weights); Johnson, D.B., "Efficient algorithms for shortest paths in sparse networks," <em>Journal of the ACM</em>, 24(1), 1977; CLRS, 3rd ed., Ch. 25 (all-pairs shortest paths, covering both algorithms with full proofs).</p>
+            <p><em>The whole idea in one line: ask, one vertex at a time, "does routing through here ever help?" — and after asking about everyone, you have every answer.</em></p>
           `,
-          exercises: []
+          exercises: [
+            "Prove the Floyd-Warshall recurrence correct by induction on k: show d_k[i][j] as computed equals the true shortest-path distance from i to j using only vertices from {1,...,k} as intermediates, handling the negative-cycle case (state precisely what the algorithm computes when a negative cycle exists among the allowed intermediates).",
+            "Derive Johnson's reweighting formula from scratch: given potentials h(v) satisfying h(v) ≤ h(u) + w(u,v) for every edge (why does one Bellman-Ford pass from a virtual zero-weight source guarantee this?), prove w'(u,v) = w(u,v) + h(u) − h(v) is always nonnegative and that shortest paths under w' correspond exactly to shortest paths under w, differing only by the additive constant h(source) − h(target)."
+          ]
         },
         {
           id: "algo-mst-cut-property",
@@ -1736,14 +1935,56 @@ for (u,v,w) in E:
         },
         {
           id: "algo-max-flow-ford-fulkerson",
-          title: "Maximum Flow: Ford-Fulkerson and Edmonds-Karp",
+          title: "Maximum Flow",
           section: "Flow Networks",
           prerequisites: ["algo-bfs"],
           estMinutes: 35,
           content: `
-            <p><em>Placeholder — content for this lesson hasn't been written yet (a genuinely different kind of graph algorithm, usually not reached in a first course: repeatedly find an augmenting path in the residual graph and push flow along it until none remains; the max-flow min-cut theorem gives an exact certificate of optimality (the achieved flow value equals the capacity of the bottleneck cut), proved via the same exchange/certificate style as the MST cut property. Edmonds-Karp's refinement — always augment along a SHORTEST path, found by BFS on the residual graph — bounds the number of augmentations at O(VE), for O(VE²) total, independent of edge capacities. Source: CLRS 3rd ed. Ch 26). Will be built out after we settle on lesson design.</em></p>
+            <p>Maximum flow finds the largest amount that can be pushed from a source to a sink through a network of capacity-limited pipes — and the same abstraction, once you see it, turns out to model bottleneck problems that have nothing to do with literal pipes at all, from scheduling to matching to image segmentation.</p>
+            <svg viewBox="0 0 340 180" width="100%" height="180" style="max-width:360px;display:block;margin:0.8rem auto;" role="img" aria-label="Flow network with source s, sink t, and two intermediate vertices a and b, edges labeled with flow slash capacity">
+              <defs><marker id="mfarrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker></defs>
+              <line x1="55" y1="90" x2="150" y2="45" stroke="var(--accent)" stroke-width="2" marker-end="url(#mfarrow)"/>
+              <line x1="55" y1="90" x2="150" y2="135" stroke="var(--accent)" stroke-width="2" marker-end="url(#mfarrow)"/>
+              <line x1="190" y1="45" x2="285" y2="90" stroke="var(--accent)" stroke-width="2" marker-end="url(#mfarrow)"/>
+              <line x1="190" y1="135" x2="285" y2="90" stroke="var(--accent)" stroke-width="2" marker-end="url(#mfarrow)"/>
+              <circle cx="40" cy="90" r="18" fill="none" stroke="var(--text)" stroke-width="2"/>
+              <circle cx="170" cy="45" r="18" fill="none" stroke="var(--text)" stroke-width="2"/>
+              <circle cx="170" cy="135" r="18" fill="none" stroke="var(--text)" stroke-width="2"/>
+              <circle cx="300" cy="90" r="18" fill="none" stroke="var(--text)" stroke-width="2"/>
+              <text x="40" y="94" text-anchor="middle" fill="var(--text)" font-size="13">s</text>
+              <text x="170" y="49" text-anchor="middle" fill="var(--text)" font-size="13">a</text>
+              <text x="170" y="139" text-anchor="middle" fill="var(--text)" font-size="13">b</text>
+              <text x="300" y="94" text-anchor="middle" fill="var(--text)" font-size="13">t</text>
+              <text x="100" y="55" text-anchor="middle" fill="var(--text-muted)" font-size="11">3/3</text>
+              <text x="100" y="130" text-anchor="middle" fill="var(--text-muted)" font-size="11">2/4</text>
+              <text x="240" y="55" text-anchor="middle" fill="var(--text-muted)" font-size="11">3/5</text>
+              <text x="240" y="130" text-anchor="middle" fill="var(--text-muted)" font-size="11">2/2</text>
+            </svg>
+            <p>The design follows from a residual graph and a repeat-until-stuck loop. Every edge (u,v) with capacity c and current flow f leaves a <strong>residual capacity</strong> c−f forward and, critically, f backward — pushing flow along an edge always creates the option to later "undo" some of it. An <strong>augmenting path</strong> is any path from source to sink in this residual graph; pushing the bottleneck amount along it strictly increases the total flow. Ford-Fulkerson's generic method just repeats "find an augmenting path, push flow along it" until none remains. That it terminates with the true maximum is the content of the <strong>max-flow min-cut theorem</strong>: the maximum achievable flow value exactly equals the minimum capacity of any s-t cut (a partition of the vertices into a source side and a sink side) — when no augmenting path remains, the set of vertices still reachable from s in the residual graph <em>is</em> such a cut, every edge crossing it is fully saturated, and a flow can never exceed the capacity of any cut it must cross, so this saturated cut is both an upper bound and one that's been achieved.</p>
+            <ul>
+              <li><strong>Ford-Fulkerson (generic)</strong> — any rule for picking an augmenting path works for correctness, but a poor rule (e.g. DFS, picking small-capacity paths) can need as many augmentations as the capacity values themselves, which is only pseudo-polynomial.</li>
+              <li><strong>Edmonds-Karp</strong> — always augment along a shortest augmenting path, found by <a href="#/subject/algorithmics/graph-algorithms/algo-bfs">BFS</a> on the residual graph. Bounds the number of augmentations at O(VE) regardless of capacities, for O(VE²) total — genuinely polynomial.</li>
+              <li><strong>Dinic's algorithm</strong> — build "level graphs" via BFS and push a whole blocking flow through each level graph via DFS before rebuilding it; O(V²E) in general, O(E√V) on unit-capacity graphs, which is exactly the case bipartite matching reduces to.</li>
+            </ul>
+            <p><strong>Remark:</strong> with irrational edge capacities, the naive generic method isn't merely slow — it can fail to converge to the max flow at all, which is precisely why a concrete augmenting-path rule like Edmonds-Karp's, not just "any augmenting path," is needed for a real correctness-and-termination guarantee.</p>
+            <table class="mini-table">
+              <tr><th>Algorithm</th><th>Complexity</th><th>Note</th></tr>
+              <tr><td>Ford-Fulkerson (generic)</td><td>O(E · f*)</td><td>f* = max flow value; pseudo-polynomial, capacity-dependent</td></tr>
+              <tr><td>Edmonds-Karp</td><td>O(VE²)</td><td>shortest augmenting path via BFS; polynomial, capacity-independent</td></tr>
+              <tr><td>Dinic's</td><td>O(V²E)</td><td>blocking flows on level graphs; O(E√V) on unit capacities</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> a company has several pipelines from a refinery to a distribution hub, each with a fixed maximum daily throughput, possibly passing through shared intermediate junctions with their own capacity limits. How would you find the maximum total daily throughput from refinery to hub?</p>
+            <details><summary>Solution</summary>
+              <p>Model junctions and endpoints as vertices and pipeline segments as directed edges labeled with their capacity; the refinery is the source, the hub is the sink. If a junction itself has a throughput limit (not just its pipes), split that vertex into an "in" copy and an "out" copy joined by one internal edge carrying the junction's capacity, with all incoming pipes routed to "in" and all outgoing pipes from "out" — a standard trick for putting a capacity on a vertex rather than an edge. Run Edmonds-Karp (or any correct max-flow algorithm) from source to sink; the resulting flow value is the maximum sustainable daily throughput, and the min cut identifies exactly which pipeline segments or junctions form the true bottleneck.</p>
+            </details>
+            <p><strong>Remark:</strong> the min-cut side of the theorem is not just a proof device — reading off which edges form the saturated cut is often the actually useful output, since it names the bottleneck precisely, and it's the same certificate-of-optimality style as the <a href="#/subject/algorithmics/graph-algorithms/algo-mst-cut-property">MST cut property</a>. The next lesson, <a href="#/subject/algorithmics/graph-algorithms/algo-bipartite-matching">bipartite matching</a>, is a direct reduction to this exact machinery.</p>
+            <p><strong>Further reading:</strong> Ford, L.R., Fulkerson, D.R., "Maximal flow through a network," <em>Canadian Journal of Mathematics</em>, 8, 1956 (the original paper, including the max-flow min-cut theorem); Edmonds, J., Karp, R.M., "Theoretical improvements in algorithmic efficiency for network flow problems," <em>Journal of the ACM</em>, 19(2), 1972; Dinic, E.A., "Algorithm for solution of a problem of maximum flow in a network with power estimation," <em>Soviet Mathematics Doklady</em>, 11, 1970; CLRS, 3rd ed., Ch. 26 (flow networks, Ford-Fulkerson, Edmonds-Karp, and the max-flow min-cut theorem's proof).</p>
+            <p><em>The whole idea in one line: keep finding a way to push more through, and when you truly can't, you've also found the exact bottleneck that stopped you.</em></p>
           `,
-          exercises: []
+          exercises: [
+            "Prove the max-flow min-cut theorem: show that (a) the value of any flow is at most the capacity of any s-t cut, and (b) when no augmenting path exists in the residual graph, the set of residually-reachable vertices from s forms a cut whose capacity exactly equals the current flow's value.",
+            "Prove that Edmonds-Karp performs at most O(VE) augmentations, using the fact that the BFS distance from s to t in the residual graph never decreases across augmentations, and that each edge can be the 'bottleneck' edge of a shortest augmenting path at most O(V) times."
+          ]
         },
         {
           id: "algo-bipartite-matching",
@@ -1752,9 +1993,60 @@ for (u,v,w) in E:
           prerequisites: ["algo-max-flow-ford-fulkerson"],
           estMinutes: 25,
           content: `
-            <p><em>Placeholder — content for this lesson hasn't been written yet (reduces maximum bipartite matching to a single max-flow instance — add a source connected to every left vertex and a sink from every right vertex, all capacities 1 — and reads König's theorem (max matching = min vertex cover in a bipartite graph) straight off the max-flow min-cut theorem. A clean, concrete payoff for having built the flow machinery: an assignment/scheduling problem solved by an algorithm from a seemingly unrelated lesson). Will be built out after we settle on lesson design.</em></p>
+            <p>Bipartite matching finds the largest possible set of pairings between two groups — job applicants to jobs, students to project slots, kidneys to recipients — such that every element on each side is used at most once, and it turns out to be exactly a maximum flow problem wearing a different name.</p>
+            <svg viewBox="0 0 360 190" width="100%" height="190" style="max-width:380px;display:block;margin:0.8rem auto;" role="img" aria-label="Source connected to three left vertices, each connected to compatible right vertices, all connected to a sink, all edges capacity one">
+              <defs><marker id="bmarrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker></defs>
+              <circle cx="30" cy="95" r="16" fill="none" stroke="var(--text)" stroke-width="2"/>
+              <text x="30" y="99" text-anchor="middle" fill="var(--text)" font-size="12">s</text>
+              <circle cx="130" cy="40" r="15" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="130" cy="95" r="15" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="130" cy="150" r="15" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <text x="130" y="44" text-anchor="middle" fill="var(--text)" font-size="12">L1</text>
+              <text x="130" y="99" text-anchor="middle" fill="var(--text)" font-size="12">L2</text>
+              <text x="130" y="154" text-anchor="middle" fill="var(--text)" font-size="12">L3</text>
+              <circle cx="230" cy="40" r="15" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="230" cy="95" r="15" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="230" cy="150" r="15" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <text x="230" y="44" text-anchor="middle" fill="var(--text)" font-size="12">R1</text>
+              <text x="230" y="99" text-anchor="middle" fill="var(--text)" font-size="12">R2</text>
+              <text x="230" y="154" text-anchor="middle" fill="var(--text)" font-size="12">R3</text>
+              <circle cx="330" cy="95" r="16" fill="none" stroke="var(--text)" stroke-width="2"/>
+              <text x="330" y="99" text-anchor="middle" fill="var(--text)" font-size="12">t</text>
+              <line x1="45" y1="90" x2="116" y2="50" stroke="var(--border)" stroke-width="1.5" marker-end="url(#bmarrow)"/>
+              <line x1="45" y1="95" x2="115" y2="95" stroke="var(--border)" stroke-width="1.5" marker-end="url(#bmarrow)"/>
+              <line x1="45" y1="100" x2="116" y2="140" stroke="var(--border)" stroke-width="1.5" marker-end="url(#bmarrow)"/>
+              <line x1="140" y1="45" x2="220" y2="90" stroke="var(--border)" stroke-width="1.5" marker-end="url(#bmarrow)"/>
+              <line x1="145" y1="95" x2="215" y2="95" stroke="var(--border)" stroke-width="1.5" marker-end="url(#bmarrow)"/>
+              <line x1="140" y1="150" x2="220" y2="100" stroke="var(--border)" stroke-width="1.5" marker-end="url(#bmarrow)"/>
+              <line x1="245" y1="50" x2="315" y2="90" stroke="var(--border)" stroke-width="1.5" marker-end="url(#bmarrow)"/>
+              <line x1="245" y1="95" x2="315" y2="95" stroke="var(--border)" stroke-width="1.5" marker-end="url(#bmarrow)"/>
+              <line x1="245" y1="140" x2="315" y2="100" stroke="var(--border)" stroke-width="1.5" marker-end="url(#bmarrow)"/>
+            </svg>
+            <p>The design is a direct reduction to <a href="#/subject/algorithmics/graph-algorithms/algo-max-flow-ford-fulkerson">maximum flow</a>: given a bipartite graph with parts L and R, build a flow network by adding a new source s connected to every vertex in L, a new sink t connected from every vertex in R, and directing every original edge from L to R — every edge in the whole network, old and new, gets capacity 1. Because all capacities are integers, the <strong>integrality theorem</strong> guarantees a maximum flow exists that is itself integer-valued on every edge, and with capacity 1 everywhere that means every edge carries either 0 or 1 unit of flow. A unit of flow along s→u→v→t, for edge (u,v) with u∈L, v∈R, is exactly a matched pair; the capacity-1 constraints at s and t enforce that no vertex is used twice. The maximum flow's value is therefore exactly the size of a maximum matching.</p>
+            <p>The same construction hands you <strong>König's theorem</strong> for free: in a bipartite graph, the size of a maximum matching equals the size of a minimum vertex cover (a smallest set of vertices touching every edge). This falls straight out of the max-flow min-cut theorem applied to this exact network — the minimum s-t cut in the flow network corresponds precisely to a minimum vertex cover in the original bipartite graph.</p>
+            <ul>
+              <li><strong>Generic max-flow reduction</strong> — the construction above, solved with any max-flow algorithm (Edmonds-Karp: O(VE) here, since every augmenting path has length exactly 3 in the unit-capacity network).</li>
+              <li><strong>Hopcroft-Karp</strong> — a specialized algorithm that finds a whole batch of shortest, vertex-disjoint augmenting paths per phase instead of one at a time, achieving O(E√V) — faster than generic Edmonds-Karp on this specific unit-capacity structure.</li>
+              <li><strong>Hungarian algorithm</strong> — solves the weighted version (the assignment problem: maximize total match quality, not just match count), using a different, dual-based approach rather than max flow directly.</li>
+            </ul>
+            <p><strong>Remark:</strong> because every capacity in this network is 1, the general O(VE²) bound for Edmonds-Karp is loose here — the augmenting-path-length argument alone already gives O(VE), and Hopcroft-Karp improves further by batching augmentations.</p>
+            <table class="mini-table">
+              <tr><th>Approach</th><th>Complexity</th><th>Note</th></tr>
+              <tr><td>Max flow (Edmonds-Karp) on the reduction</td><td>O(VE)</td><td>every augmenting path has length 3, tightening the general bound</td></tr>
+              <tr><td>Hopcroft-Karp</td><td>O(E√V)</td><td>specialized: batches vertex-disjoint shortest augmenting paths per phase</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> n job applicants each list which of m open positions they're qualified for. How would you find the maximum number of applicants who can be simultaneously placed into distinct positions they're qualified for?</p>
+            <details><summary>Solution</summary>
+              <p>Build a bipartite graph with applicants on one side, positions on the other, and an edge wherever an applicant is qualified for a position. Add a source connected to every applicant and a sink connected from every position, all capacities 1, and run any max-flow algorithm. The maximum flow value is the maximum number of applicants that can be placed; the specific edges carrying flow give the actual assignment. This is precisely the bipartite matching reduction — "who can be paired with whom, at most once each" is the defining shape of the problem.</p>
+            </details>
+            <p><strong>Remark:</strong> that this genuinely combinatorial assignment problem reduces exactly to a network-flow computation is the payoff for having built the max-flow machinery in the previous lesson — real assignment and scheduling software very often is, underneath, calling a max-flow or matching solver rather than anything resembling search or backtracking.</p>
+            <p><strong>Further reading:</strong> Hopcroft, J.E., Karp, R.M., "An n^{5/2} algorithm for maximum matchings in bipartite graphs," <em>SIAM Journal on Computing</em>, 2(4), 1973 (the specialized algorithm); Kőnig, D., "Gráfok és mátrixok," <em>Matematikai és Fizikai Lapok</em>, 38, 1931 (the original theorem relating matching and vertex cover); CLRS, 3rd ed., §26.3 (maximum bipartite matching via the max-flow reduction, including the integrality argument).</p>
+            <p><em>The whole idea in one line: pairing things up at most once each is just unit-capacity flow from a source through both sides to a sink.</em></p>
           `,
-          exercises: []
+          exercises: [
+            "Prove the integrality theorem for this specific construction: show that if all capacities are integers, some maximum flow assigns an integer value to every edge, and explain why this guarantees the max-flow value equals the maximum matching size exactly (not just an upper bound).",
+            "State König's theorem precisely and prove it using the max-flow min-cut theorem applied to the source/sink construction above: show that a minimum s-t cut in the flow network corresponds to a minimum vertex cover in the original bipartite graph, and that their sizes are equal."
+          ]
         }
       ]
     }
