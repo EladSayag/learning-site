@@ -6,7 +6,7 @@
 // field-by-field doc (id/title/section/prerequisites/estMinutes/content/exercises); same rules
 // apply here, ids just use the "algo-" prefix instead of "phys-".
 //
-// STATUS (2026-09-01, batch 5): this file now covers Data Structures / Algorithms / Graph Algorithms only.
+// STATUS (2026-09-01, batch 6): this file now covers Data Structures / Algorithms / Graph Algorithms only.
 // The five chapters that used to follow "graph-algorithms" here (numerical-linear-algebra,
 // optimization, probability-statistics, time-series, classical-ml) were moved verbatim to
 // js/data-datascience.js / DATASCIENCE_SUBJECT — that material is numerical linear algebra, convex
@@ -43,11 +43,19 @@
 //      bucket 2/2b): algo-dfs, algo-bfs, algo-scc-kosaraju (title trimmed to bare "Kosaraju's
 //      Algorithm"; section changed to "SCC family" to disambiguate from Tarjan's lesson without a
 //      colon-subtitle in the title itself).
+//   2d. NEW full-style content written in the Algorithms chapter as of 2026-09-01, batch 6 (same
+//      template as bucket 2/2b/2c): algo-heapsort, algo-linear-time-sorting (title trimmed from
+//      "Sorting in Linear Time: Counting, Radix, and Bucket Sort" to bare "Linear-Time Sorting"),
+//      algo-order-statistics-selection (title trimmed from "Order Statistics: Linear-Time Selection"
+//      to bare "Order Statistics"). This completes ALL of the "Algorithms" chapter's former
+//      placeholders (CLRS Part II, Sorting and Order Statistics) — every placeholder that chapter had
+//      is now full-style content; the chapter's pre-existing non-placeholder lessons
+//      (algo-amortized-potential-method, algo-sorting-lower-bound-mergesort, algo-randomized-quicksort,
+//      algo-binary-search-invariants, algo-divide-and-conquer, algo-dynamic-programming,
+//      algo-greedy-matroids) remain bucket-1 material, out of scope for this pass.
 //   3. PLACEHOLDER NODES ONLY — wired into the DAG with correct prerequisites, but content still to
 //      be written in a follow-up pass:
-//        Algorithms (CLRS Part II, "Sorting and Order Statistics" — the material this chapter was
-//          missing): algo-heapsort, algo-linear-time-sorting, algo-order-statistics-selection.
-//        Graph Algorithms (deliberately beyond a first course, per request), remaining after batch 5:
+//        Graph Algorithms (deliberately beyond a first course, per request), remaining after batch 6:
 //          algo-scc-tarjan, algo-bridges-articulation, algo-2sat-scc, algo-eulerian-path-hierholzer,
 //          algo-max-flow-ford-fulkerson, algo-bipartite-matching, algo-all-pairs-shortest-paths.
 //      NEXT UP when resuming this pass: Graph Algorithms placeholders, in this DAG order:
@@ -55,10 +63,9 @@
 //      algo-max-flow-ford-fulkerson, algo-bipartite-matching, algo-all-pairs-shortest-paths. Start
 //      with algo-scc-tarjan (it now has a full-style algo-scc-kosaraju lesson right before it to
 //      follow for both content — single-pass low-link algorithm, disc[v]/low[v], stack-based SCC
-//      popping when low[v] == disc[v] — and cross-linking). (Note: bucket 3's "Algorithms"
-//      placeholders — algo-heapsort, algo-linear-time-sorting, algo-order-statistics-selection — are
-//      lower priority per the current pass's scope, which after Data Structures moves straight to
-//      Graph Algorithms; revisit them only if explicitly asked to.)
+//      popping when low[v] == disc[v] — and cross-linking). This is the only remaining category —
+//      once these seven are done, the entire file is complete and the header should say so instead
+//      of naming a NEXT UP.
 
 const ALGORITHMICS_SUBJECT = {
   id: "algorithmics",
@@ -1147,36 +1154,193 @@ E[comparisons] = Σᵢ Σ_{j&gt;i} 2/(j−i+1) = 2n·H(n) + O(n) ≈ 1.39 n log�
         },
         {
           id: "algo-heapsort",
-          title: "Heapsort: Sorting via the Heap Property",
+          title: "Heapsort",
           section: "Sorting",
           prerequisites: ["algo-binary-heaps"],
           estMinutes: 20,
           content: `
-            <p><em>Placeholder — content for this lesson hasn't been written yet (CLRS Part II's own sorting algorithm: BUILD-MAX-HEAP in Θ(n), then repeatedly swap the root with the last element and sift down on the shrinking heap — O(n log n) worst case, in-place, but not stable and with poor cache locality compared to quicksort. Source: CLRS 3rd ed. Ch 6). Will be built out after we settle on lesson design.</em></p>
+            <p>Heapsort turns the array itself into a max-heap and then repeatedly pulls out the largest remaining element, giving a guaranteed Θ(n log n) sort with zero extra memory and none of quicksort's risk of a quadratic worst case — the algorithm to reach for when a hard time bound matters more than average-case speed.</p>
+            <svg viewBox="0 0 460 190" width="100%" height="190" style="max-width:460px;display:block;margin:0.8rem auto;" role="img" aria-label="An array mid-heapsort: the first five cells form the shrinking max-heap with 2 just swapped into the root and about to sift down, and the last cell holds 9, the value just extracted into the growing sorted suffix">
+              <defs><marker id="hsarrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker></defs>
+              <g font-size="12" text-anchor="middle">
+                <rect x="15" y="80" width="55" height="40" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="42" y="105" fill="var(--text)">2</text>
+                <rect x="87" y="80" width="55" height="40" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="114" y="105" fill="var(--text)">7</text>
+                <rect x="159" y="80" width="55" height="40" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="186" y="105" fill="var(--text)">8</text>
+                <rect x="231" y="80" width="55" height="40" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="258" y="105" fill="var(--text)">3</text>
+                <rect x="303" y="80" width="55" height="40" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="330" y="105" fill="var(--text)">5</text>
+                <line x1="375" y1="70" x2="375" y2="130" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="3,3"/>
+                <rect x="380" y="80" width="55" height="40" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="407" y="105" fill="var(--text-muted)">9</text>
+                <text x="200" y="20" fill="var(--text)" font-size="11">heap (shrinks each extraction)</text>
+                <text x="407" y="20" fill="var(--text-muted)" font-size="11">sorted</text>
+                <path d="M 42,78 Q 224,15 407,78" fill="none" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#hsarrow)"/>
+                <text x="224" y="35" fill="var(--accent)" font-size="11">1. swap root ↔ last heap element</text>
+                <line x1="42" y1="122" x2="42" y2="145" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#hsarrow)"/>
+                <text x="42" y="160" fill="var(--accent)" font-size="11">2. sift-down</text>
+              </g>
+            </svg>
+            <p>The design is BUILD-MAX-HEAP once, in Θ(n) — the same linear-time build argument as the <a href="#/subject/algorithmics/data-structures/algo-binary-heaps">binary heap</a> lesson — followed by n rounds of: swap the root (the current maximum) with the last element still inside the heap region, shrink the heap region by one, and sift the new root down its one broken path. The swapped-out element now sits in its final sorted position and is never touched again, so the sorted suffix grows by exactly one element per round while the heap region shrinks by one — the whole algorithm runs inside the original array, no auxiliary storage at all.</p>
+            <p>Variants worth knowing:</p>
+            <ul>
+              <li><strong>Bottom-up heapsort (Wegener)</strong> — during sift-down, follow the larger child all the way to a leaf first without comparing it to the moving element, then walk back up looking for the correct slot; this roughly halves the number of comparisons in practice, though the asymptotic Θ(n log n) bound is unchanged.</li>
+              <li><strong>d-ary heapsort</strong> — sift using a d-ary heap instead of binary, trading a shallower tree for a wider per-level comparison; rarely worth it for heapsort specifically since it complicates the array indexing for a small constant-factor gain.</li>
+              <li><strong>Introsort's safety net</strong> — <code>std::sort</code>-style introspective sorting runs <a href="#/subject/algorithmics/algorithms/algo-randomized-quicksort">randomized quicksort</a> but switches to heapsort once recursion depth passes about 2 log n, using heapsort purely to cap quicksort's adversarial tail rather than as the everyday algorithm.</li>
+            </ul>
+            <p><strong>Remark:</strong> heapsort is not stable — the swap-based extraction can and does reorder equal keys relative to each other, unlike merge sort's stable merge.</p>
+            <table class="mini-table">
+              <tr><th>Phase</th><th>Cost</th><th>Why</th></tr>
+              <tr><td>BUILD-MAX-HEAP</td><td>Θ(n)</td><td>most nodes are near the leaves and sift down only a short distance — the same Σh/2ʰ argument as the binary heap lesson</td></tr>
+              <tr><td>One extract + sift-down</td><td>O(log n)</td><td>only one root-to-leaf path is ever touched</td></tr>
+              <tr><td>Full sort (n extractions)</td><td>Θ(n log n)</td><td>n rounds of O(log n) each, and this bound holds in the worst case, not just on average</td></tr>
+              <tr><td>Extra space</td><td>O(1)</td><td>every swap happens in place within the original array</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> given a max-heap array of n elements (heap-ordered, not sorted), how would you extract just the k largest elements, in order, in O(k log n) time — without heapifying repeatedly or sorting the whole array?</p>
+            <details><summary>Solution</summary>
+              <p>Run exactly heapsort's outer loop, but stop after k rounds instead of n. Repeat k times: read the root (it is, by the heap property, the current maximum of whatever remains), swap it with the last element of the still-active heap region, shrink that region by one, and sift the new root down. Each round costs O(log n) — the heap's height doesn't shrink meaningfully for k ≪ n — so k rounds cost O(k log n) total, versus the O(n log n) a full sort would spend to produce the same first k outputs. This is not a different algorithm; it's heapsort's own extraction loop, simply halted early, which is exactly why a heap is the standard structure behind streaming top-k.</p>
+            </details>
+            <p><strong>Remark:</strong> heapsort's Θ(n log n) is a hard worst-case guarantee, unlike <a href="#/subject/algorithmics/algorithms/algo-randomized-quicksort">randomized quicksort</a>'s expected bound with an adversarial Θ(n²) tail — the reason introsort falls back to heapsort specifically to cap that tail. What it pays for the guarantee is memory access pattern: every sift-down jumps between array positions i, 2i+1, 2i+2, scattered rather than sequential, which is far less cache-friendly than quicksort's in-place partition scan or the sequential merge behind the <a href="#/subject/algorithmics/algorithms/algo-sorting-lower-bound-mergesort">comparison-sort lower bound</a> lesson's merge sort — the reason heapsort tends to lose on wall-clock time despite matching or beating both asymptotically.</p>
+            <p><strong>Further reading:</strong> CLRS, 3rd ed., Ch. 6 (heaps and heapsort, §6.4 for the sort itself); Williams, J.W.J., "Algorithm 232: Heapsort," <em>Communications of the ACM</em>, 7(6), 1964 (the original algorithm); Sedgewick & Wayne, <em>Algorithms</em>, 4th ed., §2.4 (heapsort via a sink-based array implementation, with a worked comparison against quicksort's constants).</p>
+            <p><em>The whole idea in one line: repeatedly hand back the biggest thing left, then patch the one path that broke.</em></p>
           `,
-          exercises: []
+          exercises: [
+            "Prove that heapsort performs at most n⌈log₂ n⌉ + O(n) comparisons in the worst case, combining the Θ(n) build cost with n extractions each costing at most 2⌈log₂ n⌉ comparisons. Compare this bound to the Ω(n log n) comparison-sorting lower bound and state how tight heapsort actually is.",
+            "Describe Wegener's bottom-up variant of sift-down precisely (follow the larger child to a leaf first, then walk back up to find the correct insertion point for the moving element) and explain why it roughly halves the number of comparisons per sift-down in practice while leaving the Θ(n log n) worst-case bound unchanged."
+          ]
         },
         {
           id: "algo-linear-time-sorting",
-          title: "Sorting in Linear Time: Counting, Radix, and Bucket Sort",
+          title: "Linear-Time Sorting",
           section: "Sorting",
           prerequisites: ["algo-sorting-lower-bound-mergesort"],
           estMinutes: 25,
           content: `
-            <p><em>Placeholder — content for this lesson hasn't been written yet (the three algorithms that beat the Ω(n log n) comparison bound by not comparing keys: counting sort in Θ(n+k) for keys in a small range, radix sort in Θ(d(n+k)) by applying a stable counting sort digit-by-digit, and bucket sort in expected Θ(n) under a uniformity assumption on the input distribution. Source: CLRS 3rd ed. Ch 8). Will be built out after we settle on lesson design.</em></p>
+            <p>Comparison sorts can't beat Ω(n log n) — but sorting doesn't have to compare keys at all. When a key's structure is known in advance (a small range of integers, a fixed number of digits, a roughly uniform spread) counting, radix, and bucket sort exploit that structure directly and sort in linear time instead.</p>
+            <svg viewBox="0 0 460 200" width="100%" height="200" style="max-width:460px;display:block;margin:0.8rem auto;" role="img" aria-label="Counting sort in three rows: an input array of small keys 2, 0, 3, 1, 3, a count array indexed by key value showing how many times each value occurs, and a prefix-sum array turning those counts into output positions">
+              <defs><marker id="ltsarrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker></defs>
+              <g font-size="12" text-anchor="middle">
+                <text x="20" y="12" text-anchor="start" fill="var(--text-muted)" font-size="11">input</text>
+                <rect x="20" y="16" width="50" height="36" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="45" y="39" fill="var(--text)">2</text>
+                <rect x="85" y="16" width="50" height="36" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="110" y="39" fill="var(--text)">0</text>
+                <rect x="150" y="16" width="50" height="36" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="175" y="39" fill="var(--text)">3</text>
+                <rect x="215" y="16" width="50" height="36" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="240" y="39" fill="var(--text)">1</text>
+                <rect x="280" y="16" width="50" height="36" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="305" y="39" fill="var(--text)">3</text>
+                <text x="20" y="92" text-anchor="start" fill="var(--text-muted)" font-size="11">count[value]</text>
+                <rect x="20" y="96" width="50" height="36" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="45" y="119" fill="var(--text)">1</text>
+                <text x="45" y="146" fill="var(--text-muted)" font-size="10">value 0</text>
+                <rect x="85" y="96" width="50" height="36" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="110" y="119" fill="var(--text)">1</text>
+                <text x="110" y="146" fill="var(--text-muted)" font-size="10">value 1</text>
+                <rect x="150" y="96" width="50" height="36" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="175" y="119" fill="var(--text)">1</text>
+                <text x="175" y="146" fill="var(--text-muted)" font-size="10">value 2</text>
+                <rect x="215" y="96" width="50" height="36" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="240" y="119" fill="var(--text)">2</text>
+                <text x="240" y="146" fill="var(--text-muted)" font-size="10">value 3</text>
+                <path d="M 175,54 Q 208,75 240,94" fill="none" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#ltsarrow)"/>
+                <text x="20" y="172" text-anchor="start" fill="var(--text-muted)" font-size="11">prefix sum ⇒ output slot</text>
+                <rect x="215" y="176" width="50" height="20" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="240" y="191" fill="var(--text)" font-size="11">…,4,5</text>
+                <path d="M 240,134 L 240,174" fill="none" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#ltsarrow)"/>
+              </g>
+            </svg>
+            <p>Three algorithms, same underlying move: stop comparing whole keys and read their structure instead. <strong>Counting sort</strong> assumes keys are integers in a small range [0, k): count occurrences of each value, prefix-sum the counts into output positions, then place each key directly — Θ(n + k), with no comparisons at all. <strong>Radix sort</strong> extends this to keys with d digits (in any base) by running a stable counting sort once per digit, least-significant first — Θ(d(n + k)) for digits in range [0, k). <strong>Bucket sort</strong> assumes keys are roughly uniformly spread over a known range: scatter them into n buckets by value, insertion-sort each small bucket, concatenate — expected Θ(n), since each bucket holds O(1) elements on average.</p>
+            <p>Variants and how they differ:</p>
+            <ul>
+              <li><strong>LSD radix sort</strong> — process digits right to left, one stable counting-sort pass per digit; the standard variant, and stability is load-bearing, not a nicety — it's what lets a later, more significant digit's pass preserve the order established by earlier, less significant digits.</li>
+              <li><strong>MSD radix sort</strong> — process digits left to right, recursing into each bucket by the next digit; behaves like a <a href="#/subject/algorithmics/data-structures/algo-tries">trie</a> built breadth-first over the key's digits, and handles variable-length keys such as strings without padding them to a common length.</li>
+              <li><strong>Bucket sort's distribution dependence</strong> — the expected Θ(n) bound needs the input to actually spread across buckets; an adversarial or merely clumped input (many keys landing in one bucket) degrades it toward Θ(n²), unlike counting or radix sort, whose bounds hold unconditionally once k or d is fixed.</li>
+            </ul>
+            <p><strong>Remark:</strong> all three still need Ω(n) time just to read the input, so "linear time" really means Θ(n) with the range k or digit count d hidden inside the constant — choose a k or d that's too large and the hidden constant swamps any ordinary n log n sort.</p>
+            <table class="mini-table">
+              <tr><th>Algorithm</th><th>Cost</th><th>Why</th></tr>
+              <tr><td>Counting sort</td><td>Θ(n + k)</td><td>one pass to count, one prefix-sum pass over k values, one placement pass over n keys</td></tr>
+              <tr><td>Radix sort</td><td>Θ(d(n + k))</td><td>d passes of counting sort, one per digit, each Θ(n + k)</td></tr>
+              <tr><td>Bucket sort</td><td>Θ(n) expected</td><td>n buckets each receive O(1) keys on average under uniformity, so each insertion sort is O(1) expected</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> given n integers all known to lie in the range [0, n²), how would you sort them in Θ(n) time — even though a direct counting sort over that whole range would cost Θ(n²), not Θ(n)?</p>
+            <details><summary>Solution</summary>
+              <p>Treat every number as a 2-digit number in base n: digit₀ = value mod n, digit₁ = value div n, both individually in [0, n). Run a 2-pass LSD radix sort — first pass a stable counting sort on digit₀ over range [0, n), second pass a stable counting sort on digit₁ over the same range — each pass costs Θ(n + n) = Θ(n), for Θ(2n) = Θ(n) total. This is exactly the general Θ(d(n + k)) bound with d = 2 and k = n, versus the Θ(n + k) = Θ(n + n²) a single counting sort over the full range would need: trading one more digit (d = 2 instead of d = 1) buys a dramatically smaller per-pass range k.</p>
+            </details>
+            <p><strong>Remark:</strong> this is the same move as escaping the search lower bound in the <a href="#/subject/algorithmics/data-structures/algo-tries">trie</a> lesson — stop treating a key as an opaque comparable object and read its structure directly. It only pays off when that structure is known and well-behaved (bounded k, small fixed d, or genuine uniformity); absent that, <a href="#/subject/algorithmics/algorithms/algo-randomized-quicksort">randomized quicksort</a>'s comparison-based Θ(n log n) is the robust default, and the <a href="#/subject/algorithmics/algorithms/algo-sorting-lower-bound-mergesort">comparison-sort lower bound</a> is exactly the boundary these three algorithms step outside of.</p>
+            <p><strong>Further reading:</strong> CLRS, 3rd ed., §8.2 (counting sort), §8.3 (radix sort, including the stability requirement and its proof), §8.4 (bucket sort and its expected-time analysis); Knuth, <em>The Art of Computer Programming</em>, Vol. 3, §5.2.5 (sorting by distribution — the classical treatment of radix and bucket sort, motivated by punched-card sorting machines).</p>
+            <p><em>The whole idea in one line: don't compare the keys — read them.</em></p>
           `,
-          exercises: []
+          exercises: [
+            "Prove counting sort is stable, then construct a small example with two-digit numbers showing that LSD radix sort produces an incorrect final order if the per-digit counting sort used is not stable.",
+            "Prove that bucket sort runs in expected Θ(n) time when the n input keys are drawn independently and uniformly from [0,1), by bounding the expected cost of insertion-sorting each bucket. Then construct a (non-adversarial, just non-uniform) input distribution for which bucket sort degrades to Θ(n²), and explain why counting sort and radix sort have no equivalent failure mode."
+          ]
         },
         {
           id: "algo-order-statistics-selection",
-          title: "Order Statistics: Linear-Time Selection",
+          title: "Order Statistics",
           section: "Selection",
           prerequisites: ["algo-randomized-quicksort"],
           estMinutes: 30,
           content: `
-            <p><em>Placeholder — content for this lesson hasn't been written yet (finding the k-th smallest element without fully sorting: randomized SELECT via quicksort-style partitioning gives expected O(n); the deterministic median-of-medians algorithm gets worst-case O(n) by choosing a pivot guaranteed to be a good split, at the cost of a more intricate recurrence T(n) ≤ T(n/5) + T(7n/10) + O(n). Source: CLRS 3rd ed. Ch 9). Will be built out after we settle on lesson design.</em></p>
+            <p>Finding the k-th smallest element — the median, say — doesn't require sorting the whole array first. Selection algorithms answer that one positional question directly, in linear time, by reusing quicksort's own partition step and simply throwing away the half that provably can't contain the answer.</p>
+            <svg viewBox="0 0 460 170" width="100%" height="170" style="max-width:460px;display:block;margin:0.8rem auto;" role="img" aria-label="An array partitioned around a pivot: three elements below the pivot are kept for recursion, the pivot itself sits at its final index, and four elements above the pivot are shown discarded, since the target rank falls inside the kept region">
+              <defs><marker id="ossarrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker></defs>
+              <g font-size="12" text-anchor="middle">
+                <text x="66" y="14" fill="var(--text)" font-size="11">recurse here</text>
+                <text x="201" y="14" fill="var(--accent)" font-size="11">pivot</text>
+                <text x="341" y="14" fill="var(--text-muted)" font-size="11">discarded</text>
+                <rect x="10" y="60" width="46" height="36" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="33" y="83" fill="var(--text)">2</text>
+                <rect x="66" y="60" width="46" height="36" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="89" y="83" fill="var(--text)">5</text>
+                <rect x="122" y="60" width="46" height="36" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="145" y="83" fill="var(--text)">3</text>
+                <rect x="178" y="60" width="46" height="36" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="201" y="83" fill="var(--text)">7</text>
+                <rect x="234" y="60" width="46" height="36" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="4,3"/>
+                <text x="257" y="83" fill="var(--text-muted)">9</text>
+                <rect x="290" y="60" width="46" height="36" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="4,3"/>
+                <text x="313" y="83" fill="var(--text-muted)">12</text>
+                <rect x="346" y="60" width="46" height="36" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="4,3"/>
+                <text x="369" y="83" fill="var(--text-muted)">8</text>
+                <rect x="402" y="60" width="46" height="36" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="4,3"/>
+                <text x="425" y="83" fill="var(--text-muted)">10</text>
+                <line x1="89" y1="30" x2="89" y2="58" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#ossarrow)"/>
+                <text x="119" y="44" fill="var(--accent)" font-size="11">rank k</text>
+              </g>
+            </svg>
+            <p>The design reuses quicksort's own partition routine — pick a pivot, rearrange the array in place into elements ≤ pivot followed by elements &gt; pivot, in Θ(n) — but where quicksort must recurse into <em>both</em> halves to fully order everything, selection only ever needs the half containing the target rank; the pivot's final index, compared against k, tells you immediately whether the pivot itself is the answer or which single side to recurse into. The other half's internal order is simply never computed.</p>
+            <p>Three variants of the same idea:</p>
+            <ul>
+              <li><strong>Randomized SELECT (quickselect)</strong> — pivot chosen uniformly at random, exactly as in <a href="#/subject/algorithmics/algorithms/algo-randomized-quicksort">randomized quicksort</a>; solves to expected Θ(n) because the array shrinks by a constant fraction on average each round, and now only one side is ever recursed into rather than both.</li>
+              <li><strong>Median-of-medians (BFPRT)</strong> — a deterministic pivot rule that guarantees worst-case Θ(n): split the array into groups of 5, sort each tiny group, take the group medians, and recursively find <em>their</em> median as the pivot. This pivot is provably better than at least 30% and at most 70% of all elements, giving the recurrence T(n) ≤ T(n/5) + T(7n/10) + O(n), which solves to Θ(n) despite the two recursive calls.</li>
+              <li><strong>Introselect</strong> — the pragmatic middle ground (C++'s <code>std::nth_element</code>): run randomized quickselect, but fall back to median-of-medians once recursion depth grows suspiciously large, capping the adversarial-input tail the same way introsort caps quicksort's.</li>
+            </ul>
+            <p><strong>Remark:</strong> the group size 5 in median-of-medians is load-bearing, not arbitrary — groups of 3 make the good-pivot fraction too weak for the recurrence to solve to Θ(n), and groups of 7 or more make sorting each group itself too expensive relative to the gain.</p>
+            <table class="mini-table">
+              <tr><th>Method</th><th>Cost</th><th>Why</th></tr>
+              <tr><td>Randomized quickselect</td><td>expected Θ(n)</td><td>the array shrinks by a constant fraction on average each round, same argument as randomized quicksort</td></tr>
+              <tr><td>Median-of-medians</td><td>worst-case Θ(n)</td><td>T(n) ≤ T(n/5) + T(7n/10) + O(n) solves to Θ(n) despite the extra recursive call</td></tr>
+              <tr><td>Sort, then index</td><td>Θ(n log n)</td><td>pays for a total order you never asked for, just to read off one position</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> you need the k smallest elements of a stream of n numbers arriving one at a time, using only O(k) memory — you can't hold the whole array to partition it. How would you do it, and why doesn't quickselect apply here?</p>
+            <details><summary>Solution</summary>
+              <p>Maintain a max-heap of size at most k. For each incoming number: if the heap holds fewer than k elements, push it; otherwise compare it to the heap's max — if the new number is smaller, pop the max and push the new number, otherwise discard it. After the stream ends, the heap holds exactly the k smallest elements seen. Each of the n elements does O(1) <a href="#/subject/algorithmics/data-structures/algo-priority-queue-adt">priority-queue</a> operations at O(log k) each, for Θ(n log k) total using only O(k) memory throughout. Quickselect can't be used directly because its partition step needs random access to rearrange the whole array in place — it assumes the data already sits in memory as one contiguous block, which a single forward pass over a stream never gives you; the heap trades quickselect's better Θ(n) time bound for the ability to work with O(k) memory and one pass.</p>
+            </details>
+            <p><strong>Remark:</strong> quickselect's expected Θ(n) shares its worst-case Θ(n²) vulnerability with <a href="#/subject/algorithmics/algorithms/algo-randomized-quicksort">randomized quicksort</a> — both degrade under an adversary who can force consistently bad pivots — which is exactly why a production <code>nth_element</code> uses introselect's median-of-medians fallback rather than pure quickselect. The streaming variant above is a reminder that "find the k-th smallest" and "sort everything" are genuinely different amounts of work: the <a href="#/subject/algorithmics/algorithms/algo-sorting-lower-bound-mergesort">Ω(n log n) comparison-sort lower bound</a> applies to producing a full order, not to answering one positional question, and selection is the algorithm that takes that distinction seriously.</p>
+            <p><strong>Further reading:</strong> CLRS, 3rd ed., Ch. 9 (order statistics — §9.1 for randomized SELECT's expected-time analysis, §9.3 for the deterministic median-of-medians algorithm and its recurrence); Blum, M., Floyd, R.W., Pratt, V., Rivest, R.L., & Tarjan, R.E., "Time Bounds for Selection," <em>Journal of Computer and System Sciences</em>, 7(4), 1973 (the original median-of-medians paper); Musser, D.R., "Introspective Sorting and Selection Algorithms," <em>Software—Practice & Experience</em>, 27(8), 1997 (introsort and introselect).</p>
+            <p><em>The whole idea in one line: to find what's in the middle, you only ever need to look at the half that could still contain it.</em></p>
           `,
-          exercises: []
+          exercises: [
+            "Prove that the median-of-medians recurrence T(n) ≤ T(⌈n/5⌉) + T(7n/10 + 6) + O(n) solves to O(n) (the substitution method — guess and verify — is the standard route). Then explain precisely what breaks in the good-pivot fraction guarantee, and therefore in the recurrence, if the group size is changed to 3.",
+            "Prove that randomized quickselect runs in expected Θ(n) time, using a decomposition similar to randomized quicksort's expected-comparisons argument: bound the expected work contributed at each level of recursion using the fact that a random pivot splits the remaining array into a 25%-75% (or better) range with probability at least 1/2."
+          ]
         },
         {
           id: "algo-binary-search-invariants",
