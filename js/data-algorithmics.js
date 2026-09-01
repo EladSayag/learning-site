@@ -24,7 +24,8 @@
 //      <details> solution + closing Remark with cross-links + Further reading + italic one-line
 //      slogan; bare-topic-name titles; two meatier exercises in the array beyond the inline one):
 //      algo-stacks, algo-linked-lists (the two style-template reference lessons),
-//      algo-red-black-trees, algo-b-trees, algo-splay-trees, algo-skip-lists.
+//      algo-red-black-trees, algo-b-trees, algo-splay-trees, algo-skip-lists,
+//      algo-bloom-filters, algo-priority-queue-adt, algo-fibonacci-heap.
 //   2b. Lessons with full content but written BEFORE the style template above was settled (denser
 //      academic tone, no try-it-yourself/remark/slogan structure yet) — need a restyling pass, NOT a
 //      rewrite of the underlying material: algo-queues, algo-what-is-a-data-structure, algo-kd-trees,
@@ -34,8 +35,7 @@
 //      restyling pass like the other four in this bucket.
 //   3. PLACEHOLDER NODES ONLY — wired into the DAG with correct prerequisites, but content still to
 //      be written in a follow-up pass:
-//        Data Structures: algo-bloom-filters, algo-priority-queue-adt, algo-fibonacci-heap,
-//          algo-van-emde-boas, algo-segment-fenwick-trees.
+//        Data Structures: algo-van-emde-boas, algo-segment-fenwick-trees.
 //        Algorithms (CLRS Part II, "Sorting and Order Statistics" — the material this chapter was
 //          missing): algo-heapsort, algo-linear-time-sorting, algo-order-statistics-selection.
 //        Graph Algorithms (deliberately beyond a first course, per request): algo-dfs, algo-bfs
@@ -44,10 +44,10 @@
 //          algo-max-flow-ford-fulkerson, algo-bipartite-matching, algo-all-pairs-shortest-paths,
 //          algo-2sat-scc, algo-eulerian-path-hierholzer.
 //      NEXT UP when resuming this pass: finish Data Structures category A (still-placeholder
-//      lessons) in DAG order — algo-bloom-filters, then the Heaps group (algo-priority-queue-adt,
-//      algo-fibonacci-heap, algo-van-emde-boas), then algo-segment-fenwick-trees. Only after ALL of
-//      Data Structures (both bucket 2 and 2b above) is done should the pass move to Graph Algorithms
-//      placeholders (algo-dfs first, in the DAG order listed above).
+//      lessons) in DAG order — algo-van-emde-boas, then algo-segment-fenwick-trees (batch 2 wrote
+//      algo-bloom-filters, algo-priority-queue-adt, and algo-fibonacci-heap in current style; those
+//      three are done). Only after ALL of Data Structures (both bucket 2 and 2b above) is done should
+//      the pass move to Graph Algorithms placeholders (algo-dfs first, in the DAG order listed above).
 
 const ALGORITHMICS_SUBJECT = {
   id: "algorithmics",
@@ -505,14 +505,64 @@ const ALGORITHMICS_SUBJECT = {
         },
         {
           id: "algo-bloom-filters",
-          title: "Bloom Filters: Probabilistic Set Membership",
+          title: "Bloom Filters",
           section: "Hashing & Search Trees",
           prerequisites: ["algo-hashing-universal-families"],
           estMinutes: 20,
           content: `
-            <p><em>Placeholder — content for this lesson hasn't been written yet (a bit array plus k independent hash functions; one-sided error — false positives only, never a false negative — and the derivation of the optimal k and the resulting false-positive rate; ties back to the "sketching structures" aside in the hashing lesson. Sources: Bloom, "Space/Time Trade-offs in Hash Coding with Allowable Errors," CACM 1970; Mitzenmacher & Upfal, "Probability and Computing," 2nd ed., Ch 5, for the rigorous analysis). Will be built out after we settle on lesson design.</em></p>
+            <p>A Bloom filter answers "have I possibly seen this before?" in a fixed, tiny amount of memory that never grows with how many elements you've inserted — by giving up the ability to ever say "definitely yes." It only ever says "definitely no" or "probably yes."</p>
+            <svg viewBox="0 0 460 160" width="100%" height="160" style="max-width:460px;display:block;margin:0.8rem auto;" role="img" aria-label="Element x hashed by three functions h1, h2, h3 to three positions in a ten-cell bit array, setting those three bits to 1 while the rest stay 0">
+              <g font-size="12">
+                <circle cx="230" cy="22" r="16" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="230" y="27" text-anchor="middle" fill="var(--text)" font-weight="600">x</text>
+                <defs><marker id="bfarrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker></defs>
+                <line x1="220" y1="36" x2="90" y2="82" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#bfarrow)"/>
+                <line x1="230" y1="38" x2="210" y2="82" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#bfarrow)"/>
+                <line x1="240" y1="36" x2="330" y2="82" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#bfarrow)"/>
+                <text x="120" y="60" fill="var(--text-muted)" font-size="11">h1</text>
+                <text x="235" y="65" fill="var(--text-muted)" font-size="11">h2</text>
+                <text x="300" y="60" fill="var(--text-muted)" font-size="11">h3</text>
+                <g font-size="13" text-anchor="middle">
+                  <rect x="30" y="85" width="40" height="34" fill="none" stroke="var(--border)" stroke-width="1.5"/><text x="50" y="107" fill="var(--text-muted)">0</text>
+                  <rect x="70" y="85" width="40" height="34" fill="none" stroke="var(--accent)" stroke-width="2"/><text x="90" y="107" fill="var(--text)" font-weight="600">1</text>
+                  <rect x="110" y="85" width="40" height="34" fill="none" stroke="var(--border)" stroke-width="1.5"/><text x="130" y="107" fill="var(--text-muted)">0</text>
+                  <rect x="150" y="85" width="40" height="34" fill="none" stroke="var(--border)" stroke-width="1.5"/><text x="170" y="107" fill="var(--text-muted)">0</text>
+                  <rect x="190" y="85" width="40" height="34" fill="none" stroke="var(--accent)" stroke-width="2"/><text x="210" y="107" fill="var(--text)" font-weight="600">1</text>
+                  <rect x="230" y="85" width="40" height="34" fill="none" stroke="var(--border)" stroke-width="1.5"/><text x="250" y="107" fill="var(--text-muted)">0</text>
+                  <rect x="270" y="85" width="40" height="34" fill="none" stroke="var(--border)" stroke-width="1.5"/><text x="290" y="107" fill="var(--text-muted)">0</text>
+                  <rect x="310" y="85" width="40" height="34" fill="none" stroke="var(--accent)" stroke-width="2"/><text x="330" y="107" fill="var(--text)" font-weight="600">1</text>
+                  <rect x="350" y="85" width="40" height="34" fill="none" stroke="var(--border)" stroke-width="1.5"/><text x="370" y="107" fill="var(--text-muted)">0</text>
+                  <rect x="390" y="85" width="40" height="34" fill="none" stroke="var(--border)" stroke-width="1.5"/><text x="410" y="107" fill="var(--text-muted)">0</text>
+                </g>
+                <text x="230" y="140" text-anchor="middle" fill="var(--text-muted)" font-size="11">m-bit array, all bits start at 0</text>
+              </g>
+            </svg>
+            <p>The design is a bit array of size m plus k independent hash functions <code>h₁,…,h_k</code>, each mapping a key to a position in <code>{0,…,m−1}</code>. <code>insert(x)</code> sets all k bits <code>h₁(x),…,h_k(x)</code> to 1 — nothing is ever stored about which key set which bit, and bits are freely shared between keys. <code>query(x)</code> checks the same k positions: if any is 0, x was <em>definitely</em> never inserted (that bit could only be 0 if nothing ever hashed there). If all k are 1, x <em>probably</em> was inserted — but another combination of keys could have set all k of x's bits without x itself ever being added, a <strong>false positive</strong>. The error is entirely one-sided: a false negative is impossible.</p>
+            <p>Variants that relax the base design's two hard limits — no deletion, and no way to enumerate members:</p>
+            <ul>
+              <li><strong>Counting Bloom filter</strong> — replace each bit with a small counter, incremented on insert and decremented on delete; a position is "set" whenever its counter is nonzero. Costs more space per slot and still risks counter overflow.</li>
+              <li><strong>Scalable Bloom filter</strong> — chain a growing sequence of filters with tightening false-positive targets, for workloads where n isn't known in advance.</li>
+              <li><strong>Cuckoo filter</strong> — a different structure entirely (fingerprints in a cuckoo hash table) that supports deletion natively and typically beats a Bloom filter's space/false-positive trade-off at the same target rate, at the cost of more intricate insertion logic.</li>
+            </ul>
+            <p><strong>Remark:</strong> the false-positive rate is fixed at construction time by the ratio m/n you sized for — insert far more elements than planned and the array fills with 1s, driving the false-positive rate toward 1 with no warning.</p>
+            <table class="mini-table">
+              <tr><th>Operation</th><th>Cost</th><th>Why</th></tr>
+              <tr><td>Insert</td><td>O(k)</td><td>set k fixed bit positions, independent of n</td></tr>
+              <tr><td>Query</td><td>O(k)</td><td>check the same k positions, independent of n</td></tr>
+              <tr><td>Space</td><td>O(m) bits</td><td>fixed at construction; no per-key storage at all, unlike a hash set</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> for m bits, n inserted elements, and k hash functions, roughly what's the false-positive probability — and what choice of k minimizes it for a given m/n?</p>
+            <details><summary>Solution</summary>
+              <p>After inserting n elements, treat each of the k·n hash evaluations as landing uniformly and independently on one of the m bits (the standard simplifying assumption). The probability a specific bit is still 0 is <code>(1 − 1/m)^{kn} ≈ e^{−kn/m}</code>, so the probability it's 1 is <code>≈ 1 − e^{−kn/m}</code>. A query on an absent element false-positives only if all k of its bits happen to be 1, which — treating those k bits as independent — gives false-positive probability <code>p ≈ (1 − e^{−kn/m})^k</code>. Minimizing p over k (take the derivative of ln p with respect to k and set it to zero) gives the optimum at <code>k = (m/n)·ln 2</code>, and plugging that back in gives the best achievable rate <code>p ≈ (1/2)^k = (0.6185)^{m/n}</code> — the two numbers, m/n and the resulting k, are exactly what you tune when sizing a filter for a target false-positive rate.</p>
+            </details>
+            <p><strong>Remark:</strong> a Bloom filter is <a href="#/subject/algorithmics/data-structures/algo-hashing-universal-families">hashing</a> pushed to its space-minimal extreme — it throws away the keys entirely and keeps only the union of bit positions they touched, which is exactly why it can't support deletion or enumeration without the extra machinery above. It earns that space back as a cheap pre-filter in front of something expensive: checking a Bloom filter before a disk-resident <a href="#/subject/algorithmics/data-structures/algo-b-trees">B-tree</a> lookup or a network round-trip turns most "definitely not present" queries into an O(k) in-memory check instead of the real, costly lookup.</p>
+            <p><strong>Further reading:</strong> Bloom, "Space/Time Trade-offs in Hash Coding with Allowable Errors," <em>Communications of the ACM</em>, 1970 (the original paper); Mitzenmacher & Upfal, <em>Probability and Computing</em>, 2nd ed., Ch. 5, for the rigorous independence-free analysis; Broder & Mitzenmacher, "Network Applications of Bloom Filters: A Survey," <em>Internet Mathematics</em>, 2004, for the counting variant and real deployments (web caches, database engines such as Cassandra and RocksDB using them to skip disk reads).</p>
+            <p><em>The whole idea in one line: throw away the keys, keep only the bits they touched, and accept an occasional false "maybe."</em></p>
           `,
-          exercises: []
+          exercises: [
+            "Design a counting Bloom filter supporting deletion. State the invariant each counter must maintain relative to the number of currently-inserted keys hashing there, explain precisely how counter overflow breaks the invariant (and hence correctness), and propose a concrete fix with its space cost.",
+            "You need to check incoming identifiers against a blacklist of 10^9 entries with a target false-positive rate of 1%. Compute the required array size m and the optimal k using the formulas above, compare the total memory to storing the 10^9 entries in a hash set (assume 8 bytes/entry plus overhead), and state the ratio."
+          ]
         },
         {
           id: "algo-kd-trees",
@@ -599,25 +649,116 @@ const ALGORITHMICS_SUBJECT = {
         },
         {
           id: "algo-priority-queue-adt",
-          title: "Priority Queues: The ADT Behind the Heap",
+          title: "Priority Queues",
           section: "Heaps",
           prerequisites: ["algo-binary-heaps"],
           estMinutes: 15,
           content: `
-            <p><em>Placeholder — content for this lesson hasn't been written yet (separates the priority-queue ADT — insert, extract-min/max, sometimes decrease-key — from the binary heap as just one implementation of it; sets up sorted array / unsorted array / binary heap as a cost-tradeoff table before Fibonacci and van Emde Boas heaps push the same ADT further). Will be built out after we settle on lesson design.</em></p>
+            <p>A priority queue is for the workload a plain queue can't serve: service isn't by arrival order, it's by priority. <code>insert(x, priority)</code> and <code>extract-min()</code> (or extract-max) are the whole contract — the binary heap is only the implementation you already met, not the definition.</p>
+            <svg viewBox="0 0 480 190" width="100%" height="190" style="max-width:480px;display:block;margin:0.8rem auto;" role="img" aria-label="A Priority Queue ADT box with insert and extract-min, and arrows down to three implementation boxes: unsorted array, sorted array, and binary heap, each showing the cost of the two operations">
+              <rect x="150" y="10" width="180" height="55" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <text x="240" y="33" text-anchor="middle" fill="var(--text)" font-size="13" font-weight="600">Priority Queue ADT</text>
+              <text x="240" y="52" text-anchor="middle" fill="var(--text-muted)" font-size="11">insert(x)   extract-min()</text>
+              <line x1="190" y1="65" x2="70" y2="118" stroke="var(--border)" stroke-width="1.5"/>
+              <line x1="240" y1="65" x2="240" y2="118" stroke="var(--border)" stroke-width="1.5"/>
+              <line x1="290" y1="65" x2="410" y2="118" stroke="var(--border)" stroke-width="1.5"/>
+              <rect x="5" y="120" width="150" height="62" rx="8" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <text x="80" y="142" text-anchor="middle" fill="var(--text)" font-size="12" font-weight="600">Unsorted array</text>
+              <text x="80" y="160" text-anchor="middle" fill="var(--text-muted)" font-size="11">insert: O(1)</text>
+              <text x="80" y="176" text-anchor="middle" fill="var(--text-muted)" font-size="11">extract-min: O(n)</text>
+              <rect x="165" y="120" width="150" height="62" rx="8" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <text x="240" y="142" text-anchor="middle" fill="var(--text)" font-size="12" font-weight="600">Sorted array</text>
+              <text x="240" y="160" text-anchor="middle" fill="var(--text-muted)" font-size="11">insert: O(n)</text>
+              <text x="240" y="176" text-anchor="middle" fill="var(--text-muted)" font-size="11">extract-min: O(1)</text>
+              <rect x="325" y="120" width="150" height="62" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <text x="400" y="142" text-anchor="middle" fill="var(--text)" font-size="12" font-weight="600">Binary heap</text>
+              <text x="400" y="160" text-anchor="middle" fill="var(--text-muted)" font-size="11">insert: O(log n)</text>
+              <text x="400" y="176" text-anchor="middle" fill="var(--text-muted)" font-size="11">extract-min: O(log n)</text>
+            </svg>
+            <p>The design question a priority queue implementation answers is exactly the one from the very first lesson of this chapter: where do you park the cost? An unsorted array defers all the work to extraction (scan everything to find the minimum); a sorted array pays it all up front, at insertion (shift elements to keep order); the heap is the implementation that refuses to fully commit either way, keeping just enough order (the heap property, not full sortedness) to make both operations O(log n).</p>
+            <p>Real uses add a third operation the plain contract doesn't mention:</p>
+            <ul>
+              <li><strong>decrease-key(x, new priority)</strong> — lower an already-queued element's priority in place. This is what <a href="#/subject/algorithmics/graph-algorithms/algo-dijkstra">Dijkstra's algorithm</a> calls every time it finds a shorter path to a vertex already in the queue, and a binary heap only supports it in O(log n) if you separately track each element's array index as it moves during sifting.</li>
+              <li><strong>merge(Q1, Q2)</strong> — combine two priority queues into one. A binary heap can't do this efficiently (O(n) to rebuild); this is precisely the gap the next lesson's Fibonacci heap is built to close.</li>
+              <li><strong>Bounded / integer-priority variants</strong> — when priorities are small integers, a bucket queue (array of buckets, one per priority value) gives O(1) insert and decrease-key; van Emde Boas trees, two lessons ahead, push a bounded integer universe further, to O(log log u).</li>
+            </ul>
+            <p><strong>Remark:</strong> "priority queue" and "heap" are used interchangeably so often in casual conversation that it's worth deliberately keeping them apart in your head — exactly as the What Is a Data Structure lesson urged for every ADT/implementation pair.</p>
+            <table class="mini-table">
+              <tr><th>Implementation</th><th>Insert</th><th>Extract-min</th><th>Why</th></tr>
+              <tr><td>Unsorted array</td><td>O(1)</td><td>O(n)</td><td>append is free; finding the min needs a full scan</td></tr>
+              <tr><td>Sorted array</td><td>O(n)</td><td>O(1)</td><td>min is always at the front; inserting anywhere else shifts elements</td></tr>
+              <tr><td>Binary heap</td><td>O(log n)</td><td>O(log n)</td><td>only one root-to-leaf path is touched per operation</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> you're given k already-sorted lists totaling n elements and asked to merge them into one sorted output. How does a priority queue give an O(n log k) algorithm, and why is that better than the obvious O(nk) approach of repeatedly scanning all k list-heads for the minimum?</p>
+            <details><summary>Solution</summary>
+              <p>Put the first element of each of the k lists into a priority queue, tagged with which list it came from. Repeatedly extract-min, output it, and insert the next element from that same list (if any) back into the queue. Each of the n elements is inserted once and extracted once, and the queue never holds more than k elements at a time, so the total cost is n extract-min/insert pairs at O(log k) each — O(n log k) overall. The naive approach re-scans all k heads on every single output element, paying O(k) every time regardless of how large k is relative to the current state; the priority queue instead keeps exactly enough order (the heap property over the k current candidates) to find the next minimum in O(log k) instead of O(k). This is precisely how external merge sort combines sorted runs, and how many databases execute a merge join across multiple sorted inputs.</p>
+            </details>
+            <p><strong>Remark:</strong> the ADT/implementation split pays off concretely here — code written against "priority queue" rather than "binary heap" can be handed a <a href="#/subject/algorithmics/data-structures/algo-fibonacci-heap">Fibonacci heap</a> later, dropping Dijkstra's total running time from O((V+E) log V) to O(E + V log V), without changing a single line outside the queue's own implementation.</p>
+            <p><strong>Further reading:</strong> CLRS, 3rd ed., §6.5 (priority queues built on binary heaps, including the decrease-key-via-index-tracking implementation); Sedgewick & Wayne, <em>Algorithms</em>, 4th ed., §2.4, for the sorted/unsorted-array comparison table and the k-way-merge application worked in code.</p>
+            <p><em>The whole idea in one line: "next by priority" is a different contract from "next in line," and it's worth naming separately from whatever happens to implement it.</em></p>
           `,
-          exercises: []
+          exercises: [
+            "A bucket queue stores elements whose priorities are integers in {0,…,C} as an array of C+1 buckets (each a simple list), plus a pointer to the lowest nonempty bucket. Give insert, extract-min, and decrease-key for this structure, state their costs, and explain why this beats a binary heap when C = O(n) but loses to it badly when C is exponential in n.",
+            "Prove that any comparison-based priority queue implementation must take Ω(log n) time for extract-min in the worst case, by reduction from the Ω(n log n) comparison-sorting lower bound (repeated insert followed by repeated extract-min sorts n elements)."
+          ]
         },
         {
           id: "algo-fibonacci-heap",
-          title: "Fibonacci Heaps: Lazy Merging and Amortized Decrease-Key",
+          title: "Fibonacci Heaps",
           section: "Heaps",
           prerequisites: ["algo-priority-queue-adt", "algo-amortized-potential-method"],
           estMinutes: 40,
           content: `
-            <p><em>Placeholder — content for this lesson hasn't been written yet (new node in the DAG: a heap-ordered forest with lazy consolidation, amortized O(1) insert/decrease-key via Φ = #trees + 2·#marked-nodes, and the cascading-cut mechanism). Will be built out after we settle on lesson design.</em></p>
+            <p>A Fibonacci heap exists for one reason: to make <code>decrease-key</code> cheap. A binary heap already does insert and extract-min in O(log n); the only operation left to improve is the one <a href="#/subject/algorithmics/graph-algorithms/algo-dijkstra">Dijkstra</a> and Prim call once per edge, and shaving it down changes those algorithms' total running time, not just a constant factor.</p>
+            <svg viewBox="0 0 480 210" width="100%" height="210" style="max-width:480px;display:block;margin:0.8rem auto;" role="img" aria-label="A root list of three trees connected by a dashed line, a min pointer to the smallest root, and one root with a child node marked to indicate it has already lost one child">
+              <g font-size="12">
+                <text x="80" y="18" text-anchor="middle" fill="var(--accent)" font-size="11">min</text>
+                <defs><marker id="fharrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker></defs>
+                <line x1="80" y1="22" x2="80" y2="38" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#fharrow)"/>
+                <line x1="80" y1="52" x2="400" y2="52" stroke="var(--border)" stroke-width="1" stroke-dasharray="3,3"/>
+                <circle cx="80" cy="52" r="18" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="80" y="57" text-anchor="middle" fill="var(--text)">5</text>
+                <circle cx="240" cy="52" r="18" fill="none" stroke="var(--text)" stroke-width="1.5"/>
+                <text x="240" y="57" text-anchor="middle" fill="var(--text)">9</text>
+                <circle cx="400" cy="52" r="18" fill="none" stroke="var(--text)" stroke-width="1.5"/>
+                <text x="400" y="57" text-anchor="middle" fill="var(--text)">12</text>
+                <line x1="240" y1="70" x2="220" y2="112" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <line x1="240" y1="70" x2="270" y2="112" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <circle cx="220" cy="128" r="15" fill="none" stroke="var(--text)" stroke-width="1.5"/>
+                <text x="220" y="133" text-anchor="middle" fill="var(--text)">14</text>
+                <circle cx="270" cy="128" r="15" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="2,2"/>
+                <text x="270" y="133" text-anchor="middle" fill="var(--text)">17</text>
+                <text x="270" y="160" text-anchor="middle" fill="var(--text-muted)" font-size="10">marked</text>
+                <text x="270" y="174" text-anchor="middle" fill="var(--text-muted)" font-size="10">(already lost a child)</text>
+              </g>
+            </svg>
+            <p>The design is a heap-ordered <strong>forest</strong>, not a single tree: a circular doubly linked <strong>root list</strong> with a pointer kept to the current minimum root. The forest stays deliberately messy for as long as possible — every operation except extract-min does the least work it can get away with, and the mess is only cleaned up when extract-min is forced to look for the new minimum anyway:</p>
+            <ul>
+              <li><strong>insert(x)</strong> — splice a new singleton tree into the root list. O(1), no rebalancing.</li>
+              <li><strong>merge(H1, H2)</strong> — splice one root list onto the other and keep whichever min pointer is smaller. O(1) — this is the operation a binary heap cannot do cheaply at all.</li>
+              <li><strong>decrease-key(x, k)</strong> — lower x's key. If x now violates heap order under its parent, <strong>cut</strong> x free and add it to the root list as a new tree — O(1). If x's parent was already <strong>marked</strong> (meaning it has already lost one child since it was last made a root), cut the parent too, and recurse upward: this is the <strong>cascading cut</strong>. A node is marked the first time it loses a child, and unmarked when it becomes a root; the marking is exactly the bookkeeping needed to keep trees from becoming too shallow relative to their size.</li>
+              <li><strong>extract-min()</strong> — remove the min root, splice its children into the root list, then <strong>consolidate</strong>: repeatedly union any two root trees of equal degree (linking the larger key under the smaller) until every remaining root has a distinct degree — exactly like the carrying step of binary-counter addition. This is the one operation that actually pays down the debt every lazy insert and cut left behind.</li>
+            </ul>
+            <p><strong>Remark:</strong> the structure is named for the Fibonacci numbers that appear in the proof bounding maximum node degree — cascading cuts keep any tree from becoming "too thin for its size," which forces every node of degree k to have at least F<sub>k+2</sub> descendants, and hence bounds the maximum degree (and so extract-min's consolidation cost) at O(log n).</p>
+            <p>All of this is proved with the potential-method machinery from two lessons back, using <code>Φ(H) = t(H) + 2·m(H)</code>, where t is the number of trees in the root list and m is the number of marked nodes:</p>
+            <table class="mini-table">
+              <tr><th>Operation</th><th>Amortized cost</th><th>Why</th></tr>
+              <tr><td>Insert, merge, find-min</td><td>O(1)</td><td>pure splicing; Φ rises by exactly 1 per new root, paying for the O(1) actual work</td></tr>
+              <tr><td>Decrease-key</td><td>O(1)</td><td>each cut raises t by 1 but can lower m by 1 (unmarking on cut), so ĉ stays O(1) even under a long cascade</td></tr>
+              <tr><td>Extract-min</td><td>O(log n)</td><td>consolidation touches O(t) trees, but the resulting drop in Φ (t falls to O(log n)) pays for all the deferred work</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> decrease-key can trigger a cascade of cuts all the way up a tree. Using Φ = t(H) + 2m(H), show that even a cascade of length c still costs only O(1) amortized, not O(c).</p>
+            <details><summary>Solution</summary>
+              <p>Say a decrease-key triggers c cuts before the cascade stops (the c-th cut hits either an unmarked node, which just gets marked and stops, or a root). Each cut is O(1) actual work and adds one tree to the root list, so the actual cost is O(c) and t(H) increases by c, but every cut except possibly the last also removes a mark from the node being cut (it was marked, that's why the cascade continued; cutting it makes it a root, and roots are unmarked), so m(H) decreases by at least c−1. The potential change is therefore roughly <code>Δt + 2·Δm ≈ c + 2·(−(c−1)) = 2 − c</code>. Amortized cost is actual cost plus potential change: <code>O(c) + (2 − c) = O(1)</code> — the c−1 units of dropped potential exactly absorb the c−1 extra cuts, leaving only a constant. The mark bit is doing all the work here: it's a receipt proving "this node already spent one free pass," so the second loss must be charged for immediately rather than deferred again.</p>
+            </details>
+            <p><strong>Remark:</strong> the constants hidden inside that O(1) and O(log n) are large enough — and cache behavior is bad enough, since a Fibonacci heap is even more pointer-chasing than an ordinary <a href="#/subject/algorithmics/data-structures/algo-linked-lists">linked list</a> — that a plain <a href="#/subject/algorithmics/data-structures/algo-binary-heaps">binary heap</a> usually wins in practice unless E is asymptotically much larger than V log V; the Fibonacci heap's real legacy is proving the O(E + V log V) bound for Dijkstra is achievable at all, and the potential-method technique it popularized.</p>
+            <p><strong>Further reading:</strong> Fredman & Tarjan, "Fibonacci Heaps and Their Uses in Improved Network Optimization Algorithms," <em>Journal of the ACM</em>, 1987 (the original paper); CLRS, 3rd ed., Ch. 19, for the full potential-method proof of every bound in the table above; Fredman, Sedgewick, Sleator & Tarjan, "The Pairing Heap: A New Form of Self-Adjusting Heap," <em>Algorithmica</em>, 1986, for the simpler, empirically faster alternative with a messier theoretical history.</p>
+            <p><em>The whole idea in one line: procrastinate on tidying the forest until extract-min is forced to look anyway, and let a potential function prove the procrastination was free.</em></p>
           `,
-          exercises: []
+          exercises: [
+            "Prove that a node of degree k in a Fibonacci heap has at least F_{k+2} descendants (including itself), where F is the Fibonacci sequence, using the fact that a node can have lost at most one child since becoming a child itself. Conclude that the maximum degree of any node is O(log n).",
+            "Using the O(log n) max-degree bound from the previous exercise and the potential function Φ = t(H) + 2m(H), prove that extract-min runs in O(log n) amortized time, accounting separately for the cost of splicing in the removed root's children and the cost of the consolidation loop."
+          ]
         },
         {
           id: "algo-van-emde-boas",
