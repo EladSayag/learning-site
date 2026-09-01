@@ -6,7 +6,7 @@
 // field-by-field doc (id/title/section/prerequisites/estMinutes/content/exercises); same rules
 // apply here, ids just use the "algo-" prefix instead of "phys-".
 //
-// STATUS (2026-08-31): this file now covers Data Structures / Algorithms / Graph Algorithms only.
+// STATUS (2026-09-01): this file now covers Data Structures / Algorithms / Graph Algorithms only.
 // The five chapters that used to follow "graph-algorithms" here (numerical-linear-algebra,
 // optimization, probability-statistics, time-series, classical-ml) were moved verbatim to
 // js/data-datascience.js / DATASCIENCE_SUBJECT — that material is numerical linear algebra, convex
@@ -19,16 +19,20 @@
 //      added when the DAG restructure happened): algo-hashing-universal-families, algo-bst-balance,
 //      algo-binary-heaps, algo-dynamic-arrays-amortization, algo-union-find, algo-tries, and all of
 //      "algorithms" + "graph-algorithms" except the placeholders listed below.
-//   2. Lessons with FULL new content, written against a CLRS-plus-more curriculum pass and using the
-//      /learn skill's "direct explanation + one clarifying diagram + cited resources" approach:
-//      algo-what-is-a-data-structure, algo-stacks, algo-queues, algo-linked-lists (the Foundations
-//      section), and three new structures beyond the original CLRS-only list — algo-kd-trees,
+//   2. Lessons with FULL content in the CURRENT style template (goal + inline SVG diagram + design +
+//      variants list + one-sentence Remark + mini-table + inline "Try it yourself" with folded
+//      <details> solution + closing Remark with cross-links + Further reading + italic one-line
+//      slogan; bare-topic-name titles; two meatier exercises in the array beyond the inline one):
+//      algo-stacks, algo-linked-lists (the two style-template reference lessons), algo-kd-trees,
+//      algo-red-black-trees, algo-b-trees, algo-splay-trees, algo-skip-lists.
+//   2b. Lessons with full content but written BEFORE the style template above was settled (denser
+//      academic tone, no try-it-yourself/remark/slogan structure yet) — need a restyling pass, NOT a
+//      rewrite of the underlying material: algo-queues, algo-what-is-a-data-structure,
 //      algo-suffix-trees-arrays, algo-persistent-data-structures.
 //   3. PLACEHOLDER NODES ONLY — wired into the DAG with correct prerequisites, but content still to
 //      be written in a follow-up pass:
-//        Data Structures: algo-red-black-trees, algo-b-trees, algo-splay-trees, algo-skip-lists,
-//          algo-bloom-filters, algo-priority-queue-adt, algo-fibonacci-heap, algo-van-emde-boas,
-//          algo-segment-fenwick-trees.
+//        Data Structures: algo-bloom-filters, algo-priority-queue-adt, algo-fibonacci-heap,
+//          algo-van-emde-boas, algo-segment-fenwick-trees.
 //        Algorithms (CLRS Part II, "Sorting and Order Statistics" — the material this chapter was
 //          missing): algo-heapsort, algo-linear-time-sorting, algo-order-statistics-selection.
 //        Graph Algorithms (deliberately beyond a first course, per request): algo-dfs, algo-bfs
@@ -36,9 +40,12 @@
 //          algo-scc-tarjan, algo-bridges-articulation (pre-existing), plus new ones —
 //          algo-max-flow-ford-fulkerson, algo-bipartite-matching, algo-all-pairs-shortest-paths,
 //          algo-2sat-scc, algo-eulerian-path-hierholzer.
-//      NEXT UP when resuming this pass: Hashing & Search Trees group (Red-Black, B-Trees, Splay,
-//      Skip Lists, Bloom Filters), in that DAG order, since they're the next un-written prerequisite
-//      layer after Foundations.
+//      NEXT UP when resuming this pass: finish Data Structures category A (still-placeholder
+//      lessons) in DAG order — algo-bloom-filters, then the Heaps group (algo-priority-queue-adt,
+//      algo-fibonacci-heap, algo-van-emde-boas), then algo-segment-fenwick-trees. Only after ALL of
+//      Data Structures (both bucket 2 and 2b above) is done should the pass move to Graph Algorithms
+//      placeholders (algo-dfs first, in the DAG order listed above). Note algo-kd-trees was already
+//      in the new style before this run and did NOT need touching.
 
 const ALGORITHMICS_SUBJECT = {
   id: "algorithmics",
@@ -252,47 +259,247 @@ const ALGORITHMICS_SUBJECT = {
         },
         {
           id: "algo-red-black-trees",
-          title: "Red-Black Trees: The Rebalancing Cases in Full",
+          title: "Red-Black Trees",
           section: "Hashing & Search Trees",
           prerequisites: ["algo-bst-balance"],
           estMinutes: 30,
           content: `
-            <p><em>Placeholder — content for this lesson hasn't been written yet (expands the black-height argument already sketched in the balance overview into the full insertion/deletion fixup case analysis — the three insert cases and how recoloring vs. rotation resolves each — see CLRS 3rd ed. Ch 13). Will be built out after we settle on lesson design.</em></p>
+            <p>A red-black tree keeps a binary search tree balanced on every single insert and delete, automatically, so that search, insert, and delete all stay O(log n) even if the keys arrive in an order designed to make a plain BST degenerate into a linked list.</p>
+            <svg viewBox="0 0 300 220" width="100%" height="220" style="max-width:320px;display:block;margin:0.8rem auto;" role="img" aria-label="A small tree of circles, some outlined with the accent color for red nodes and some with a muted color for black nodes, with no red node directly above another red node">
+              <g font-size="12" text-anchor="middle">
+                <line x1="150" y1="34" x2="90" y2="86" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="150" y1="34" x2="220" y2="86" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="90" y1="102" x2="50" y2="156" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="90" y1="102" x2="130" y2="156" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="220" y1="102" x2="190" y2="156" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="220" y1="102" x2="260" y2="156" stroke="var(--border)" stroke-width="1.5"/>
+                <circle cx="150" cy="20" r="16" fill="none" stroke="var(--text-muted)" stroke-width="2"/>
+                <text x="150" y="24" fill="var(--text)">B</text>
+                <circle cx="90" cy="90" r="16" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="90" y="94" fill="var(--text)">R</text>
+                <circle cx="220" cy="90" r="16" fill="none" stroke="var(--text-muted)" stroke-width="2"/>
+                <text x="220" y="94" fill="var(--text)">B</text>
+                <circle cx="50" cy="160" r="14" fill="none" stroke="var(--text-muted)" stroke-width="2"/>
+                <text x="50" y="164" fill="var(--text)">B</text>
+                <circle cx="130" cy="160" r="14" fill="none" stroke="var(--text-muted)" stroke-width="2"/>
+                <text x="130" y="164" fill="var(--text)">B</text>
+                <circle cx="190" cy="160" r="14" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="190" y="164" fill="var(--text)">R</text>
+                <circle cx="260" cy="160" r="14" fill="none" stroke="var(--text-muted)" stroke-width="2"/>
+                <text x="260" y="164" fill="var(--text)">B</text>
+                <text x="55" y="200" fill="var(--accent)" font-size="11" text-anchor="start">red</text>
+                <text x="110" y="200" fill="var(--text-muted)" font-size="11" text-anchor="start">black</text>
+              </g>
+            </svg>
+            <p>The design is a coloring rule enforced by O(1)-work-per-level repair. Every node is red or black, the root and every null leaf are black, no red node has a red child, and every root-to-leaf path has the same count of black nodes. That last rule alone would force perfect balance; relaxing it to allow red nodes as "free" extra height, capped by the no-red-red rule, is what makes the invariant repairable in constant work per level instead of requiring a global rebuild — the same height bound as before (h ≤ 2·log₂(n+1)) for a much cheaper maintenance cost.</p>
+            <p>The two update paths, and one well-known simplification of them:</p>
+            <ul>
+              <li><strong>Insertion fixup</strong> — a new node is inserted red (it can't add to any black-height, only risk a red-red violation). Walking up from it, exactly one of three local cases applies at each step: the uncle is red (recolor and continue upward), the uncle is black and the node is a "zig-zag" from its grandparent (rotate once to make it a "zig-zig"), or the uncle is black and already a "zig-zig" (rotate once more and recolor — done). At most two rotations ever occur per insertion, however many recolorings happen above them.</li>
+              <li><strong>Deletion fixup</strong> — deleting a black node can leave a path short one black node ("double-black"); fixing it walks up through four mirrored cases (red sibling, black sibling with black children, black sibling with a near red child, black sibling with a far red child), the last of which terminates the walk with a single rotation. Up to three rotations total.</li>
+              <li><strong>Left-leaning red-black trees</strong> (Sedgewick) — restrict red links to always lean left, which collapses the insertion case analysis to two cases and makes the structure map directly onto a 2-3 tree; the simplification used in several teaching implementations, though the classic scheme above is what production libraries (Linux kernel's rbtree, Java's TreeMap, C++'s std::map) actually ship.</li>
+            </ul>
+            <p><strong>Remark:</strong> the case analysis looks intimidating on the page but every case is a local, O(1) pattern match on a node, its parent, and its sibling or uncle — nothing ever looks two levels further than that.</p>
+            <table class="mini-table">
+              <tr><th>Operation</th><th>Cost</th><th>Why</th></tr>
+              <tr><td>Search</td><td>O(log n)</td><td>height is at most 2·log₂(n+1) by the black-height argument</td></tr>
+              <tr><td>Insert</td><td>O(log n)</td><td>O(log n) recolorings walking up, but at most 2 rotations</td></tr>
+              <tr><td>Delete</td><td>O(log n)</td><td>same walk-up structure, at most 3 rotations</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> given the claim that insertion needs at most 2 rotations no matter how deep the tree is, why doesn't the O(log n) chain of recolorings above it also need O(log n) rotations?</p>
+            <details><summary>Solution</summary>
+              <p>The recoloring case ("uncle is red") never rotates — it just repaints the parent, uncle, and grandparent and moves the problem one level up, so it can repeat all the way to the root without ever touching tree shape. A rotation only happens in the other two cases, and each of those is a terminal case: after the rotation (and, in one of them, a recoloring), the red-red violation is gone and the black-heights are restored, so the walk stops immediately. At most one non-rotating case chains upward, and at most one rotating case ends it — hence at most 2 rotations total, however many recolorings preceded them.</p>
+            </details>
+            <p><strong>Remark:</strong> the payoff for all this bookkeeping is a tree that's <em>always</em> balanced immediately after every update, unlike the <a href="#/subject/algorithmics/data-structures/algo-splay-trees">splay tree</a>, which allows a single access to cost Θ(n) and only bounds the average; when a wide branching factor matters more than exact height — because each "step down" is a disk read — the <a href="#/subject/algorithmics/data-structures/algo-b-trees">B-tree</a> restructures the same idea around nodes with many keys instead of one.</p>
+            <p><strong>Further reading:</strong> CLRS, 3rd ed., Ch. 13 (the full insertion and deletion fixup case analysis, with diagrams for every case); Guibas & Sedgewick, "A Dichromatic Framework for Balanced Trees," FOCS 1978 (the original paper introducing red-black trees as a reformulation of symmetric binary B-trees); Sedgewick, "Left-Leaning Red-Black Trees," 2008 (the simplified variant, freely available from the author's Princeton page).</p>
+            <p><em>The whole idea in one line: color the tree so no root-to-leaf path can be more than twice as long as another, then repair only the O(1)-sized neighborhood around whatever you just changed.</em></p>
           `,
-          exercises: []
+          exercises: [
+            "Work out all three insertion-fixup cases (red uncle; black uncle, zig-zag; black uncle, zig-zig) starting from a node inserted as the left child of a left child, drawing the tree before and after each case. Then state, for each case, whether the walk continues upward or terminates.",
+            "A red-black tree is built by inserting 1, 2, 3, ..., n in increasing order. Trace or simulate this and determine the resulting height as a function of n. Compare it to the height a plain (unbalanced) BST would have on the same input, and explain in one or two sentences why the difference is the entire point of the structure."
+          ]
         },
         {
           id: "algo-b-trees",
-          title: "B-Trees: Branching Factor and External Memory",
+          title: "B-Trees",
           section: "Hashing & Search Trees",
           prerequisites: ["algo-bst-balance"],
           estMinutes: 30,
           content: `
-            <p><em>Placeholder — content for this lesson hasn't been written yet (minimum-degree t invariant, O(log_t n) height, and why disk/SSD-backed indexes — filesystems, database B+trees — pick a wide multiway tree over a binary one; see CLRS 3rd ed. Ch 18). Will be built out after we settle on lesson design.</em></p>
+            <p>A B-tree keeps a sorted index shallow when each step down the tree is expensive — a disk seek, an SSD page read, a network round trip — by making every node hold hundreds of keys instead of one, so descending even a few levels covers a huge key range.</p>
+            <svg viewBox="0 0 460 170" width="100%" height="170" style="max-width:480px;display:block;margin:0.8rem auto;" role="img" aria-label="A wide root node containing three keys splitting into four child nodes, each containing two keys">
+              <g font-size="12" text-anchor="middle">
+                <rect x="150" y="10" width="160" height="34" rx="4" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <line x1="190" y1="10" x2="190" y2="44" stroke="var(--accent)" stroke-width="1.5"/>
+                <line x1="230" y1="10" x2="230" y2="44" stroke="var(--accent)" stroke-width="1.5"/>
+                <line x1="270" y1="10" x2="270" y2="44" stroke="var(--accent)" stroke-width="1.5"/>
+                <text x="170" y="32" fill="var(--text)">10</text>
+                <text x="210" y="32" fill="var(--text)">25</text>
+                <text x="250" y="32" fill="var(--text)">40</text>
+                <line x1="170" y1="44" x2="60" y2="100" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="210" y1="44" x2="180" y2="100" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="250" y1="44" x2="300" y2="100" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="290" y1="44" x2="400" y2="100" stroke="var(--border)" stroke-width="1.5"/>
+                <rect x="20" y="100" width="80" height="34" rx="4" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="60" y="122" fill="var(--text-muted)">3, 7</text>
+                <rect x="140" y="100" width="80" height="34" rx="4" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="180" y="122" fill="var(--text-muted)">15, 20</text>
+                <rect x="260" y="100" width="80" height="34" rx="4" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="300" y="122" fill="var(--text-muted)">30, 35</text>
+                <rect x="360" y="100" width="80" height="34" rx="4" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="400" y="122" fill="var(--text-muted)">45, 60</text>
+              </g>
+            </svg>
+            <p>The design is a single invariant on branching factor: with minimum degree t, every non-root node holds between t−1 and 2t−1 keys and has one more child than it has keys, and every leaf sits at the same depth. Because each node fans out to up to 2t children, the height of a tree holding n keys is only O(log_t n) — with t in the hundreds (chosen to fill one disk block or memory page), a tree holding a billion keys is only 3-4 levels deep. Insertion and deletion work exactly like the rotation-based trees before it, just one level of indirection wider: a node that overflows past 2t−1 keys is <strong>split</strong> in two around its median key, which is pushed up into the parent (the mirror-image operation, merging two undersized siblings, handles deletion), so the tree grows and shrinks only at the root, never needing a separate global rebalance.</p>
+            <p>Two variants dominate real systems:</p>
+            <ul>
+              <li><strong>B+-tree</strong> — all keys and values live in the leaves; internal nodes hold only routing keys, and the leaves are additionally linked into a sorted list. This is what almost every production database index and filesystem (NTFS, ext4's HTree, essentially all relational DB indexes) actually implements, because the leaf linked-list makes range scans a cheap linear walk instead of repeated tree descents.</li>
+              <li><strong>B*-tree</strong> — delays a split by first trying to redistribute keys with a neighboring sibling, keeping nodes closer to full (around 2/3 rather than 1/2 in the worst case) at the cost of touching an extra sibling node on every near-overflow.</li>
+            </ul>
+            <p><strong>Remark:</strong> the "why not just use a red-black tree" answer is entirely about the constant hidden inside O(log n) — a binary tree of a billion keys is about 30 levels deep, each potentially a separate disk seek, while a B-tree with t≈100 covers the same billion keys in 3-4 seeks.</p>
+            <table class="mini-table">
+              <tr><th>Operation</th><th>Cost</th><th>Why</th></tr>
+              <tr><td>Search</td><td>O(log_t n) node accesses</td><td>height shrinks as branching factor t grows</td></tr>
+              <tr><td>Insert / delete</td><td>O(log_t n) node accesses</td><td>split/merge only propagates one node at a time, up to the root</td></tr>
+              <tr><td>Range scan (B+-tree)</td><td>O(log_t n + k)</td><td>once you reach the first leaf, the leaf-level linked list gives the rest for free</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> a B-tree of minimum degree t=100 needs how many levels, at most, to hold one billion keys?</p>
+            <details><summary>Solution</summary>
+              <p>The tightest tree (every non-root node completely full) has, at height h, at most <code>2·(2t)^h</code> keys — each of the h levels branches by up to 2t. The <em>shortest possible</em> tree, on the other hand — the one that determines the worst-case height bound — has every non-root node at minimum occupancy: a root with at least 2 children, and every other internal node with at least t children, giving at least <code>2·t^(h−1)</code> leaves at depth h. Setting n = 10^9 and t = 100: <code>2·100^(h−1) ≤ 10^9</code> gives h−1 ≤ 3.5, so h ≤ 4 or 5 — a billion keys reachable in about four or five block reads, versus roughly 30 for a binary tree of the same size.</p>
+            </details>
+            <p><strong>Remark:</strong> this is the same branching-factor idea the <a href="#/subject/algorithmics/data-structures/algo-red-black-trees">red-black tree</a> lesson mentioned in passing — a red-black tree is isomorphic to a 2-3-4 B-tree (t=2) with color encoding the grouping — but here the branching factor is tuned for I/O cost rather than left as a binary default; the <a href="#/subject/algorithmics/data-structures/algo-bst-balance">balance overview</a> lesson's table lists it alongside AVL and red-black for exactly this comparison.</p>
+            <p><strong>Further reading:</strong> CLRS, 3rd ed., Ch. 18 (the full definition, and the insertion/deletion algorithms with the minimum-degree invariant); Bayer & McCreight, "Organization and Maintenance of Large Ordered Indices," Acta Informatica, 1972 (the original paper); Comer, "The Ubiquitous B-Tree," ACM Computing Surveys, 1979, for the B+-tree variant and its dominance in real database and filesystem design.</p>
+            <p><em>The whole idea in one line: make each node hold hundreds of keys instead of one, so descending the tree means reading a handful of blocks, not thousands.</em></p>
           `,
-          exercises: []
+          exercises: [
+            "Give the precise minimum and maximum number of keys a B-tree node of minimum degree t can hold, and use it to derive a tight lower bound on the height of a B-tree with n keys and minimum degree t ≥ 2, matching the style of the worked example above.",
+            "Describe the split and merge operations for insertion and deletion in full: what happens when a leaf overflows past 2t−1 keys, what happens when that propagates all the way to a full root, and what happens on deletion when a node drops below t−1 keys and neither neighboring sibling has a key to spare."
+          ]
         },
         {
           id: "algo-splay-trees",
-          title: "Splay Trees: Self-Adjusting Search Trees",
+          title: "Splay Trees",
           section: "Hashing & Search Trees",
           prerequisites: ["algo-bst-balance", "algo-amortized-potential-method"],
           estMinutes: 25,
           content: `
-            <p><em>Placeholder — content for this lesson hasn't been written yet (no explicit balance invariant at all — every access splays the touched node to the root; amortized O(log n) via the same potential-method style as the Fibonacci heap, plus the static-optimality / working-set property. Source: Sleator & Tarjan, "Self-Adjusting Binary Search Trees," JACM 1985). Will be built out after we settle on lesson design.</em></p>
+            <p>A splay tree is a binary search tree with no balance invariant at all — no colors, no heights, no rank. Instead, every single access (search, insert, or delete) ends by dragging the node you just touched all the way up to the root. It keeps no promise about any one access, only that a long sequence of them is cheap — which turns out to be exactly the right promise for workloads with locality, where whatever you accessed recently is likely to be accessed again soon.</p>
+            <svg viewBox="0 0 420 190" width="100%" height="190" style="max-width:440px;display:block;margin:0.8rem auto;" role="img" aria-label="Before: a chain z above y above x. After splaying x: x is on top, with y and z rearranged below it, connected by an arrow labeled splay of x">
+              <g font-size="12" text-anchor="middle">
+                <circle cx="60" cy="20" r="15" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="60" y="24" fill="var(--text)">z</text>
+                <line x1="60" y1="35" x2="60" y2="70" stroke="var(--border)" stroke-width="1.5"/>
+                <circle cx="60" cy="85" r="15" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="60" y="89" fill="var(--text)">y</text>
+                <line x1="60" y1="100" x2="60" y2="135" stroke="var(--border)" stroke-width="1.5"/>
+                <circle cx="60" cy="150" r="15" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="60" y="154" fill="var(--text)">x</text>
+                <defs><marker id="splayarrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--text-muted)"/></marker></defs>
+                <line x1="130" y1="95" x2="220" y2="95" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#splayarrow)"/>
+                <text x="175" y="80" fill="var(--text-muted)" font-size="11">splay(x)</text>
+                <circle cx="330" cy="30" r="15" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="330" y="34" fill="var(--text)">x</text>
+                <line x1="317" y1="42" x2="290" y2="80" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="343" y1="42" x2="370" y2="80" stroke="var(--border)" stroke-width="1.5"/>
+                <circle cx="280" cy="95" r="15" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="280" y="99" fill="var(--text)">y</text>
+                <circle cx="380" cy="95" r="15" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="380" y="99" fill="var(--text)">z</text>
+              </g>
+            </svg>
+            <p>The mechanism is a chain of rotations, chosen by pattern rather than by any balance measurement. Let x be the accessed node, y its parent, z its grandparent (if any). Repeat until x is the root: if x has no grandparent, do one ordinary rotation of x with y ("zig"); if x and y are both left children or both right children of their parents ("zig-zig"), rotate y with z, then x with y; if one is a left child and the other a right child ("zig-zag"), rotate x with y, then x with z. The zig-zig case is the crucial one — rotating the grandparent first, not the parent, is what gives the amortized bound; doing the two rotations in the naive order (x-with-y, then x-with-z) still moves x to the root but loses the guarantee entirely.</p>
+            <p>The amortized analysis uses the same potential-function machinery as the <a href="#/subject/algorithmics/data-structures/algo-fibonacci-heap">Fibonacci heap</a>: define the potential as the sum, over all nodes, of the log of each node's subtree size, and show that each splay step's actual cost is paid for by a large enough drop in potential — the zig-zig case in particular either does O(1) real work while dropping potential a lot, or does a lot of work while dropping potential by at least as much. The result is that any sequence of m operations on a tree of n nodes costs O(m log n) total, matching a balanced tree in the aggregate despite guaranteeing nothing about any single operation.</p>
+            <ul>
+              <li><strong>Bottom-up splaying</strong> — the recursive formulation above; easiest to state and to prove the amortized bound for.</li>
+              <li><strong>Top-down splaying</strong> — restructures the tree in a single downward pass while searching, avoiding both recursion and a second upward pass; the version most real implementations use.</li>
+              <li>The same "move the accessed thing to the front" idea, one dimension flatter, is the <strong>move-to-front</strong> heuristic for a plain unsorted list — worse asymptotically, but the same locality bet.</li>
+            </ul>
+            <p><strong>Remark:</strong> a single unlucky access can still take Θ(n) time — walking a long chain to a leaf and splaying it back up costs Θ(n) rotations that particular time — it is only the amortized cost over any sequence of accesses that is guaranteed O(log n).</p>
+            <table class="mini-table">
+              <tr><th>Operation</th><th>Cost</th><th>Why</th></tr>
+              <tr><td>Any single search/insert/delete</td><td>O(n) worst case</td><td>no balance invariant bounds any one access</td></tr>
+              <tr><td>Any m operations, amortized</td><td>O(log n) each</td><td>potential-function argument on Σ log(subtree size)</td></tr>
+              <tr><td>k repeated accesses to the same d items</td><td>O(log d) each, after the first</td><td>working-set property: recently splayed items stay near the root</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> if you repeatedly search for the same k elements out of n over and over, what does the "working-set" property say your amortized cost per search should converge to, and why does splaying — specifically, not just any self-adjusting scheme — achieve it?</p>
+            <details><summary>Solution</summary>
+              <p>Sleator and Tarjan proved the working-set bound: the cost of accessing an element is O(log t + 1), where t is the number of <em>distinct</em> elements accessed since that element was last accessed. If you cycle through the same k elements repeatedly, each one was last touched at most k accesses ago, so every access after the first full cycle costs only O(log k), independent of n — the tree behaves as if it only ever held those k hot elements. This falls directly out of splaying always moving the touched node to the root: an element you haven't touched in a while sinks down as other elements get splayed past it, but never further than the number of distinct elements accessed since, because splaying only ever moves nodes on the search path.</p>
+            </details>
+            <p><strong>Remark:</strong> that working-set guarantee is a real, practical advantage over a <a href="#/subject/algorithmics/data-structures/algo-red-black-trees">red-black tree</a>, which gives the same O(log n) to a hot key and a cold key alike — the cost is that a splay tree offers no worst-case latency bound at all, which rules it out for real-time systems and is exactly why red-black trees, not splay trees, back the C++ and Java standard library maps.</p>
+            <p><strong>Further reading:</strong> Sleator & Tarjan, "Self-Adjusting Binary Search Trees," <em>JACM</em>, 1985 (the original paper — defines splaying, proves the O(log n) amortized bound and the working-set theorem); Tarjan, <em>Data Structures and Network Algorithms</em>, CBMS 44, SIAM, 1983, the chapter on amortized complexity and self-adjusting structures, for the potential-method proof technique in general; Weiss, <em>Data Structures and Algorithm Analysis</em>, the chapter on splay trees, for a more implementation-oriented walkthrough of top-down splaying.</p>
+            <p><em>The whole idea in one line: don't try to stay balanced — just drag whatever you touched straight to the root, and let locality pay the bill.</em></p>
           `,
-          exercises: []
+          exercises: [
+            "Prove that the zig-zig case must rotate the grandparent (z) before the parent (y) — not x with y followed by x with z — by constructing a small example where doing the rotations in the naive order still moves x to the root but produces a tree with asymptotically worse amortized behavior over a repeated access pattern.",
+            "Using the potential function Φ = Σ_v log(size(v)) (size(v) = number of nodes in v's subtree), prove that a single zig-zig step has amortized cost O(1 + log(size after) − log(size before)), and sum this over one full splay to a leaf to derive the O(log n) amortized bound for a single access."
+          ]
         },
         {
           id: "algo-skip-lists",
-          title: "Skip Lists: Randomized Balance Without Rotations",
+          title: "Skip Lists",
           section: "Hashing & Search Trees",
           prerequisites: ["algo-linked-lists"],
           estMinutes: 25,
           content: `
-            <p><em>Placeholder — content for this lesson hasn't been written yet (layered linked lists with a geometric level distribution give expected O(log n) search/insert/delete with no rotation machinery at all; used in Redis sorted sets and the LevelDB/RocksDB memtable. Source: Pugh, "Skip Lists: A Probabilistic Alternative to Balanced Trees," CACM 1990). Will be built out after we settle on lesson design.</em></p>
+            <p>A skip list gets balanced-tree search speed out of a plain sorted linked list, without a single rotation — it uses randomness where a balanced tree uses careful invariant bookkeeping.</p>
+            <svg viewBox="0 0 440 160" width="100%" height="160" style="max-width:460px;display:block;margin:0.8rem auto;" role="img" aria-label="Four horizontal rows of nodes, the bottom row holding every element and each row above holding an increasingly sparse subset, with vertical links connecting a node to its copy in the row above">
+              <g font-size="12" text-anchor="middle">
+                <text x="20" y="24" fill="var(--text-muted)" font-size="10" text-anchor="start">L3</text>
+                <line x1="60" y1="20" x2="380" y2="20" stroke="var(--border)" stroke-width="1" stroke-dasharray="2,3"/>
+                <circle cx="60" cy="20" r="10" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <circle cx="380" cy="20" r="10" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="20" y="59" fill="var(--text-muted)" font-size="10" text-anchor="start">L2</text>
+                <line x1="60" y1="55" x2="380" y2="55" stroke="var(--border)" stroke-width="1" stroke-dasharray="2,3"/>
+                <circle cx="60" cy="55" r="10" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <circle cx="220" cy="55" r="10" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <circle cx="380" cy="55" r="10" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="20" y="94" fill="var(--text-muted)" font-size="10" text-anchor="start">L1</text>
+                <line x1="60" y1="90" x2="380" y2="90" stroke="var(--border)" stroke-width="1" stroke-dasharray="2,3"/>
+                <circle cx="60" cy="90" r="10" fill="none" stroke="var(--text)" stroke-width="1.5"/>
+                <circle cx="140" cy="90" r="10" fill="none" stroke="var(--text)" stroke-width="1.5"/>
+                <circle cx="220" cy="90" r="10" fill="none" stroke="var(--text)" stroke-width="1.5"/>
+                <circle cx="300" cy="90" r="10" fill="none" stroke="var(--text)" stroke-width="1.5"/>
+                <circle cx="380" cy="90" r="10" fill="none" stroke="var(--text)" stroke-width="1.5"/>
+                <text x="20" y="129" fill="var(--text-muted)" font-size="10" text-anchor="start">L0</text>
+                <line x1="60" y1="125" x2="380" y2="125" stroke="var(--border)" stroke-width="1.5"/>
+                <circle cx="60" cy="125" r="10" fill="none" stroke="var(--text)" stroke-width="1.5"/>
+                <circle cx="100" cy="125" r="10" fill="none" stroke="var(--text)" stroke-width="1.5"/>
+                <circle cx="140" cy="125" r="10" fill="none" stroke="var(--text)" stroke-width="1.5"/>
+                <circle cx="180" cy="125" r="10" fill="none" stroke="var(--text)" stroke-width="1.5"/>
+                <circle cx="220" cy="125" r="10" fill="none" stroke="var(--text)" stroke-width="1.5"/>
+                <circle cx="260" cy="125" r="10" fill="none" stroke="var(--text)" stroke-width="1.5"/>
+                <circle cx="300" cy="125" r="10" fill="none" stroke="var(--text)" stroke-width="1.5"/>
+                <circle cx="340" cy="125" r="10" fill="none" stroke="var(--text)" stroke-width="1.5"/>
+                <circle cx="380" cy="125" r="10" fill="none" stroke="var(--text)" stroke-width="1.5"/>
+                <line x1="60" y1="30" x2="60" y2="115" stroke="var(--text-muted)" stroke-width="1"/>
+                <line x1="220" y1="65" x2="220" y2="115" stroke="var(--text-muted)" stroke-width="1"/>
+                <line x1="380" y1="30" x2="380" y2="115" stroke="var(--text-muted)" stroke-width="1"/>
+              </g>
+            </svg>
+            <p>The design gives every node a random height, chosen the moment it's inserted: flip a coin, and keep growing the node's tower one level for as long as it comes up heads (probability 1/2 per extra level, so a node reaches level k with probability 1/2^k). The bottom level L0 is an ordinary sorted linked list holding every element; each level above is a sparser "express lane" containing only the nodes tall enough to reach it. Searching starts at the top-left corner and moves right along the top level until the next node would overshoot the target, then drops down one level and repeats — skipping over large stretches of the bottom list on the way, the same way an express train skips local stops.</p>
+            <p>A handful of variants and real deployments:</p>
+            <ul>
+              <li><strong>Standard skip list</strong> (Pugh, 1990) — coin-flip probability p=1/2 per level, as drawn above; the choice that minimizes expected search cost for a given expected space overhead.</li>
+              <li><strong>Indexable / ranked skip lists</strong> — augment each forward pointer with the number of bottom-level nodes it skips over, giving O(log n) expected "find the k-th smallest element" for free.</li>
+              <li>Used directly in production: Redis implements its sorted-set (<code>ZSET</code>) type as a skip list rather than a balanced tree, and both LevelDB and RocksDB use a skip list as the in-memory <strong>memtable</strong> that buffers recent writes before they're flushed to disk.</li>
+            </ul>
+            <p><strong>Remark:</strong> every bound here is <em>expected</em>, not worst case — an adversary who knows your random bits, or just extremely bad luck, can still produce a tree of all-height-1 towers and force Θ(n) search, though with vanishingly small probability for any reasonable random source.</p>
+            <table class="mini-table">
+              <tr><th>Operation</th><th>Cost</th><th>Why</th></tr>
+              <tr><td>Search / insert / delete</td><td>O(log n) expected</td><td>expected O(log n) levels, expected O(1) nodes scanned per level</td></tr>
+              <tr><td>Space</td><td>O(n) expected</td><td>expected total tower height across all nodes is 2n (geometric series)</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> both skip lists and red-black trees give O(log n) expected/worst-case operations, yet Redis and RocksDB chose skip lists for a structure that many other threads or requests touch concurrently. What does a skip list have that makes it easier to use safely under concurrent modification?</p>
+            <details><summary>Solution</summary>
+              <p>Inserting into or deleting from a skip list only ever rewires a local, bounded set of forward pointers — the ones at the levels the new/removed node participates in — and never triggers a cascading structural change elsewhere in the structure, unlike a red-black tree insertion or deletion, which can trigger rotations and recolorings that touch nodes arbitrarily far from the change. That locality makes fine-grained locking (lock just the predecessor nodes being rewired at each level) or even fully lock-free implementations via compare-and-swap on individual forward pointers straightforward to reason about, whereas safely rebalancing a tree concurrently — where a rotation can touch and briefly invalidate ancestors — is substantially harder to get right. This is precisely why the lock-free data structure literature (see the further reading) treats skip lists, not balanced trees, as the default ordered-map building block for concurrent code.</p>
+            </details>
+            <p><strong>Remark:</strong> a skip list is really the <a href="#/subject/algorithmics/data-structures/algo-linked-lists">linked list</a> lesson's central trade-off (cheap insertion, expensive access) fixed by borrowing the same randomization trick that makes <a href="#/subject/algorithmics/data-structures/algo-hashing-universal-families">universal hashing</a> work — accept a small, controlled chance of an unlucky structure in exchange for never needing the rotation machinery of a <a href="#/subject/algorithmics/data-structures/algo-red-black-trees">red-black tree</a>.</p>
+            <p><strong>Further reading:</strong> Pugh, "Skip Lists: A Probabilistic Alternative to Balanced Trees," <em>Communications of the ACM</em>, 1990 (the original paper, including the expected-height analysis); Pat Morin, <em>Open Data Structures</em> (free, opendatastructures.org), Ch. 4, "Skiplists," for a fully worked implementation with the expected-cost proofs spelled out; Herlihy & Shavit, <em>The Art of Multiprocessor Programming</em>, revised 1st ed., Ch. 14, for lock-free and lock-based concurrent skip lists.</p>
+            <p><em>The whole idea in one line: flip coins to build yourself some express lanes over a sorted list, and skip most of it on every search.</em></p>
           `,
-          exercises: []
+          exercises: [
+            "Derive the expected number of levels in a skip list of n elements built with per-level probability p=1/2, and the expected number of nodes examined while searching at any single level. Combine them into the expected O(log n) total search cost.",
+            "Design and justify an indexable skip list that supports select(k) — return the k-th smallest element — in O(log n) expected time, by augmenting each forward pointer with a 'width' (the number of bottom-level elements it skips over). Give the update rule for width during insertion."
+          ]
         },
         {
           id: "algo-bloom-filters",
