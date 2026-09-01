@@ -6,7 +6,7 @@
 // field-by-field doc (id/title/section/prerequisites/estMinutes/content/exercises); same rules
 // apply here, ids just use the "algo-" prefix instead of "phys-".
 //
-// STATUS (2026-09-01): this file now covers Data Structures / Algorithms / Graph Algorithms only.
+// STATUS (2026-09-01, batch 4): this file now covers Data Structures / Algorithms / Graph Algorithms only.
 // The five chapters that used to follow "graph-algorithms" here (numerical-linear-algebra,
 // optimization, probability-statistics, time-series, classical-ml) were moved verbatim to
 // js/data-datascience.js / DATASCIENCE_SUBJECT — that material is numerical linear algebra, convex
@@ -28,10 +28,13 @@
 //      algo-bloom-filters, algo-priority-queue-adt, algo-fibonacci-heap, algo-van-emde-boas,
 //      algo-segment-fenwick-trees. This completes Data Structures category A (all former
 //      placeholder-only nodes now have full content) as of 2026-09-01, batch 3.
-//   2b. Lessons with full content but written BEFORE the style template above was settled (denser
-//      academic tone, no try-it-yourself/remark/slogan structure yet) — need a restyling pass, NOT a
-//      rewrite of the underlying material: algo-queues, algo-what-is-a-data-structure, algo-kd-trees,
-//      algo-suffix-trees-arrays, algo-persistent-data-structures.
+//   2b. RESTYLED as of 2026-09-01 batch 4 — now identical in structure to bucket 2 (goal + inline SVG
+//      + design + variants list + one-sentence Remark + mini-table + inline "Try it yourself" with
+//      folded <details> solution + closing Remark with cross-links + Further reading + italic
+//      one-line slogan), underlying material unchanged: algo-queues, algo-what-is-a-data-structure,
+//      algo-kd-trees, algo-suffix-trees-arrays, algo-persistent-data-structures. This completes ALL of
+//      Data Structures (bucket 2 + 2b, categories A and B) — every lesson in the "data-structures"
+//      chapter is now in the current style template.
 //   3. PLACEHOLDER NODES ONLY — wired into the DAG with correct prerequisites, but content still to
 //      be written in a follow-up pass:
 //        Algorithms (CLRS Part II, "Sorting and Order Statistics" — the material this chapter was
@@ -41,11 +44,16 @@
 //          algo-scc-tarjan, algo-bridges-articulation (pre-existing), plus new ones —
 //          algo-max-flow-ford-fulkerson, algo-bipartite-matching, algo-all-pairs-shortest-paths,
 //          algo-2sat-scc, algo-eulerian-path-hierholzer.
-//      NEXT UP when resuming this pass: Data Structures category A (bucket 2) is now fully done.
-//      Move to category B — the restyling pass over bucket 2b, in this order: algo-queues,
-//      algo-what-is-a-data-structure, algo-kd-trees, algo-suffix-trees-arrays,
-//      algo-persistent-data-structures. Only after ALL of Data Structures (both bucket 2 and 2b) is
-//      done should the pass move to Graph Algorithms placeholders (algo-dfs first, in DAG order).
+//      NEXT UP when resuming this pass: Data Structures (categories A and B, i.e. buckets 2 and 2b) is
+//      now FULLY done — every lesson in that chapter is in current style. Move to Graph Algorithms
+//      placeholders, in this DAG order: algo-dfs, algo-bfs, algo-topological-sort-dag-dp (check first
+//      whether it already has real content — it may not be a placeholder), algo-scc-kosaraju,
+//      algo-scc-tarjan, algo-bridges-articulation, algo-2sat-scc, algo-eulerian-path-hierholzer,
+//      algo-max-flow-ford-fulkerson, algo-bipartite-matching, algo-all-pairs-shortest-paths. Start
+//      with algo-dfs. (Note: bucket 3's "Algorithms" placeholders — algo-heapsort,
+//      algo-linear-time-sorting, algo-order-statistics-selection — are lower priority per the current
+//      pass's scope, which after Data Structures moves straight to Graph Algorithms; revisit them only
+//      if explicitly asked to.)
 
 const ALGORITHMICS_SUBJECT = {
   id: "algorithmics",
@@ -80,9 +88,21 @@ const ALGORITHMICS_SUBJECT = {
               <text x="420" y="172" text-anchor="middle" fill="var(--text-muted)" font-size="11">get(i): O(n)</text>
               <text x="420" y="189" text-anchor="middle" fill="var(--text-muted)" font-size="11">insert(0,x): O(1)</text>
             </svg>
-            <p>Two consequences follow immediately, and they recur in every later lesson. First, you can swap implementations without changing any code that only talks to the ADT — this is the entire justification for a database index switching from a B-tree to a hash index, or for choosing Python's <code>list</code> versus <code>collections.deque</code>. Second, "which structure is best" is not answerable without knowing the operation mix: a workload dominated by random access wants the array; one dominated by front-insertion wants the list. Every later lesson in this chapter is filling in a row of a much bigger version of the table above — the same handful of ADTs (list, set, map, priority queue), an increasing number of implementations, each buying a different point on the time/space trade-off curve.</p>
-            <p>A structure's <strong>invariant</strong> is the standing property its operations must preserve — sortedness for a sorted array, the heap property for a heap, no cycles for a tree. Reading any new structure well means asking three questions in order: what is the invariant, why does maintaining it make some operation cheap, and what does maintaining it cost on the operations that don't benefit. That question triage is the actual skill this chapter is teaching; the specific structures are the practice material.</p>
+            <p>Two consequences follow immediately, and they recur in every later lesson. First, you can swap implementations without changing any code that only talks to the ADT — this is the entire justification for a database index switching from a B-tree to a hash index, or for choosing Python's <code>list</code> versus <code>collections.deque</code>. Second, "which structure is best" is not answerable without knowing the operation mix: a workload dominated by random access wants the array; one dominated by front-insertion wants the list.</p>
+            <table class="mini-table">
+              <tr><th>Operation</th><th>Dynamic array</th><th>Linked list</th><th>Why</th></tr>
+              <tr><td>get(i)</td><td>O(1)</td><td>O(i)</td><td>array indexes directly by address; a list must walk links from the head</td></tr>
+              <tr><td>insert(0, x)</td><td>O(n)</td><td>O(1)</td><td>array shifts everything right one slot; a list just relinks the head pointer</td></tr>
+            </table>
+            <p>Every later lesson in this chapter is filling in a row of a much bigger version of the table above — the same handful of ADTs (list, set, map, priority queue), an increasing number of implementations, each buying a different point on the time/space trade-off curve.</p>
+            <p><strong>Remark:</strong> a structure's <strong>invariant</strong> is the standing property its operations must preserve — sortedness for a sorted array, the heap property for a heap, no cycles for a tree — and it's worth naming up front because every lesson from here on leans on it without saying so again.</p>
+            <p><strong>Try it yourself:</strong> a stack (push/pop from one end) and a queue (enqueue at one end, dequeue from the other) are both, in ADT terms, restricted versions of the List above. Which one can be implemented with O(1) worst-case operations using <em>only</em> a dynamic array with no shifting ever — and which one genuinely needs either a second index trick or a linked structure to avoid O(n) shifts?</p>
+            <details><summary>Solution</summary>
+              <p>A stack is free: push and pop both happen at the same end (the array's tail), so a dynamic array with amortized-O(1) append already gives O(1) push/pop with no shifting, ever. A queue is the hard case, because enqueue and dequeue happen at <em>opposite</em> ends — dequeuing from index 0 of a plain array means shifting everything left, which is O(n). That's precisely why queues need either the circular-buffer trick (advance a head index instead of shifting) or a linked list, while stacks never do. The asymmetry is the ADT's fault, not the array's: it's baked into which end each operation touches.</p>
+            </details>
+            <p><strong>Remark:</strong> reading any new structure well means asking three questions in order: what is the invariant, why does maintaining it make some operation cheap, and what does maintaining it cost on the operations that don't benefit. That question triage is the actual skill this chapter is teaching; the specific structures — starting with <a href="#/subject/algorithmics/data-structures/algo-stacks">stacks</a> and <a href="#/subject/algorithmics/data-structures/algo-queues">queues</a> next — are the practice material.</p>
             <p><strong>Further reading:</strong> CLRS, 3rd ed., Ch. 10 introduction (stacks/queues/lists as the first worked instances of implementing an ADT); Sedgewick & Wayne, <em>Algorithms</em>, 4th ed., §1.2 ("Data Types") for the clearest short treatment of the ADT/implementation split specifically; Pat Morin, <em>Open Data Structures</em> (free, opendatastructures.org), Ch. 1, for the same ground with runnable code in several languages if you want to see interfaces expressed as code rather than prose.</p>
+            <p><em>The whole idea in one line: the contract is what it promises, the structure is how it pays for that promise.</em></p>
           `,
           exercises: [
             "The Python list and collections.deque both implement something close to the List ADT. Look up (or measure) the cost of appendleft on each. Explain the discrepancy in terms of the underlying data structure, not the interface.",
@@ -153,10 +173,25 @@ const ALGORITHMICS_SUBJECT = {
                 <text x="185" y="95" text-anchor="middle" fill="var(--accent)" font-size="11">tail (enqueue)</text>
               </g>
             </svg>
-            <p>A naive array queue that just advances a "front" index and shifts everything left on dequeue costs O(n) per dequeue — unacceptable. The fix is the <strong>circular (ring) buffer</strong>: keep <code>head</code> and <code>tail</code> indices into a fixed-size array of capacity m, advance each modulo m, and never shift anything. Both enqueue and dequeue become O(1), and the only bookkeeping subtlety is distinguishing "empty" from "full" when <code>head == tail</code> — solved by tracking a count alongside the two indices, or by deliberately never filling the last slot. A doubly linked list gives the same O(1) bounds with no capacity limit and no modular arithmetic, at the usual per-node pointer overhead; this is essentially what <code>collections.deque</code> is (a linked list of small fixed-size blocks, giving O(1) at both ends with better cache behavior than one node per element).</p>
-            <p>The queue's FIFO discipline is not a stylistic choice in breadth-first search — it is the mechanism that makes BFS correct. Processing vertices in the order they were discovered means everything at graph-distance <em>k</em> from the source is dequeued (and its neighbors enqueued) before anything at distance <em>k+1</em>, which is exactly the layer-by-layer guarantee the BFS lesson proves. Swap the queue for a stack and you get depth-first search's order instead — same two lines of pseudocode, different data structure, entirely different traversal.</p>
-            <p>Beyond graph traversal, queues are the standard shape for anything modeling arrival order under real constraints: task schedulers, print spoolers, and producer-consumer buffering between a fast producer and a slower consumer (a "message queue" is this ADT plus durability and network delivery guarantees layered on top). Contrast this with the priority queue two lessons ahead, where service order is by priority rather than arrival — the same real-world scheduling problem, solved by a structurally different ADT once "first come, first served" stops being the right policy.</p>
+            <p>The design follows straight from that goal: a naive array queue that just advances a "front" index and shifts everything left on dequeue costs O(n) per dequeue — unacceptable. The fix is the <strong>circular (ring) buffer</strong>: keep <code>head</code> and <code>tail</code> indices into a fixed-size array of capacity m, advance each modulo m, and never shift anything. Nothing ever moves once written; only the two indices walk in circles around the same block of memory.</p>
+            <p>Two implementations satisfy the rule, and either is standard:</p>
+            <ul>
+              <li><strong>Circular (ring) array</strong> — fixed capacity, both indices advance mod m. Contiguous and cache-friendly, at the cost of a capacity limit.</li>
+              <li><strong>Doubly linked list</strong> — enqueue at the tail, dequeue at the head. No capacity limit and no modular arithmetic, at the usual per-node pointer overhead; this is essentially what <code>collections.deque</code> is (a linked list of small fixed-size blocks, giving O(1) at both ends with better cache behavior than one node per element).</li>
+            </ul>
+            <p><strong>Remark:</strong> the one bookkeeping subtlety in the ring-array version is distinguishing "empty" from "full" when <code>head == tail</code> — solved by tracking a count alongside the two indices, or by deliberately never filling the last slot.</p>
+            <table class="mini-table">
+              <tr><th>Operation</th><th>Cost</th><th>Why</th></tr>
+              <tr><td>enqueue</td><td>O(1)</td><td>write at tail, advance tail — no shifting, no scan</td></tr>
+              <tr><td>dequeue</td><td>O(1)</td><td>read at head, advance head — same reasoning, opposite end</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> stacks can simulate a queue (two stacks, amortized O(1) — see the previous lesson's exercises). Can you go the other way: implement a stack's <code>push</code>/<code>pop</code> using only two plain queues?</p>
+            <details><summary>Solution</summary>
+              <p>Keep all elements in one queue, call it the "main" one, in stack order (top at the front). To <code>push(x)</code>: enqueue x into the empty second queue, then dequeue everything from main and re-enqueue it behind x, then swap the two queues' roles so main is the one holding everything with x at the front. <code>pop</code> and <code>peek</code> are then just dequeue/front on main. Push does O(n) work to re-route the existing elements behind the new one; pop is O(1). This is the mirror image of the two-stack queue, where the O(n) cost sits on the read side instead — the FIFO/LIFO mismatch has to be paid somewhere, and which operation absorbs it is a design choice.</p>
+            </details>
+            <p><strong>Remark:</strong> the queue's FIFO discipline is not a stylistic choice in <a href="#/subject/algorithmics/graph-algorithms/algo-bfs">breadth-first search</a> — it is the mechanism that makes BFS correct. Processing vertices in the order they were discovered means everything at graph-distance <em>k</em> from the source is dequeued before anything at distance <em>k+1</em>. Swap the queue for a <a href="#/subject/algorithmics/data-structures/algo-stacks">stack</a> and you get depth-first search's order instead — same two lines of pseudocode, different data structure, entirely different traversal. And when "first come, first served" stops being the right policy — service order should be by priority instead of arrival — the <a href="#/subject/algorithmics/data-structures/algo-priority-queue-adt">priority queue</a> is the structurally different ADT built for exactly that.</p>
             <p><strong>Further reading:</strong> CLRS, 3rd ed., §10.1 (queues via a circular array, with the wraparound arithmetic spelled out); Sedgewick & Wayne, <em>Algorithms</em>, 4th ed., §1.3 (queues, with diagrams of the resizing circular array); Skiena, <em>The Algorithm Design Manual</em>, 3rd ed., §3.3.</p>
+            <p><em>The whole idea in one line: first come, first served — always.</em></p>
           `,
           exercises: [
             "Implement a fixed-capacity queue as a circular buffer over an array of size m. Give the exact index arithmetic for enqueue and dequeue, and an empty/full test that is correct when head == tail can mean either.",
@@ -581,10 +616,27 @@ const ALGORITHMICS_SUBJECT = {
               <circle cx="160" cy="130" r="3.5" fill="var(--text)"/>
               <circle cx="120" cy="180" r="3.5" fill="var(--text)"/>
             </svg>
-            <p><strong>Construction</strong> mirrors building a balanced BST from sorted data: at each node, find the median point along the current axis (median-of-medians, or randomized selection — see the Order Statistics lesson — gives O(n) per level), partition the remaining points into "below" and "above", and recurse on each half with the axis advanced. Total build cost is O(n log n), and the resulting tree has height O(log n) by the same argument as a balanced BST built from a sorted array.</p>
-            <p><strong>Nearest-neighbor search</strong> descends to the region containing the query point, just like a BST search, then backtracks up the recursion — but unlike a BST, it must also check whether the <em>sibling</em> subtree could possibly contain something closer: it does, only if the splitting plane itself is closer to the query than the best distance found so far. This pruning is what makes k-d trees useful at all; without it, nearest-neighbor search would degrade to scanning every point. In low dimensions this pruning is effective and search runs in roughly O(log n) on average. In high dimensions it stops working — the "curse of dimensionality" means almost every sibling subtree ends up within pruning distance, and search degrades toward O(n). Past roughly 10-20 dimensions, approximate methods (locality-sensitive hashing, or approximate nearest-neighbor libraries) replace exact k-d tree search entirely.</p>
-            <p>Applications: nearest-neighbor classifiers, 2D/3D range queries in spatial databases and computer graphics (collision detection, ray tracing acceleration structures), and — in the spirit of this course — nearest-neighbor search over multi-factor feature vectors, e.g. finding historically similar market regimes by treating each day's feature vector as a point.</p>
+            <p>The design follows straight from that goal: at each node, find the median point along the current axis (median-of-medians, or randomized selection — see the <a href="#/subject/algorithmics/algorithms/algo-order-statistics-selection">Order Statistics</a> lesson — gives O(n) per level), partition the remaining points into "below" and "above", and recurse on each half with the axis advanced. This is the same recursive-median idea a balanced BST built from sorted data would use, just cycling which coordinate plays the role of "the key" as depth increases.</p>
+            <p>Variants worth knowing:</p>
+            <ul>
+              <li><strong>Static (median-built)</strong> — as described above; guarantees O(log n) height but requires knowing all points up front.</li>
+              <li><strong>Dynamic k-d tree</strong> — supports one-at-a-time insertion (descend and insert like a BST, cycling axis with depth), at the cost that height guarantees degrade without periodic rebalancing.</li>
+              <li><strong>Region/range-tree variants</strong> — store bounding boxes at internal nodes instead of single split points, trading a larger structure for faster orthogonal range queries.</li>
+            </ul>
+            <p><strong>Remark:</strong> in high dimensions the whole approach stops paying off — the "curse of dimensionality" means almost every sibling subtree ends up within pruning distance, and search degrades toward O(n), which is why approximate methods (locality-sensitive hashing, approximate nearest-neighbor libraries) take over past roughly 10-20 dimensions.</p>
+            <table class="mini-table">
+              <tr><th>Operation</th><th>Cost</th><th>Why</th></tr>
+              <tr><td>Build (n points)</td><td>O(n log n)</td><td>O(n) work per level of the recursion via linear-time median selection, O(log n) levels</td></tr>
+              <tr><td>Nearest-neighbor query</td><td>O(log n) average, O(n) worst case</td><td>descend to the query's region, then backtrack — pruning sibling subtrees works well only in low dimensions</td></tr>
+              <tr><td>Insert (dynamic)</td><td>O(log n) expected</td><td>same descent as a BST insert, no rebalancing performed</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> nearest-neighbor search must decide whether to also explore the sibling subtree after finding the best point so far in the query's own region. What's the exact test — in terms of the splitting plane — that decides whether the sibling can be skipped?</p>
+            <details><summary>Solution</summary>
+              <p>Let <em>d</em> be the distance from the query point to the closest point found so far, and let the current node split on some axis at value <em>s</em> (e.g. x = s). The sibling subtree lies entirely on the other side of that plane, so the closest any point in it could possibly be to the query is the perpendicular distance from the query to the plane itself, |query[axis] − s|. If that distance already exceeds <em>d</em>, no point over there can beat what you already have, so the whole sibling subtree is skipped — one comparison prunes however many points it contains. If it's less than <em>d</em>, the sibling might hold something closer and must be searched. This single test is exactly what turns a tree that could be scanned in O(n) into one that (in low dimensions) is searched in O(log n).</p>
+            </details>
+            <p><strong>Remark:</strong> applications: nearest-neighbor classifiers, 2D/3D range queries in spatial databases and computer graphics (collision detection, ray tracing acceleration structures), and — in the spirit of this course — nearest-neighbor search over multi-factor feature vectors, e.g. finding historically similar market regimes by treating each day's feature vector as a point. The underlying recursive-median idea is the same one that builds a balanced <a href="#/subject/algorithmics/data-structures/algo-bst-balance">binary search tree</a>; a k-d tree is what you get by running that idea once per dimension instead of once, ever.</p>
             <p><strong>Further reading:</strong> Bentley, "Multidimensional Binary Search Trees Used for Associative Searching," <em>CACM</em>, 1975 (the original paper); de Berg, Cheong, van Kreveld & Overmars, <em>Computational Geometry: Algorithms and Applications</em>, 3rd ed., Ch. 5, for the clearest diagrams of the recursive partition and range-query pruning; a step-by-step interactive visualization is available at the University of San Francisco's data structure visualization site (cs.usfca.edu/~galles/visualization) if you want to watch construction and search happen incrementally.</p>
+            <p><em>The whole idea in one line: a binary search tree that takes turns deciding which coordinate matters.</em></p>
           `,
           exercises: [
             "Give the O(n log n) algorithm to build a balanced k-d tree by recursively selecting the median along the cycling axis using linear-time selection, and prove the resulting height is O(log n).",
@@ -618,9 +670,26 @@ const ALGORITHMICS_SUBJECT = {
                 <line x1="290" y1="30" x2="190" y2="98" stroke="var(--accent)" stroke-width="2"/>
               </g>
             </svg>
-            <p>There is a taxonomy worth knowing, because each level requires more machinery: <strong>partial persistence</strong> lets you query any past version but only update the latest one (path copying as described is already enough); <strong>full persistence</strong> lets you update any past version too, producing a branching tree of versions rather than a line; <strong>confluent persistence</strong> additionally allows merging two versions. Full persistence on structures with only forward pointers needs the fat-node / node-splitting machinery of Driscoll, Sarnak, Sleator, and Tarjan; their "fat node" alternative avoids copying an entire new node by instead storing a small append-only log of {version, value} pairs per modified field — O(1) extra space per write, at the cost of O(log #versions) per read to find the right entry.</p>
-            <p>This is not a niche technique. Immutable data in functional programming languages <em>is</em> persistence — "no mutation, but still efficient updates" is precisely the problem path copying solves, which is why functional languages lean so heavily on trees rather than arrays. Practical instances: an editor's undo/redo history without storing a full snapshot per keystroke; and, tying back to this course's Range Query Structures, a persistent segment tree answers "what did this range query return as of any past point in time" without rebuilding anything.</p>
+            <p>Three levels of persistence are worth telling apart, because each needs more machinery than the last:</p>
+            <ul>
+              <li><strong>Partial persistence</strong> — query any past version, but only update the latest one. Plain path copying, as described above, is already enough.</li>
+              <li><strong>Full persistence</strong> — update any past version too, producing a branching tree of versions rather than a line. Needs the fat-node machinery below.</li>
+              <li><strong>Confluent persistence</strong> — additionally allows merging two versions into one.</li>
+            </ul>
+            <p><strong>Remark:</strong> full persistence on structures with only forward pointers needs the fat-node alternative of Driscoll, Sarnak, Sleator, and Tarjan — instead of copying an entire new node, store a small append-only log of {version, value} pairs per modified field, at O(1) extra space per write but O(log #versions) per read to find the right entry.</p>
+            <table class="mini-table">
+              <tr><th>Operation</th><th>Cost</th><th>Why</th></tr>
+              <tr><td>Update (path copying, height h)</td><td>O(h) new nodes</td><td>only the root-to-node path is copied; every untouched subtree is shared, not duplicated</td></tr>
+              <tr><td>Query any past version</td><td>same as the non-persistent structure</td><td>an old root is a fully valid, ordinary tree — nothing about querying it changed</td></tr>
+              <tr><td>Space, n updates</td><td>O(n·h) total</td><td>each update adds O(h) new nodes on top of everything already shared</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> a persistent stack (push/pop that never destroys the previous version) is one of the simplest persistent structures to build. How would you implement one so that every past version stays queryable in O(1) extra space per push?</p>
+            <details><summary>Solution</summary>
+              <p>Represent the stack as a singly linked list where the "top of stack" is the head pointer, and treat each distinct head pointer as a separate version. <code>push(x)</code> on version v allocates one new node whose next-pointer is v's head, and returns the new node as the head of a brand-new version — v itself is untouched, since nothing about its nodes changed. <code>pop</code> on version v simply returns v's head's next-pointer as a new version, again allocating nothing. Every past version remains a valid, independently walkable list, because path copying on a list is trivial: the "path" from the point of change to anything shared is just one node, the new head. This is the linked-list special case of the general BST path-copying idea — the "path" collapses to length 1 because a stack has no branching to preserve.</p>
+            </details>
+            <p><strong>Remark:</strong> this is not a niche technique. Immutable data in functional programming languages <em>is</em> persistence — "no mutation, but still efficient updates" is precisely the problem path copying solves, which is why functional languages lean so heavily on trees (like the <a href="#/subject/algorithmics/data-structures/algo-bst-balance">balanced BSTs</a> this lesson builds on) rather than arrays. Practical instances: an editor's undo/redo history without storing a full snapshot per keystroke; and a persistent <a href="#/subject/algorithmics/data-structures/algo-segment-fenwick-trees">segment tree</a> answers "what did this range query return as of any past point in time" without rebuilding anything.</p>
             <p><strong>Further reading:</strong> Driscoll, Sarnak, Sleator & Tarjan, "Making Data Structures Persistent," <em>JCSS</em>, 1989 (the foundational paper — defines partial/full/confluent persistence and proves the space/time bounds for the fat-node and node-copying techniques); Okasaki, <em>Purely Functional Data Structures</em>, 1998, Ch. 1-3, for why immutability and persistence are the same idea in a functional setting, with a catalog of structures — leftist heaps, red-black trees, finger trees — built this way from scratch; a step-through visualization of path copying on a BST is available at the Open Data Structures companion site (opendatastructures.org).</p>
+            <p><em>The whole idea in one line: never overwrite — share what didn't change, copy only what did.</em></p>
           `,
           exercises: [
             "Implement a partially persistent balanced BST via path copying: insert returns a new root while every earlier root remains valid. Prove the amortized extra space per insert is O(log n), and that querying any past version costs the same asymptotic time as the non-persistent structure.",
@@ -979,9 +1048,28 @@ const ALGORITHMICS_SUBJECT = {
                 <text x="290" y="95" text-anchor="middle" fill="var(--text-muted)" font-size="11">3: $</text>
               </g>
             </svg>
-            <p>Beyond substring search, several classically hard-looking string problems become linear once the tree is built: the <strong>longest repeated substring</strong> of T is the deepest internal (branching) node's path label, since branching is exactly where two or more suffixes stop agreeing; the <strong>longest common substring</strong> of two texts is found by building one <em>generalized</em> suffix tree over both (each leaf tagged with which text it came from) and finding the deepest node with leaves from both texts. Building a suffix tree in linear time is possible (Ukkonen's algorithm) but intricate enough that it's usually cited rather than derived in a first pass.</p>
-            <p>A <strong>suffix array</strong> sidesteps that complexity: it is just the suffix tree's leaves read left to right, i.e. the list of suffix-start positions sorted lexicographically — a plain array of integers, no pointers, far more cache-friendly. The Manber-Myers algorithm builds it in O(n log n) via repeated doubling (sort by 1 character, then by 2, then 4, …), and Kasai's algorithm then computes the accompanying LCP (longest-common-prefix) array in a further O(n), recovering the branching information the tree had for free. In practice — genome alignment, full-text search indexes, plagiarism detection, and the Burrows-Wheeler transform behind bzip2 (built directly from the suffix array) — the suffix array plus LCP array is the standard choice; the suffix tree is the conceptual tool you reach for to prove why a query is fast.</p>
+            <p>Two implementations of the same underlying idea are standard, and the choice between them is the usual pointers-vs-arrays trade-off from earlier in this chapter:</p>
+            <ul>
+              <li><strong>Suffix tree</strong> — the compressed trie itself. Pointer-heavy, but each internal (branching) node directly names a repeated substring, and pattern search costs only O(|P|), independent of |T|.</li>
+              <li><strong>Suffix array + LCP array</strong> — just the tree's leaves read left to right: the list of suffix-start positions sorted lexicographically, a plain array of integers with no pointers at all, plus a companion array recovering the branching information the tree had for free.</li>
+              <li><strong>Generalized suffix tree</strong> — build one tree over the suffixes of <em>two</em> texts, each leaf tagged with which text it came from, to compare texts rather than search within one.</li>
+            </ul>
+            <p>The <strong>longest repeated substring</strong> of T is the deepest internal node's path label, since branching is exactly where two or more suffixes stop agreeing; the <strong>longest common substring</strong> of two texts is the deepest node with leaves from both texts in their generalized suffix tree. Building a suffix tree in linear time is possible (Ukkonen's algorithm) but intricate enough that it's usually cited rather than derived in a first pass; the suffix array sidesteps that entirely — the Manber-Myers algorithm builds it in O(n log n) via repeated doubling (sort by 1 character, then by 2, then 4, …), and Kasai's algorithm then computes the LCP array in a further O(n).</p>
+            <p><strong>Remark:</strong> in practice — genome alignment, full-text search indexes, plagiarism detection, and the Burrows-Wheeler transform behind bzip2 — the suffix array plus LCP array is the standard choice, since it uses far less memory per character than pointer-heavy tree nodes; the suffix tree is mainly the conceptual tool used to prove why a query is fast.</p>
+            <table class="mini-table">
+              <tr><th>Operation</th><th>Cost</th><th>Why</th></tr>
+              <tr><td>Build suffix tree</td><td>O(n)</td><td>Ukkonen's algorithm amortizes the work of extending all n suffixes to linear total</td></tr>
+              <tr><td>Build suffix array + LCP</td><td>O(n log n) + O(n)</td><td>Manber-Myers doubling, then Kasai's algorithm walks suffixes in rank order</td></tr>
+              <tr><td>Pattern search, suffix tree</td><td>O(|P|)</td><td>one walk down the compressed trie, independent of |T|</td></tr>
+              <tr><td>Pattern search, suffix array</td><td>O(|P| log n)</td><td>binary search over the sorted array, each comparison up to |P| characters</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> given only a suffix array and its LCP array for a string T (no tree at all), how would you find the longest substring of T that occurs at least twice — in O(n) time?</p>
+            <details><summary>Solution</summary>
+              <p>The LCP array stores, for each adjacent pair of suffixes in sorted order, the length of their longest common prefix. Since suffixes are sorted lexicographically, any two suffixes sharing a long common prefix end up <em>adjacent</em> in the sorted order (if they weren't, something between them in sort order would have to share at least as much of that prefix too). So the longest common prefix between <em>any</em> two suffixes anywhere in T equals the maximum value in the LCP array — a single O(n) scan. This is exactly the array analogue of "the deepest branching node" in the tree formulation: maximum LCP corresponds to the deepest point at which two suffixes still agree, without ever building the tree.</p>
+            </details>
+            <p><strong>Remark:</strong> both structures are, underneath, exactly the compressed <a href="#/subject/algorithmics/data-structures/algo-tries">trie</a> from the previous lesson, applied to a specific and enormous key set — every suffix of one string — rather than an arbitrary one; everything that made trie search independent of the number of stored keys applies here too, just measured against |T| instead of the dictionary size.</p>
             <p><strong>Further reading:</strong> Gusfield, <em>Algorithms on Strings, Trees, and Sequences</em>, 1997 (the standard reference — Ch. 5-7 for suffix trees and generalized suffix trees, motivated throughout by DNA sequence analysis); Manber & Myers, "Suffix Arrays: A New Method for On-Line String Searches," <em>SIAM J. Computing</em>, 1993 (the original suffix array paper); Kasai, Lee, Arimura, Arikawa & Park, "Linear-Time Longest-Common-Prefix Computation in Suffix Arrays," 2001.</p>
+            <p><em>The whole idea in one line: every substring is a prefix of some suffix, so index the suffixes and you've indexed everything.</em></p>
           `,
           exercises: [
             "Given the suffix tree for a string T of length n, describe an O(n) algorithm to find the longest substring of T that occurs at least twice, and justify the bound in terms of the tree's internal nodes.",
