@@ -6,7 +6,7 @@
 // field-by-field doc (id/title/section/prerequisites/estMinutes/content/exercises); same rules
 // apply here, ids just use the "algo-" prefix instead of "phys-".
 //
-// STATUS (2026-09-01, batch 4): this file now covers Data Structures / Algorithms / Graph Algorithms only.
+// STATUS (2026-09-01, batch 5): this file now covers Data Structures / Algorithms / Graph Algorithms only.
 // The five chapters that used to follow "graph-algorithms" here (numerical-linear-algebra,
 // optimization, probability-statistics, time-series, classical-ml) were moved verbatim to
 // js/data-datascience.js / DATASCIENCE_SUBJECT — that material is numerical linear algebra, convex
@@ -18,7 +18,11 @@
 //   1. Original, already-good content, kept verbatim (just with section/prerequisites/estMinutes
 //      added when the DAG restructure happened): algo-hashing-universal-families, algo-bst-balance,
 //      algo-binary-heaps, algo-dynamic-arrays-amortization, algo-union-find, algo-tries, and all of
-//      "algorithms" + "graph-algorithms" except the placeholders listed below.
+//      "algorithms" + "graph-algorithms" except the placeholders listed below. This bucket also
+//      includes algo-topological-sort-dag-dp, algo-dijkstra, algo-bellman-ford, and
+//      algo-mst-cut-property, which are real, substantive content but predate the current style
+//      template (no inline SVG / try-it-yourself block / slogan) — confirmed NOT placeholders when
+//      checked in batch 5, and out of scope for now (not on the restyle list below).
 //   2. Lessons with FULL content in the CURRENT style template (goal + inline SVG diagram + design +
 //      variants list + one-sentence Remark + mini-table + inline "Try it yourself" with folded
 //      <details> solution + closing Remark with cross-links + Further reading + italic one-line
@@ -35,25 +39,26 @@
 //      algo-kd-trees, algo-suffix-trees-arrays, algo-persistent-data-structures. This completes ALL of
 //      Data Structures (bucket 2 + 2b, categories A and B) — every lesson in the "data-structures"
 //      chapter is now in the current style template.
+//   2c. NEW full-style content written in Graph Algorithms as of 2026-09-01, batch 5 (same template as
+//      bucket 2/2b): algo-dfs, algo-bfs, algo-scc-kosaraju (title trimmed to bare "Kosaraju's
+//      Algorithm"; section changed to "SCC family" to disambiguate from Tarjan's lesson without a
+//      colon-subtitle in the title itself).
 //   3. PLACEHOLDER NODES ONLY — wired into the DAG with correct prerequisites, but content still to
 //      be written in a follow-up pass:
 //        Algorithms (CLRS Part II, "Sorting and Order Statistics" — the material this chapter was
 //          missing): algo-heapsort, algo-linear-time-sorting, algo-order-statistics-selection.
-//        Graph Algorithms (deliberately beyond a first course, per request): algo-dfs, algo-bfs
-//          (pre-existing placeholders, split out of an old combined lesson), algo-scc-kosaraju,
-//          algo-scc-tarjan, algo-bridges-articulation (pre-existing), plus new ones —
-//          algo-max-flow-ford-fulkerson, algo-bipartite-matching, algo-all-pairs-shortest-paths,
-//          algo-2sat-scc, algo-eulerian-path-hierholzer.
-//      NEXT UP when resuming this pass: Data Structures (categories A and B, i.e. buckets 2 and 2b) is
-//      now FULLY done — every lesson in that chapter is in current style. Move to Graph Algorithms
-//      placeholders, in this DAG order: algo-dfs, algo-bfs, algo-topological-sort-dag-dp (check first
-//      whether it already has real content — it may not be a placeholder), algo-scc-kosaraju,
+//        Graph Algorithms (deliberately beyond a first course, per request), remaining after batch 5:
+//          algo-scc-tarjan, algo-bridges-articulation, algo-2sat-scc, algo-eulerian-path-hierholzer,
+//          algo-max-flow-ford-fulkerson, algo-bipartite-matching, algo-all-pairs-shortest-paths.
+//      NEXT UP when resuming this pass: Graph Algorithms placeholders, in this DAG order:
 //      algo-scc-tarjan, algo-bridges-articulation, algo-2sat-scc, algo-eulerian-path-hierholzer,
 //      algo-max-flow-ford-fulkerson, algo-bipartite-matching, algo-all-pairs-shortest-paths. Start
-//      with algo-dfs. (Note: bucket 3's "Algorithms" placeholders — algo-heapsort,
-//      algo-linear-time-sorting, algo-order-statistics-selection — are lower priority per the current
-//      pass's scope, which after Data Structures moves straight to Graph Algorithms; revisit them only
-//      if explicitly asked to.)
+//      with algo-scc-tarjan (it now has a full-style algo-scc-kosaraju lesson right before it to
+//      follow for both content — single-pass low-link algorithm, disc[v]/low[v], stack-based SCC
+//      popping when low[v] == disc[v] — and cross-linking). (Note: bucket 3's "Algorithms"
+//      placeholders — algo-heapsort, algo-linear-time-sorting, algo-order-statistics-selection — are
+//      lower priority per the current pass's scope, which after Data Structures moves straight to
+//      Graph Algorithms; revisit them only if explicitly asked to.)
 
 const ALGORITHMICS_SUBJECT = {
   id: "algorithmics",
@@ -1264,25 +1269,112 @@ return hi                          # the least k with P(k) true</code></pre>
       lessons: [
         {
           id: "algo-dfs",
-          title: "Depth-First Search: The Structure Theorems",
+          title: "Depth-First Search",
           section: "DFS family",
           prerequisites: ["algo-stacks"],
           estMinutes: 25,
           content: `
-            <p><em>Placeholder — split out of the old combined "DFS and BFS" lesson; needs to be expanded into a standalone lesson (discovery/finish times, the parenthesis theorem, edge classification, and the three corollaries: cycle detection, topological order, SCC). Will be built out after we settle on lesson design.</em></p>
+            <p>Depth-first search explores a graph by committing to one path as far as it can go, and only backtracking once it is truly stuck. It's the algorithm to reach for whenever the question is about a graph's shape — cycles, reachability, ordering — rather than about the shortest way to get somewhere.</p>
+            <svg viewBox="0 0 300 230" width="100%" height="230" style="max-width:320px;display:block;margin:0.8rem auto;" role="img" aria-label="DFS tree rooted at A with tree edges to B and D, B to C, and a dashed back edge from C to A, with discover/finish times shown at each node">
+              <defs><marker id="dfsarrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker></defs>
+              <line x1="150" y1="45" x2="85" y2="90" stroke="var(--accent)" stroke-width="2" marker-end="url(#dfsarrow)"/>
+              <line x1="150" y1="45" x2="215" y2="90" stroke="var(--accent)" stroke-width="2" marker-end="url(#dfsarrow)"/>
+              <line x1="70" y1="118" x2="70" y2="160" stroke="var(--accent)" stroke-width="2" marker-end="url(#dfsarrow)"/>
+              <path d="M56,178 Q0,90 134,34" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#dfsarrow)"/>
+              <circle cx="150" cy="30" r="20" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="70" cy="100" r="20" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="230" cy="100" r="20" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="70" cy="180" r="20" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <text x="150" y="34" text-anchor="middle" fill="var(--text)" font-size="13">A</text>
+              <text x="70" y="104" text-anchor="middle" fill="var(--text)" font-size="13">B</text>
+              <text x="230" y="104" text-anchor="middle" fill="var(--text)" font-size="13">D</text>
+              <text x="70" y="184" text-anchor="middle" fill="var(--text)" font-size="13">C</text>
+              <text x="150" y="60" text-anchor="middle" fill="var(--text-muted)" font-size="11">1 / 8</text>
+              <text x="70" y="130" text-anchor="middle" fill="var(--text-muted)" font-size="11">2 / 5</text>
+              <text x="230" y="130" text-anchor="middle" fill="var(--text-muted)" font-size="11">6 / 7</text>
+              <text x="70" y="210" text-anchor="middle" fill="var(--text-muted)" font-size="11">3 / 4</text>
+              <text x="10" y="80" fill="var(--text-muted)" font-size="10">back edge</text>
+            </svg>
+            <p>The design follows straight from that goal: from the current vertex, immediately recurse into an unvisited neighbor before considering any other neighbor of the current vertex — the neighbor list is only revisited after that whole sub-exploration is exhausted. Bookkeeping two timestamps per vertex, <code>discover[v]</code> when v is first reached and <code>finish[v]</code> when its subtree is fully explored, turns this into a precise tool: the <strong>parenthesis theorem</strong> says that for any two vertices, their discover/finish intervals are either nested or disjoint, never partially overlapping — exactly like well-formed parentheses. Every edge then falls into exactly one of four categories relative to the DFS forest, and the category is fully determined by comparing timestamps.</p>
+            <ul>
+              <li><strong>Recursive DFS</strong> — the implicit call stack does the bookkeeping. Simplest to write, but recursion depth equals path depth, so it can overflow the call stack on a long enough path (see <a href="#/subject/algorithmics/data-structures/algo-stacks">stacks</a>).</li>
+              <li><strong>Iterative DFS</strong> — an explicit stack replacing the call stack, the "recursion in reverse" trick already teased in the stacks lesson; needed on very deep or generated-on-demand graphs.</li>
+              <li><strong>Multi-source DFS forest</strong> — restart DFS from any still-unvisited vertex once one tree is exhausted, producing a forest instead of a single tree when the graph is disconnected.</li>
+              <li><strong>Edge classification</strong> (tree / back / forward / cross) — the timestamps directly answer three of the most useful questions in the DFS family: is there a cycle (a back edge)? what's a topological order (decreasing finish time)? which vertices lie together (the SCC lessons)?</li>
+            </ul>
+            <p><strong>Remark:</strong> the four-way edge classification is stated for directed graphs — in an undirected graph every non-tree edge is a back edge, since there's no way to have discovered the far endpoint without already having discovered a common ancestor.</p>
+            <table class="mini-table">
+              <tr><th>Operation</th><th>Cost</th><th>Why</th></tr>
+              <tr><td>Full traversal</td><td>O(V+E)</td><td>each vertex is discovered once, each edge is examined once, from whichever endpoint reaches it first</td></tr>
+              <tr><td>Cycle detection (directed)</td><td>O(V+E)</td><td>free byproduct — a back edge to a still-in-progress vertex is a witness</td></tr>
+              <tr><td>Space</td><td>O(V)</td><td>recursion/explicit stack depth plus one discover/finish pair per vertex</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> using only a three-color scheme (white = unvisited, gray = on the current path, black = fully finished), how would you detect whether a directed graph contains a cycle at all, in a single DFS pass?</p>
+            <details><summary>Solution</summary>
+              <p>Color every vertex white initially. When DFS discovers a vertex, color it gray; when DFS finishes it, color it black. Whenever DFS examines an edge (u, v): if v is gray, that edge points back into the path currently being explored — a cycle, since v is an ancestor of u still under active recursion. If v is white, recurse into it. If v is black, it's a forward or cross edge and can't create a cycle back through u, because its whole subtree already finished with no path back to u. The graph is acyclic exactly when this never finds a gray target across the whole traversal — precisely the back-edge case of the edge classification above.</p>
+            </details>
+            <p><strong>Remark:</strong> this "explore one path fully, then backtrack" discipline is a stack in disguise — recursion <em>is</em> a stack (see <a href="#/subject/algorithmics/data-structures/algo-stacks">stacks</a>) — which is why swapping the stack for a <a href="#/subject/algorithmics/data-structures/algo-queues">queue</a> in the exact same skeleton produces <a href="#/subject/algorithmics/graph-algorithms/algo-bfs">breadth-first search</a> instead, with an entirely different guarantee. Everything downstream in this chapter's DFS family — <a href="#/subject/algorithmics/graph-algorithms/algo-topological-sort-dag-dp">topological sorting</a>, both strongly-connected-components algorithms, and bridges and articulation points — is this same traversal with one extra piece of bookkeeping layered on top.</p>
+            <p><strong>Further reading:</strong> CLRS, 3rd ed., §22.3 (depth-first search, the parenthesis theorem, edge classification, white/gray/black); Sedgewick & Wayne, <em>Algorithms</em>, 4th ed., §4.2 (directed graphs, depth-first search); Skiena, <em>The Algorithm Design Manual</em>, 3rd ed., §5.2-5.3 (DFS and its use for cycle detection).</p>
+            <p><em>The whole idea in one line: go as deep as you possibly can, and only turn back when there's truly nowhere left to go.</em></p>
           `,
-          exercises: []
+          exercises: [
+            "Prove the parenthesis theorem: for any two vertices u and v in a DFS forest, exactly one of the following holds — the intervals [discover[u], finish[u]] and [discover[v], finish[v]] are disjoint, or one is entirely nested inside the other. Use this to show that v is a descendant of u in the DFS forest if and only if discover[u] < discover[v] < finish[v] < finish[u].",
+            "Given an undirected graph, describe an O(V+E) DFS-based algorithm that determines whether it is a tree (connected and acyclic), using only the discover/finish bookkeeping and the fact that every non-tree edge in an undirected DFS is a back edge. Then explain what changes if the graph may have several components and you're asked whether the whole graph is a forest."
+          ]
         },
         {
           id: "algo-bfs",
-          title: "Breadth-First Search: Shortest Paths in Unweighted Graphs",
+          title: "Breadth-First Search",
           section: "BFS family",
           prerequisites: ["algo-queues"],
           estMinutes: 25,
           content: `
-            <p><em>Placeholder — split out of the old combined "DFS and BFS" lesson; needs to be expanded into a standalone lesson (layered distances, the queue invariant, correctness proof). Will be built out after we settle on lesson design.</em></p>
+            <p>Breadth-first search explores a graph outward in layers, one hop at a time, and that ordering is exactly what makes it the tool for shortest paths when every edge costs the same: the first time BFS reaches a vertex, it has provably found a shortest path to it.</p>
+            <svg viewBox="0 0 340 200" width="100%" height="200" style="max-width:360px;display:block;margin:0.8rem auto;" role="img" aria-label="BFS frontier expanding outward from source S: S at distance 0, A and B at distance 1, C at distance 2 reachable from both A and B">
+              <defs><marker id="bfsarrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker></defs>
+              <line x1="68" y1="90" x2="150" y2="58" stroke="var(--accent)" stroke-width="2" marker-end="url(#bfsarrow)"/>
+              <line x1="68" y1="110" x2="150" y2="142" stroke="var(--accent)" stroke-width="2" marker-end="url(#bfsarrow)"/>
+              <line x1="188" y1="58" x2="272" y2="92" stroke="var(--accent)" stroke-width="2" marker-end="url(#bfsarrow)"/>
+              <line x1="188" y1="142" x2="272" y2="108" stroke="var(--accent)" stroke-width="2" marker-end="url(#bfsarrow)"/>
+              <circle cx="50" cy="100" r="20" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="170" cy="50" r="20" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="170" cy="150" r="20" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="290" cy="100" r="20" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <text x="50" y="104" text-anchor="middle" fill="var(--text)" font-size="13">S</text>
+              <text x="170" y="54" text-anchor="middle" fill="var(--text)" font-size="13">A</text>
+              <text x="170" y="154" text-anchor="middle" fill="var(--text)" font-size="13">B</text>
+              <text x="290" y="104" text-anchor="middle" fill="var(--text)" font-size="13">C</text>
+              <text x="50" y="130" text-anchor="middle" fill="var(--text-muted)" font-size="11">dist 0</text>
+              <text x="170" y="26" text-anchor="middle" fill="var(--text-muted)" font-size="11">dist 1</text>
+              <text x="170" y="180" text-anchor="middle" fill="var(--text-muted)" font-size="11">dist 1</text>
+              <text x="290" y="130" text-anchor="middle" fill="var(--text-muted)" font-size="11">dist 2</text>
+            </svg>
+            <p>The design follows straight from that goal: process vertices in the exact order they were discovered, using a queue rather than a stack. Mark a vertex visited the moment it's <em>discovered</em> (enqueued), not when it's later dequeued — that single choice is what keeps every vertex processed exactly once and keeps the frontier growing one clean layer at a time instead of stalling. The queue's FIFO discipline (see <a href="#/subject/algorithmics/data-structures/algo-queues">queues</a>) then guarantees an invariant: at any moment, the queue holds vertices of at most two consecutive distances, all of the smaller distance before all of the larger — which is exactly why the first dequeue of any vertex fixes its shortest-path distance.</p>
+            <ul>
+              <li><strong>Single-source BFS</strong> — queue seeded with one source; parent pointers reconstruct the actual shortest path, not just its length.</li>
+              <li><strong>Multi-source BFS</strong> — seed the queue with several sources at once, all at distance 0; the resulting distances are each vertex's distance to its <em>nearest</em> source.</li>
+              <li><strong>0-1 BFS</strong> — replace the queue with a deque: push a 0-weight edge's endpoint to the front, a 1-weight edge's endpoint to the back. Handles exactly two edge weights without paying for a full priority queue.</li>
+              <li><strong>Bidirectional BFS</strong> — grow two frontiers at once, from the source and from the target, stopping when they meet; roughly halves the number of vertices explored when there's one known target on a large graph.</li>
+            </ul>
+            <p><strong>Remark:</strong> BFS only gives shortest paths when every edge has the same cost — as soon as edges carry different positive weights, the layered argument breaks and you need <a href="#/subject/algorithmics/graph-algorithms/algo-dijkstra">Dijkstra's algorithm</a> instead.</p>
+            <table class="mini-table">
+              <tr><th>Operation</th><th>Cost</th><th>Why</th></tr>
+              <tr><td>Distances from one source</td><td>O(V+E)</td><td>each vertex enqueued once, each edge examined once from whichever endpoint reaches it first</td></tr>
+              <tr><td>Shortest path reconstruction</td><td>O(path length)</td><td>walk parent pointers back from target to source</td></tr>
+              <tr><td>Space</td><td>O(V)</td><td>the queue plus one distance/parent slot per vertex</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> you're given a standard 8x8 chessboard and a knight on one square. Using BFS, how would you find the minimum number of knight moves to reach any other given square?</p>
+            <details><summary>Solution</summary>
+              <p>Treat each of the 64 squares as a vertex, with an edge between two squares if a knight can move between them in one move (up to 8 possible moves per square, fewer near the edges). Run BFS from the starting square: the graph is unweighted (every move costs one turn), so BFS's layer-by-layer guarantee applies directly, and the distance recorded when the target square is first dequeued is the minimum number of moves. This is the general pattern for "minimum moves" puzzles — sliding tile puzzles, word ladders, Rubik's-cube-style state spaces — where the graph is never built explicitly; each state's neighbors are just generated on demand as BFS asks for them.</p>
+            </details>
+            <p><strong>Remark:</strong> BFS's layering is the base case that <a href="#/subject/algorithmics/graph-algorithms/algo-dijkstra">Dijkstra's algorithm</a> generalizes — swap the queue for a priority queue keyed on tentative distance, and the same "settle the closest unsettled vertex first" argument goes through for nonnegative weights instead of unit weights. Structurally, BFS is <a href="#/subject/algorithmics/graph-algorithms/algo-dfs">depth-first search</a> with a queue in place of a stack — the same traversal skeleton, one substitution, an entirely different guarantee.</p>
+            <p><strong>Further reading:</strong> CLRS, 3rd ed., §22.2 (breadth-first search, the shortest-path proof via the layering invariant); Sedgewick & Wayne, <em>Algorithms</em>, 4th ed., §4.1 (breadth-first search in undirected graphs, with the maze/shortest-path framing).</p>
+            <p><em>The whole idea in one line: finish everything at distance k before you start anything at distance k+1.</em></p>
           `,
-          exercises: []
+          exercises: [
+            "Prove the layering invariant precisely: at every point during BFS, the queue contains vertices whose distances take at most two consecutive values, with all vertices of the smaller value appearing before all vertices of the larger. Use it to prove that the first time BFS dequeues a vertex, its recorded distance equals the true shortest-path distance from the source.",
+            "You're given an unweighted graph and a set of k 'special' vertices. Describe an O(V+E) algorithm, using a single multi-source BFS, that computes for every vertex its distance to the nearest special vertex. Then explain why running k separate single-source BFS passes and taking the minimum would give the same answer but cost O(k(V+E)) — the multi-source version isn't just the same work written more cleverly, it genuinely shares work across sources."
+          ]
         },
         {
           id: "algo-topological-sort-dag-dp",
@@ -1303,14 +1395,60 @@ return hi                          # the least k with P(k) true</code></pre>
         },
         {
           id: "algo-scc-kosaraju",
-          title: "Strongly Connected Components I: Kosaraju's Algorithm",
-          section: "DFS family",
+          title: "Kosaraju's Algorithm",
+          section: "SCC family",
           prerequisites: ["algo-dfs"],
           estMinutes: 30,
           content: `
-            <p><em>Placeholder — new node in the DAG (DFS on G for finish-time order, DFS on the transpose Gᵀ in decreasing finish order, each tree of the second forest is an SCC — plus the component-graph-is-a-DAG lemma that makes it work). Will be built out after we settle on lesson design.</em></p>
+            <p>A directed graph's cycles can tangle vertices together in a way that makes the graph as a whole hard to reason about — but every directed graph decomposes uniquely into strongly connected components (maximal sets of vertices that can all reach each other), and collapsing each component to a single point always produces a DAG. Kosaraju's algorithm finds that decomposition in two clean DFS passes.</p>
+            <svg viewBox="0 0 360 190" width="100%" height="190" style="max-width:380px;display:block;margin:0.8rem auto;" role="img" aria-label="Two strongly connected components, each a small cycle of vertices, with one directed edge from the left component to the right component in the condensation">
+              <defs><marker id="sccarrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker></defs>
+              <rect x="10" y="15" width="150" height="150" rx="10" fill="none" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="5,4"/>
+              <rect x="210" y="45" width="140" height="100" rx="10" fill="none" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="5,4"/>
+              <text x="85" y="175" text-anchor="middle" fill="var(--text-muted)" font-size="11">SCC 1</text>
+              <text x="280" y="160" text-anchor="middle" fill="var(--text-muted)" font-size="11">SCC 2</text>
+              <line x1="60" y1="55" x2="100" y2="55" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#sccarrow)"/>
+              <line x1="100" y1="65" x2="70" y2="115" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#sccarrow)"/>
+              <line x1="65" y1="110" x2="55" y2="65" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#sccarrow)"/>
+              <circle cx="50" cy="55" r="14" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="110" cy="55" r="14" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="75" cy="120" r="14" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <text x="50" y="59" text-anchor="middle" fill="var(--text)" font-size="12">X</text>
+              <text x="110" y="59" text-anchor="middle" fill="var(--text)" font-size="12">Y</text>
+              <text x="75" y="124" text-anchor="middle" fill="var(--text)" font-size="12">Z</text>
+              <line x1="255" y1="85" x2="295" y2="105" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#sccarrow)"/>
+              <line x1="292" y1="112" x2="258" y2="92" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#sccarrow)"/>
+              <circle cx="250" cy="80" r="14" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="300" cy="115" r="14" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <text x="250" y="84" text-anchor="middle" fill="var(--text)" font-size="12">P</text>
+              <text x="300" y="119" text-anchor="middle" fill="var(--text)" font-size="12">Q</text>
+              <line x1="160" y1="90" x2="208" y2="90" stroke="var(--text)" stroke-width="2" marker-end="url(#sccarrow)"/>
+            </svg>
+            <p>The design follows straight from one lemma: the <strong>component graph</strong> — one node per SCC, one edge between two SCCs if any edge crosses between their members — is always a DAG, because a cycle between two components would just mean they were one component all along. Kosaraju's algorithm exploits this in two passes: first, a DFS over G records each vertex's finish time (exactly as in <a href="#/subject/algorithmics/graph-algorithms/algo-dfs">plain DFS</a>); second, a DFS over the transpose graph G<sup>T</sup> (every edge reversed), processing vertices in <em>decreasing</em> order of the finish times just recorded. Each tree produced by that second DFS is exactly one SCC — the vertex with the globally latest finish time in G must belong to a "source" component of the condensation (one with no incoming inter-component edges), so starting the second DFS there can only wander into that one component before running out of forward edges in G<sup>T</sup>.</p>
+            <ul>
+              <li><strong>Kosaraju (Kosaraju-Sharir)</strong> — the two-pass DFS-plus-transpose approach above; conceptually simplest, at the cost of building the transpose graph explicitly.</li>
+              <li><strong>Tarjan's algorithm</strong> — a single DFS pass with a low-link value per vertex, popping a completed SCC off an auxiliary stack as soon as one is found; no transpose needed (next lesson).</li>
+              <li><strong>Gabow's path-based algorithm</strong> — another single-pass variant, using two stacks instead of low-link values, that some implementers find easier to get exactly right.</li>
+            </ul>
+            <p><strong>Remark:</strong> all three variants run in O(V+E) time; the practical differences are constant factors and code complexity, not asymptotic cost.</p>
+            <table class="mini-table">
+              <tr><th>Operation</th><th>Cost</th><th>Why</th></tr>
+              <tr><td>Full SCC decomposition</td><td>O(V+E)</td><td>two full DFS passes, one on G and one on G<sup>T</sup>, each linear</td></tr>
+              <tr><td>Building the transpose G<sup>T</sup></td><td>O(V+E)</td><td>one pass over the edge list, reversing each edge</td></tr>
+              <tr><td>Space</td><td>O(V+E)</td><td>the transpose graph itself, plus the usual DFS bookkeeping</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> given a directed graph, how would you determine whether it is strongly connected as a whole (exactly one SCC containing every vertex), without running the full two-pass algorithm?</p>
+            <details><summary>Solution</summary>
+              <p>Pick any vertex s and run a single DFS from s on G: if it doesn't reach every vertex, the graph isn't strongly connected (some vertex can't be reached from s, so certainly can't cycle back to it). If it does reach every vertex, build the transpose G<sup>T</sup> and run a single DFS from s on it: if that also reaches every vertex, then every vertex can reach s, and combined with the first pass, every vertex can reach every other vertex through s. Two linear-time DFS passes from one fixed vertex, because you only need to check for one component, not enumerate all of them.</p>
+            </details>
+            <p><strong>Remark:</strong> the condensation DAG that falls out of this decomposition is exactly the structure <a href="#/subject/algorithmics/graph-algorithms/algo-topological-sort-dag-dp">topological ordering</a> operates on — SCC decomposition is often the first step whenever a directed graph needs to be reasoned about as a DAG, including the surprising application in 2-SAT via strongly connected components, where the same two-pass machinery decides satisfiability outright.</p>
+            <p><strong>Further reading:</strong> CLRS, 3rd ed., §22.5 (strongly connected components, the component-graph lemma, and the correctness proof for the two-pass algorithm); Sedgewick & Wayne, <em>Algorithms</em>, 4th ed., §4.2 (under the name Kosaraju-Sharir, with the historical note); Sharir, M., "A strong-connectivity algorithm and its applications in data flow analysis," <em>Computers & Mathematics with Applications</em>, 7(1), 1981 (the first published version; the underlying two-pass idea is credited to S. Rao Kosaraju, unpublished, 1978).</p>
+            <p><em>The whole idea in one line: finish late in G, then explore G<sup>T</sup> in that order — the transpose can't run away from where G already cornered it.</em></p>
           `,
-          exercises: []
+          exercises: [
+            "Prove the key lemma: the component graph of any directed graph is a DAG. Then prove that if u finishes after v in a DFS of G and u, v are in different SCCs, the SCC containing u appears no later than the SCC containing v in every topological order of the condensation — i.e., decreasing finish order in G never starts the second pass inside a 'downstream' component before an 'upstream' one.",
+            "Implement Kosaraju's algorithm and trace it by hand on a small graph with two SCCs of sizes 3 and 2, connected by exactly one inter-component edge. Then describe how you would extend the algorithm to also output, for each pair of SCCs with an edge between them, the direction of that edge in the condensation DAG, using information already computed during the two passes."
+          ]
         },
         {
           id: "algo-scc-tarjan",
