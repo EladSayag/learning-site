@@ -23,12 +23,15 @@
 //      variants list + one-sentence Remark + mini-table + inline "Try it yourself" with folded
 //      <details> solution + closing Remark with cross-links + Further reading + italic one-line
 //      slogan; bare-topic-name titles; two meatier exercises in the array beyond the inline one):
-//      algo-stacks, algo-linked-lists (the two style-template reference lessons), algo-kd-trees,
+//      algo-stacks, algo-linked-lists (the two style-template reference lessons),
 //      algo-red-black-trees, algo-b-trees, algo-splay-trees, algo-skip-lists.
 //   2b. Lessons with full content but written BEFORE the style template above was settled (denser
 //      academic tone, no try-it-yourself/remark/slogan structure yet) — need a restyling pass, NOT a
-//      rewrite of the underlying material: algo-queues, algo-what-is-a-data-structure,
-//      algo-suffix-trees-arrays, algo-persistent-data-structures.
+//      rewrite of the underlying material: algo-queues, algo-what-is-a-data-structure, algo-kd-trees,
+//      algo-suffix-trees-arrays, algo-persistent-data-structures. CORRECTION (verified 2026-09-01
+//      after batch 1): algo-kd-trees does NOT have the try-it-yourself/remark/slogan structure —
+//      an earlier status note claiming it was already current-style was wrong. It still needs the
+//      restyling pass like the other four in this bucket.
 //   3. PLACEHOLDER NODES ONLY — wired into the DAG with correct prerequisites, but content still to
 //      be written in a follow-up pass:
 //        Data Structures: algo-bloom-filters, algo-priority-queue-adt, algo-fibonacci-heap,
@@ -44,8 +47,7 @@
 //      lessons) in DAG order — algo-bloom-filters, then the Heaps group (algo-priority-queue-adt,
 //      algo-fibonacci-heap, algo-van-emde-boas), then algo-segment-fenwick-trees. Only after ALL of
 //      Data Structures (both bucket 2 and 2b above) is done should the pass move to Graph Algorithms
-//      placeholders (algo-dfs first, in the DAG order listed above). Note algo-kd-trees was already
-//      in the new style before this run and did NOT need touching.
+//      placeholders (algo-dfs first, in the DAG order listed above).
 
 const ALGORITHMICS_SUBJECT = {
   id: "algorithmics",
