@@ -4,7 +4,7 @@
     {
       "name": "learning-site",
       "runtimeExecutable": "py",
-      "runtimeArgs": ["-m", "http.server", "5173"],
+      "runtimeArgs": ["-m", "http.server", "5173", "--directory", "docs"],
       "port": 5173
     }
   ]

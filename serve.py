@@ -2,7 +2,7 @@
 import http.server
 import os
 
-SITE_DIR = os.path.dirname(os.path.abspath(__file__))
+SITE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs")
 
 class NoCacheHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
