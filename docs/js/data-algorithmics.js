@@ -55,20 +55,41 @@
 //      does not exist yet (that's A4), so the closing remark does not link it — mentions AVL
 //      comparison only via the existing algo-bst-balance cross-link already in that lesson's own
 //      remark; add a direct algo-red-black-trees <-> algo-avl-trees cross-link when A4 lands.
-//   A4 NOT STARTED — NEXT UP. New lesson algo-avl-trees, same deep template, section "Hashing &
-//      Search Trees", prerequisites: ["algo-bst", "algo-amortized-potential-method"]. (Both exist
-//      now, so this prereq is valid.) NOTE: once A4 lands, also add algo-avl-trees to
-//      algo-exercises-hashing-search-trees's prerequisites array (currently does NOT include it)
-//      so that ex-lesson keeps covering the full section cluster, and consider adding a two-way
-//      cross-link between algo-red-black-trees and algo-avl-trees's closing remarks (see A3 note).
+//   A4 DONE (run 3). New lesson algo-avl-trees ("AVL Trees") inserted right after
+//      algo-red-black-trees (section "Hashing & Search Trees", prerequisites: ["algo-bst",
+//      "algo-amortized-potential-method"]) — full deep template: opening goal paragraph naming
+//      Adelson-Velsky/Landis 1962; formal definition as the single balance-factor axiom
+//      |bf(x)| ≤ 1 (bf(x) = height(left)−height(right), empty subtree height −1); a small valid
+//      AVL tree SVG with per-node balance-factor annotations; a try-it-yourself proving the
+//      Fibonacci-tree minimum-node-count recurrence N(h)=N(h−1)+N(h−2)+1 and deriving
+//      h ≤ log_φ(n+1)−1 ≈ 1.44·log₂(n+1), explicitly contrasted with red-black's looser 2·log₂(n+1)
+//      bound; a repair-strategy paragraph explaining insert needs at most one rotation event
+//      (fixed subtree height is restored exactly) while delete can cascade up to O(log n) rotation
+//      events (contrasted explicitly with red-black's O(1)-rotations-either-way); the CENTERPIECE
+//      — LL/RR/LR/RL cased try-it-yourself, LL and LR each with their own problem-state SVG (RR/RL
+//      described in prose as exact mirrors to keep the lesson's diagram count reasonable — 3
+//      diagrams total: the axiom-anchor tree, the LL problem, the LR problem, plus one LR solution
+//      diagram showing the double-rotation's single clean end state = 4 SVGs), folded solution
+//      covering all four cases; a short insert/delete-as-primitives closing section; closing
+//      remark cross-linking algo-bst and algo-red-black-trees with an explicit AVL-vs-RB tradeoff
+//      statement; further reading (Knuth TAOCP Vol 3 §6.2.3, CLRS Problem 13-3, the 1962 Doklady
+//      paper); italic slogan. Reciprocally updated algo-red-black-trees's closing Remark to add a
+//      two-way cross-link to algo-avl-trees with the same tradeoff framing (was previously a NOTE
+//      flagging this as pending), and added "algo-avl-trees" to
+//      algo-exercises-hashing-search-trees's prerequisites array so that ex-lesson's gating covers
+//      the full section cluster again.
 //   A5 NOT STARTED (lower priority, only if budget allows after A1-A4 and all of Part B).
-// PART B (new topics) — NOT STARTED, gated on A1-A4 per the task spec (do not start until A4 is
-//   also done). B1 (4 new DP lessons), B2 (FFT), B3 (sparse linear algebra), B4 (fast matrix
-//   multiplication incl. boolean variant), B5 (Seidel's APSP, depends on B4's lesson id), B6
-//   (computational geometry: convex hull + segment intersection), B7 (linear programming: simplex +
-//   duality) — none begun.
-// NEXT UP OVERALL: A4 (algo-avl-trees).
-// NEXT UP: A3 (red-black trees rewrite) is the very next task for the next fire.
+// PART B (new topics) — NOT STARTED YET, now UNBLOCKED (A1-A4 are all done as of run 3). B1 (4 new
+//   DP lessons), B2 (FFT), B3 (sparse linear algebra), B4 (fast matrix multiplication incl. boolean
+//   variant), B5 (Seidel's APSP, depends on B4's lesson id), B6 (computational geometry: convex
+//   hull + segment intersection), B7 (linear programming: simplex + duality) — none begun.
+// NEXT UP OVERALL: B1 (the 4 new Dynamic Programming lessons — Longest Increasing Subsequence incl.
+//   O(n log n) patience-sorting, DP on Trees, Bitmask DP / TSP, plus one more of the implementer's
+//   choice such as digit DP or a monotonic-queue/convex-hull-trick optimization), in the
+//   "algorithms" chapter, section "Dynamic Programming", prerequisites: ["algo-dynamic-programming"]
+//   each. A5 (upgrading algo-splay-trees / algo-b-trees / algo-skip-lists to the deep template) is
+//   still open and lower priority than all of Part B per the task spec — only pick it up if a run
+//   finishes all of B1-B7 with budget still left over, which is not expected for a while.
 // ===== END DEEP PASS STATUS =====
 //
 // ----- Historical: pre-deep-pass batch history (superseded by the DEEP PASS STATUS above) -----
@@ -650,13 +671,152 @@ const ALGORITHMICS_SUBJECT = {
               <tr><td>Insert</td><td>O(log n)</td><td>O(log n) possible recolorings walking up, but at most 2 rotations total</td></tr>
               <tr><td>Delete</td><td>O(log n)</td><td>same walk-up structure, a different 4-case fixup, still O(1) rotations</td></tr>
             </table>
-            <p><strong>Remark:</strong> the payoff for all this bookkeeping is a tree that's <em>always</em> balanced immediately after every update, unlike the <a href="#/subject/algorithmics/data-structures/algo-splay-trees">splay tree</a>, which allows a single access to cost Θ(n) and only bounds the average; when a wide branching factor matters more than exact height — because each "step down" is a disk read — the <a href="#/subject/algorithmics/data-structures/algo-b-trees">B-tree</a> restructures the same idea around nodes with many keys instead of one. And the "bound the total work by bounding how many times a violation can be pushed up before it must terminate" argument used above for the O(log n) repair cost has the same flavor as the potential-function arguments in the <a href="#/subject/algorithmics/algorithms/algo-amortized-potential-method">amortized analysis</a> lesson, even though this bound is worst-case per operation rather than amortized over a sequence.</p>
+            <p><strong>Remark:</strong> the payoff for all this bookkeeping is a tree that's <em>always</em> balanced immediately after every update, unlike the <a href="#/subject/algorithmics/data-structures/algo-splay-trees">splay tree</a>, which allows a single access to cost Θ(n) and only bounds the average; when a wide branching factor matters more than exact height — because each "step down" is a disk read — the <a href="#/subject/algorithmics/data-structures/algo-b-trees">B-tree</a> restructures the same idea around nodes with many keys instead of one. Against the <a href="#/subject/algorithmics/data-structures/algo-avl-trees">AVL tree</a> — the other classic height-balanced BST, using a purely numeric balance-factor invariant instead of colors — the tradeoff is: AVL keeps a provably shorter tree (faster lookups) but can need O(log n) rotations on a single delete, where red-black caps rotations at O(1) for both insert and delete at the cost of a looser height bound. And the "bound the total work by bounding how many times a violation can be pushed up before it must terminate" argument used above for the O(log n) repair cost has the same flavor as the potential-function arguments in the <a href="#/subject/algorithmics/algorithms/algo-amortized-potential-method">amortized analysis</a> lesson, even though this bound is worst-case per operation rather than amortized over a sequence.</p>
             <p><strong>Further reading:</strong> CLRS, 3rd ed., Ch. 13 — §13.1 for the axioms and the height bound proved above, §13.2 for rotations, §13.3 for the full insertion fixup (RB-INSERT-FIXUP), §13.4 for the deletion fixup this lesson only sketched; Guibas & Sedgewick, "A Dichromatic Framework for Balanced Trees," FOCS 1978 (the original paper introducing red-black trees as a reformulation of symmetric binary B-trees).</p>
             <p><em>The whole idea in one line: color the tree so no root-to-leaf path can be more than twice as long as another, then repair only the O(1)-sized neighborhood around whatever you just changed, one level up at a time.</em></p>
           `,
           exercises: [
             "Work out all three insertion-fixup cases (red uncle; black uncle, same side; black uncle, opposite sides) starting from a node inserted as the left child of a left child, drawing the tree before and after each case. Then state, for each case, whether the walk continues upward or terminates, and how many total rotations the whole insertion can possibly perform.",
             "A red-black tree is built by inserting 1, 2, 3, ..., n in increasing order. Trace or simulate this and determine the resulting height as a function of n. Compare it to the height a plain (unbalanced) BST would have on the same input, and explain in one or two sentences why the difference is the entire point of the structure."
+          ]
+        },
+        {
+          id: "algo-avl-trees",
+          title: "AVL Trees",
+          section: "Hashing & Search Trees",
+          prerequisites: ["algo-bst", "algo-amortized-potential-method"],
+          estMinutes: 38,
+          content: `
+            <p>An AVL tree (Adelson-Velsky and Landis, 1962 — the first self-balancing BST ever published, predating red-black trees by over a decade) keeps a binary search tree balanced by imposing a tighter, purely height-based invariant than red-black's color scheme, and repairing it with rotations after every insert and delete. The tighter invariant buys a shorter tree — faster lookups — at the cost of doing more rebalancing work on updates.</p>
+            <p>For a node x, define its <strong>balance factor</strong> <code>bf(x) = height(left(x)) − height(right(x))</code>, treating an empty subtree as having height −1. The AVL axiom is a single inequality, required at <em>every</em> node:</p>
+            <ol>
+              <li><code>|bf(x)| ≤ 1</code> for every node x in the tree.</li>
+            </ol>
+            <p>That's the entire invariant — no colors, no separate black-height bookkeeping, just: neither child's subtree may be more than one level taller than the other, anywhere in the tree. The tree below satisfies it at every node (balance factors annotated in muted text):</p>
+            <svg viewBox="0 0 340 220" width="100%" height="220" style="max-width:360px;display:block;margin:0.8rem auto;" role="img" aria-label="A binary search tree with root 8 (balance factor 0), left child 3 (balance factor 0) with children 1 and 6, right child 10 (balance factor -1) with right child 14, all balance factors within plus or minus 1">
+              <g font-size="13" text-anchor="middle">
+                <line x1="170" y1="34" x2="90" y2="90" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="170" y1="34" x2="250" y2="90" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="90" y1="106" x2="50" y2="160" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="90" y1="106" x2="130" y2="160" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="250" y1="106" x2="290" y2="160" stroke="var(--border)" stroke-width="1.5"/>
+                <circle cx="170" cy="20" r="17" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="170" y="25" fill="var(--text)">8</text>
+                <text x="170" y="0" fill="var(--text-muted)" font-size="11">bf=0</text>
+                <circle cx="90" cy="90" r="16" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="90" y="95" fill="var(--text)">3</text>
+                <text x="45" y="80" fill="var(--text-muted)" font-size="11">bf=0</text>
+                <circle cx="250" cy="90" r="16" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="250" y="95" fill="var(--text)">10</text>
+                <text x="295" y="80" fill="var(--text-muted)" font-size="11">bf=-1</text>
+                <circle cx="50" cy="160" r="14" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="50" y="164" fill="var(--text)">1</text>
+                <circle cx="130" cy="160" r="14" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="130" y="164" fill="var(--text)">6</text>
+                <circle cx="290" cy="160" r="14" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="290" y="164" fill="var(--text)">14</text>
+              </g>
+            </svg>
+            <p><strong>Try it yourself:</strong> prove that an AVL tree of height h has at least a Fibonacci-like number of nodes, and use it to derive an explicit constant in the O(log n) height bound.</p>
+            <details><summary>Solution</summary>
+              <p>Let N(h) be the <em>minimum</em> number of internal nodes an AVL tree of height h can have (h = −1 for an empty tree, h = 0 for a single leaf). To make a tree of height h with as few nodes as possible, one child subtree should be as short as the invariant allows relative to the other: since |bf| ≤ 1, the two child subtrees of the root can have heights h−1 and h−2 (they can't both be shorter, or the root's height wouldn't reach h). Minimizing each child's node count recursively gives the recurrence</p>
+              <pre><code>N(h) = N(h−1) + N(h−2) + 1,   N(−1) = 0,  N(0) = 1</code></pre>
+              <p>which is exactly the Fibonacci recurrence shifted by a constant. Solving it (or simply noting N(h) + 1 satisfies the unshifted Fibonacci recurrence with the right base cases) gives <code>N(h) + 1 = F(h+3)</code>, where F is the standard Fibonacci sequence. Since <code>F(k) ≥ φ^(k−2)</code> for the golden ratio φ ≈ 1.618, a tree with n nodes and height h satisfies <code>n ≥ N(h) = F(h+3) − 1 ≥ φ^(h+1) − 1</code>, which rearranges to <strong>h ≤ log<sub>φ</sub>(n+1) − 1 ≈ 1.44·log₂(n+1) − 1</strong>. So AVL height is not just O(log n) — its worst-case constant (≈1.44) is explicitly smaller than red-black's proved bound of 2·log₂(n+1), which is exactly why AVL lookups are faster in practice: the tree is provably shorter.</p>
+            </details>
+            <p>That tighter bound is not free. After an ordinary BST insert, walking back up from the new leaf and recomputing heights, the <em>first</em> node found with <code>|bf| = 2</code> gets fixed by one rotation (or two — see the case analysis below) — and here is the key structural fact: <strong>after that single fix, the repaired subtree's height is exactly what it was before the insertion</strong>, so no ancestor further up can have become unbalanced, and the walk can stop immediately. Insert therefore does at most one rotation event (one single or one double rotation) no matter how tall the tree is. Delete is not so lucky: removing a node can <em>shrink</em> the height of the subtree it was fixed in, which can unbalance the next ancestor up, and the next, all the way to the root in the worst case — so a single AVL deletion can trigger O(log n) separate rotations, one per level, unlike insertion's single fix. (Contrast this with red-black trees, which cap rotations at O(1) for <em>both</em> insert and delete, at the cost of a less tight height bound and a walk-up that may still do O(log n) recolorings.)</p>
+            <p><strong>Try it yourself — the four rebalancing shapes.</strong> Suppose the first ancestor found unbalanced while walking up is z, with <code>bf(z) = +2</code> (left-heavy; the mirror <code>bf(z) = −2</code> cases are symmetric). Let y = z's left child, the taller of z's two subtrees. Whether one rotation or two is needed depends only on which of y's own subtrees is the taller one — work out the fix for each of these four named shapes (T1…T4 denote subtrees, drawn as triangles, whose exact contents don't matter — only their heights do):</p>
+            <p><strong>Left-Left (LL) — y is left-heavy or balanced (bf(y) ≥ 0), so y's own left subtree T1 is the tall one.</strong></p>
+            <svg viewBox="0 0 220 190" width="100%" height="190" style="max-width:230px;display:inline-block;margin:0.5rem 1rem;" role="img" aria-label="LL problem: z on top marked balance factor plus 2, left child y, right subtree T3; y has left subtree T1 (tall) and right subtree T2">
+              <g font-size="12" text-anchor="middle">
+                <text x="110" y="10" fill="var(--accent)" font-size="10">bf(z)=+2</text>
+                <line x1="90" y1="38" x2="55" y2="80" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="130" y1="38" x2="165" y2="80" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="40" y1="108" x2="20" y2="140" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="70" y1="108" x2="90" y2="140" stroke="var(--border)" stroke-width="1.5"/>
+                <circle cx="110" cy="24" r="16" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="110" y="29" fill="var(--text)">z</text>
+                <circle cx="55" cy="94" r="16" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="55" y="99" fill="var(--text)">y</text>
+                <path d="M165,86 L145,116 L185,116 Z" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="165" y="108" fill="var(--text-muted)" font-size="11">T3</text>
+                <path d="M20,148 L4,176 L36,176 Z" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="20" y="168" fill="var(--text-muted)" font-size="11">T1</text>
+                <path d="M90,148 L74,176 L106,176 Z" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="90" y="168" fill="var(--text-muted)" font-size="11">T2</text>
+              </g>
+            </svg>
+            <p><strong>Right-Right (RR) — mirror of LL: y = z's right child, y's own right subtree is the tall one.</strong></p>
+            <p><strong>Left-Right (LR) — y is right-heavy (bf(y) &lt; 0), so the tall subtree is y's right subtree; call its root x.</strong></p>
+            <svg viewBox="0 0 240 200" width="100%" height="200" style="max-width:250px;display:inline-block;margin:0.5rem 1rem;" role="img" aria-label="LR problem: z on top marked balance factor plus 2, left child y, right subtree T4; y has left subtree T1 and right child x; x has subtrees T2 and T3">
+              <g font-size="12" text-anchor="middle">
+                <text x="120" y="10" fill="var(--accent)" font-size="10">bf(z)=+2</text>
+                <line x1="100" y1="38" x2="60" y2="80" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="140" y1="38" x2="185" y2="80" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="45" y1="108" x2="25" y2="140" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="75" y1="108" x2="95" y2="140" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="80" y1="150" x2="60" y2="178" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="110" y1="150" x2="130" y2="178" stroke="var(--border)" stroke-width="1.5"/>
+                <circle cx="120" cy="24" r="16" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="120" y="29" fill="var(--text)">z</text>
+                <circle cx="60" cy="94" r="16" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="60" y="99" fill="var(--text)">y</text>
+                <path d="M185,86 L165,116 L205,116 Z" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="185" y="108" fill="var(--text-muted)" font-size="11">T4</text>
+                <path d="M25,148 L9,176 L41,176 Z" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="25" y="168" fill="var(--text-muted)" font-size="11">T1</text>
+                <circle cx="95" cy="150" r="14" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="95" y="155" fill="var(--text)">x</text>
+                <path d="M60,186 L44,196 L76,196 Z" fill="none" stroke="var(--border)" stroke-width="1"/>
+                <text x="60" y="192" fill="var(--text-muted)" font-size="10">T2</text>
+                <path d="M130,186 L114,196 L146,196 Z" fill="none" stroke="var(--border)" stroke-width="1"/>
+                <text x="130" y="192" fill="var(--text-muted)" font-size="10">T3</text>
+              </g>
+            </svg>
+            <p><strong>Right-Left (RL) — mirror of LR: y = z's right child, y's own left subtree (rooted at x) is the tall one.</strong></p>
+            <details><summary>Solution</summary>
+              <p><strong>LL.</strong> A single right rotation around z, exactly the rotation primitive from the <a href="#/subject/algorithmics/data-structures/algo-bst">BST lesson</a>: y comes up to the top, z becomes y's right child, and T2 (the subtree that was "in between" y and z) becomes z's new left child. T1 and T3 don't move. Before the insertion that caused the imbalance, T1, T2, T3 all had the same height; the insertion made T1 one taller. After the rotation, z's height is back to T2 and T3's common height plus one (unchanged from before the insertion), so the fix is complete and self-contained — no ancestor further up needs revisiting.</p>
+              <p><strong>RR.</strong> The exact mirror: a single left rotation around z.</p>
+              <p><strong>LR.</strong> One rotation around z can't fix a zigzag — it would just leave a mirrored zigzag. The standard fix is a <strong>double rotation</strong>: left-rotate around y first (bringing x up into y's old spot, with x's own left subtree T2 becoming y's new right child), which turns the shape into a plain LL case with x now playing the role "y" did; then right-rotate around z exactly as in the LL fix. The net effect lands x on top, with y = x's left child (subtrees T1, T2) and z = x's right child (subtrees T3, T4) — one clean rebalancing, done in two rotations total.</p>
+            <svg viewBox="0 0 240 190" width="100%" height="190" style="max-width:250px;display:inline-block;margin:0.5rem 1rem;" role="img" aria-label="LR solution: x on top, left child y with subtrees T1 and T2, right child z with subtrees T3 and T4">
+              <g font-size="12" text-anchor="middle">
+                <line x1="120" y1="38" x2="65" y2="90" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="120" y1="38" x2="175" y2="90" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="50" y1="106" x2="35" y2="140" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="80" y1="106" x2="95" y2="140" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="160" y1="106" x2="145" y2="140" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="190" y1="106" x2="205" y2="140" stroke="var(--border)" stroke-width="1.5"/>
+                <circle cx="120" cy="24" r="16" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="120" y="29" fill="var(--text)">x</text>
+                <circle cx="65" cy="94" r="15" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="65" y="99" fill="var(--text)">y</text>
+                <circle cx="175" cy="94" r="15" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="175" y="99" fill="var(--text)">z</text>
+                <path d="M35,148 L19,174 L51,174 Z" fill="none" stroke="var(--border)" stroke-width="1"/>
+                <text x="35" y="166" fill="var(--text-muted)" font-size="10">T1</text>
+                <path d="M95,148 L79,174 L111,174 Z" fill="none" stroke="var(--border)" stroke-width="1"/>
+                <text x="95" y="166" fill="var(--text-muted)" font-size="10">T2</text>
+                <path d="M145,148 L129,174 L161,174 Z" fill="none" stroke="var(--border)" stroke-width="1"/>
+                <text x="145" y="166" fill="var(--text-muted)" font-size="10">T3</text>
+                <path d="M205,148 L189,174 L221,174 Z" fill="none" stroke="var(--border)" stroke-width="1"/>
+                <text x="205" y="166" fill="var(--text-muted)" font-size="10">T4</text>
+              </g>
+            </svg>
+              <p><strong>RL.</strong> The mirror double rotation: right-rotate around y, then left-rotate around z, landing the same x on top with z = x's left child and y = x's right child.</p>
+            </details>
+            <p><strong>Insert and delete as primitives.</strong> <strong>Insert</strong> is ordinary <a href="#/subject/algorithmics/data-structures/algo-bst">BST insert</a>, followed by walking back up from the new leaf recomputing each ancestor's height and balance factor; at the first node found with |bf| = 2, apply whichever of the four cases above matches (determined by the sign of bf(z) and the sign of bf(y)) and stop — one fix, as argued above. <strong>Delete</strong> also starts as ordinary BST delete (successor-splice for the two-children case, exactly as in the plain-BST lesson), then walks up recomputing heights and applying the same four-case fix at every unbalanced ancestor it finds — but unlike insert, it cannot stop at the first fix, since a rotation here can shrink the local subtree's height and propagate the imbalance upward, so the walk continues checking every level, up to O(log n) rotations in the worst case.</p>
+            <table class="mini-table">
+              <tr><th>Operation</th><th>Cost</th><th>Why</th></tr>
+              <tr><td>Search</td><td>O(log n)</td><td>height ≤ ~1.44·log₂(n+1) by the Fibonacci-tree bound above</td></tr>
+              <tr><td>Insert</td><td>O(log n)</td><td>O(log n) height/balance-factor updates while walking up, but at most 1 rotation event total</td></tr>
+              <tr><td>Delete</td><td>O(log n)</td><td>same walk-up, but rebalancing can cascade — up to O(log n) rotation events</td></tr>
+            </table>
+            <p><strong>Remark:</strong> AVL's height bound (≈1.44 log n) is provably tighter than a <a href="#/subject/algorithmics/data-structures/algo-red-black-trees">red-black tree</a>'s (≤2 log n), so AVL wins on pure lookup-heavy workloads; red-black wins when updates dominate, because its color-based invariant caps rotations at O(1) for both insert <em>and</em> delete, where AVL's delete can cascade. This is exactly the tradeoff the <a href="#/subject/algorithmics/data-structures/algo-bst-balance">balanced-search-trees overview</a> lesson's comparison table gestures at — this lesson and the red-black lesson are the two concrete structures behind that table's first two rows.</p>
+            <p><strong>Further reading:</strong> Knuth, <em>The Art of Computer Programming</em>, Vol. 3, §6.2.3 (the original AVL analysis, including the Fibonacci-tree argument in full); CLRS, 3rd ed., Problem 13-3 (AVL trees posed as a structured exercise, phrased in terms directly comparable to the red-black material in Ch. 13); Adelson-Velsky & Landis, "An algorithm for the organization of information," Doklady Akademii Nauk SSSR, 1962 (the original paper).</p>
+            <p><em>The whole idea in one line: keep every node's two subtrees within one level of height of each other, and a single rotation — or two, in a zigzag — after each update is always enough to restore it.</em></p>
+          `,
+          exercises: [
+            "Insert the keys 1, 2, 3, 4, 5, 6, 7 into an initially empty AVL tree in that order, drawing the tree after every insertion and naming which of LL/RR/LR/RL fires (if any) at each step. Compare the final shape and height to what a plain unbalanced BST would look like on the same input.",
+            "Construct the smallest possible AVL tree of height 4 (i.e. one realizing the minimum-node-count bound N(4) from the Fibonacci argument above) by explicit recursive construction, and state its exact node count."
           ]
         },
         {
@@ -1006,7 +1166,7 @@ const ALGORITHMICS_SUBJECT = {
           id: "algo-exercises-hashing-search-trees",
           title: "Exercises: Hashing & Search Trees",
           section: "Hashing & Search Trees",
-          prerequisites: ["algo-hashing-universal-families", "algo-bst", "algo-bst-balance", "algo-red-black-trees", "algo-b-trees", "algo-splay-trees", "algo-skip-lists", "algo-bloom-filters", "algo-kd-trees", "algo-persistent-data-structures"],
+          prerequisites: ["algo-hashing-universal-families", "algo-bst", "algo-bst-balance", "algo-red-black-trees", "algo-avl-trees", "algo-b-trees", "algo-splay-trees", "algo-skip-lists", "algo-bloom-filters", "algo-kd-trees", "algo-persistent-data-structures"],
           estMinutes: 45,
           content: `
             <p>Six problems that compare and combine structures across this whole section, rather than drilling any one of them in isolation.</p>
