@@ -35,29 +35,39 @@
 //      forward-reference to algo-red-black-trees, try-it-yourself = O(1)-extra-space predecessor,
 //      2 array exercises). algo-bst-balance's prerequisites updated to
 //      ["algo-what-is-a-data-structure", "algo-bst"] as instructed.
-//   A3 NOT STARTED — NEXT UP. Rewrite algo-red-black-trees to the new deep template from the task
-//      spec (3 numbered axioms as formal definition, valid-tree SVG, a combined "prove h ≤ 2h_b and
-//      n ≥ 2^h_b − 1" try-it-yourself, a repair-strategy-as-general-pattern paragraph, then the
-//      CENTERPIECE: a 3-case insert-fixup try-it-yourself — uncle red / black-same-side /
-//      black-opposite-side — each with its own small SVG in both the problem and the folded
-//      solution (6 SVGs total for that block), then brief insert/delete-as-primitives closing,
-//      cross-links, further reading, slogan). IMPORTANT CORRECTION for whoever picks this up: the
-//      task prompt that seeded this pass describes algo-red-black-trees as "currently a placeholder"
-//      — that is NOT true as of run 1; it already has full bucket-2 content (diagram, case-analysis
-//      list, table, try-it-yourself, 2 exercises). Do the A3 rewrite anyway — the new template
-//      (numbered axioms, the h≤2h_b proof exercise, the 3-case cased diagrams) is a genuine
-//      upgrade the current version lacks — just don't be confused expecting an empty lesson.
-//   A4 NOT STARTED. New lesson algo-avl-trees, same deep template, section "Hashing & Search Trees",
-//      prerequisites: ["algo-bst", "algo-amortized-potential-method"]. (algo-bst now exists, so this
-//      prereq is valid whenever A4 is picked up.) NOTE: once A4 lands, also add algo-avl-trees to
-//      algo-exercises-hashing-search-trees's prerequisites array (currently does NOT include it,
-//      since A4 hasn't happened yet) so that ex-lesson keeps covering the full section cluster.
+//   A3 DONE (run 2). Rewrote algo-red-black-trees COMPLETELY to the deep template: opening goal
+//      paragraph; formal definition as 3 numbered axioms (root black / no red-red / equal
+//      black-height h_b) with the reused valid-tree SVG anchoring them; a combined try-it-yourself
+//      proving both n ≥ 2^h_b − 1 (induction on black-height, CLRS-style) and h ≤ 2h_b (no two
+//      consecutive reds on any path), folded solution, followed by the explicit O(log n) bound and
+//      why a *worst-case* guarantee (not just expected) matters; a "repair pushes the same kind of
+//      violation one level up" conceptual paragraph naming the general pattern (shared with splay
+//      trees / B-tree split-merge); the CENTERPIECE — a single "Try it yourself" posing the 3-case
+//      insert-fixup (uncle red / black-same-side / black-opposite-side), each case with its own
+//      small inline SVG in the problem, and the folded solution walking all 3 cases with their own
+//      after-diagrams (6 case diagrams total, plus the axiom-anchor diagram = 7 SVGs in the lesson);
+//      a shorter insert/delete-as-primitives closing section (delete's 4-case fixup named/cited to
+//      CLRS §13.4 rather than diagrammed, per the brief); closing remark cross-linking algo-bst,
+//      algo-splay-trees, algo-b-trees, and algo-amortized-potential-method (noting the shared
+//      "bound repeated local pushes" argument shape); further reading with specific CLRS 3rd ed.
+//      Ch 13 section numbers; italic slogan. prerequisites changed to ["algo-bst"] (was
+//      algo-bst-balance) as instructed. Title stayed bare "Red-Black Trees". NOTE: algo-avl-trees
+//      does not exist yet (that's A4), so the closing remark does not link it — mentions AVL
+//      comparison only via the existing algo-bst-balance cross-link already in that lesson's own
+//      remark; add a direct algo-red-black-trees <-> algo-avl-trees cross-link when A4 lands.
+//   A4 NOT STARTED — NEXT UP. New lesson algo-avl-trees, same deep template, section "Hashing &
+//      Search Trees", prerequisites: ["algo-bst", "algo-amortized-potential-method"]. (Both exist
+//      now, so this prereq is valid.) NOTE: once A4 lands, also add algo-avl-trees to
+//      algo-exercises-hashing-search-trees's prerequisites array (currently does NOT include it)
+//      so that ex-lesson keeps covering the full section cluster, and consider adding a two-way
+//      cross-link between algo-red-black-trees and algo-avl-trees's closing remarks (see A3 note).
 //   A5 NOT STARTED (lower priority, only if budget allows after A1-A4 and all of Part B).
-// PART B (new topics) — NOT STARTED, gated on A1-A4 per the task spec (do not start until A3+A4
-//   are done). B1 (4 new DP lessons), B2 (FFT), B3 (sparse linear algebra), B4 (fast matrix
+// PART B (new topics) — NOT STARTED, gated on A1-A4 per the task spec (do not start until A4 is
+//   also done). B1 (4 new DP lessons), B2 (FFT), B3 (sparse linear algebra), B4 (fast matrix
 //   multiplication incl. boolean variant), B5 (Seidel's APSP, depends on B4's lesson id), B6
 //   (computational geometry: convex hull + segment intersection), B7 (linear programming: simplex +
 //   duality) — none begun.
+// NEXT UP OVERALL: A4 (algo-avl-trees).
 // NEXT UP: A3 (red-black trees rewrite) is the very next task for the next fire.
 // ===== END DEEP PASS STATUS =====
 //
@@ -488,10 +498,17 @@ const ALGORITHMICS_SUBJECT = {
           id: "algo-red-black-trees",
           title: "Red-Black Trees",
           section: "Hashing & Search Trees",
-          prerequisites: ["algo-bst-balance"],
-          estMinutes: 30,
+          prerequisites: ["algo-bst"],
+          estMinutes: 40,
           content: `
-            <p>A red-black tree keeps a binary search tree balanced on every single insert and delete, automatically, so that search, insert, and delete all stay O(log n) even if the keys arrive in an order designed to make a plain BST degenerate into a linked list.</p>
+            <p>A red-black tree keeps a binary search tree balanced automatically, on every single insert and delete, so that search, insert, and delete all stay O(log n) even if the keys arrive in an order designed to make a plain BST degenerate into a linked list. It does this by imposing exactly one extra piece of structure on every node — a color — and repairing that structure with a bounded amount of local work whenever an update threatens it.</p>
+            <p>Formally, a red-black tree is a binary search tree in which every node is colored red or black, subject to three axioms:</p>
+            <ol>
+              <li>the root is black;</li>
+              <li>no red node has a red child;</li>
+              <li>every root-to-leaf path contains the same number of black nodes — call this number the <strong>black-height</strong>, h<sub>b</sub>.</li>
+            </ol>
+            <p>("Leaf" here means a NIL pointer, not a node with real data — every real node's missing children count as black leaves for axiom 3 to be well-defined.) The tree below satisfies all three: the root is black, no accent-colored (red) node sits directly above another, and every one of its four root-to-leaf paths passes through exactly two black nodes:</p>
             <svg viewBox="0 0 300 220" width="100%" height="220" style="max-width:320px;display:block;margin:0.8rem auto;" role="img" aria-label="A small tree of circles, some outlined with the accent color for red nodes and some with a muted color for black nodes, with no red node directly above another red node">
               <g font-size="12" text-anchor="middle">
                 <line x1="150" y1="34" x2="90" y2="86" stroke="var(--border)" stroke-width="1.5"/>
@@ -518,30 +535,127 @@ const ALGORITHMICS_SUBJECT = {
                 <text x="110" y="200" fill="var(--text-muted)" font-size="11" text-anchor="start">black</text>
               </g>
             </svg>
-            <p>The design is a coloring rule enforced by O(1)-work-per-level repair. Every node is red or black, the root and every null leaf are black, no red node has a red child, and every root-to-leaf path has the same count of black nodes. That last rule alone would force perfect balance; relaxing it to allow red nodes as "free" extra height, capped by the no-red-red rule, is what makes the invariant repairable in constant work per level instead of requiring a global rebuild — the same height bound as before (h ≤ 2·log₂(n+1)) for a much cheaper maintenance cost.</p>
-            <p>The two update paths, and one well-known simplification of them:</p>
-            <ul>
-              <li><strong>Insertion fixup</strong> — a new node is inserted red (it can't add to any black-height, only risk a red-red violation). Walking up from it, exactly one of three local cases applies at each step: the uncle is red (recolor and continue upward), the uncle is black and the node is a "zig-zag" from its grandparent (rotate once to make it a "zig-zig"), or the uncle is black and already a "zig-zig" (rotate once more and recolor — done). At most two rotations ever occur per insertion, however many recolorings happen above them.</li>
-              <li><strong>Deletion fixup</strong> — deleting a black node can leave a path short one black node ("double-black"); fixing it walks up through four mirrored cases (red sibling, black sibling with black children, black sibling with a near red child, black sibling with a far red child), the last of which terminates the walk with a single rotation. Up to three rotations total.</li>
-              <li><strong>Left-leaning red-black trees</strong> (Sedgewick) — restrict red links to always lean left, which collapses the insertion case analysis to two cases and makes the structure map directly onto a 2-3 tree; the simplification used in several teaching implementations, though the classic scheme above is what production libraries (Linux kernel's rbtree, Java's TreeMap, C++'s std::map) actually ship.</li>
-            </ul>
-            <p><strong>Remark:</strong> the case analysis looks intimidating on the page but every case is a local, O(1) pattern match on a node, its parent, and its sibling or uncle — nothing ever looks two levels further than that.</p>
+            <p><strong>Try it yourself:</strong> using only the three axioms above, prove two facts about a red-black tree with n <em>internal</em> (real) nodes and black-height h<sub>b</sub> at the root: (1) n ≥ 2<sup>h<sub>b</sub></sup> − 1, and (2) the tree's height h (the number of edges on the longest root-to-leaf path) satisfies h ≤ 2·h<sub>b</sub>.</p>
+            <details><summary>Solution</summary>
+              <p><strong>Part 1, by induction on black-height.</strong> Define bh(x), for any node x, as the number of black nodes on the path from x down to a leaf, not counting x itself — so a NIL leaf has bh = 0. <em>Base case:</em> bh(x) = 0 means x is itself a NIL leaf, contributing 0 internal nodes, and 2⁰ − 1 = 0 — the bound holds with equality. <em>Inductive step:</em> take an internal node x with bh(x) = b > 0, and consider either child. By axiom 3, both of x's children have the same black-height "budget" remaining below them: if a child is black, its own bh is b − 1 (one black node — the child itself — has been consumed); if a child is red, its bh is still b (red nodes don't count, and axiom 2 guarantees x itself, being the parent of a red node, imposes no further consumption at this step). Either way, each child's subtree has black-height at least b − 1, so by the inductive hypothesis each contains at least 2<sup>b−1</sup> − 1 internal nodes. Summing both children and adding 1 for x itself: x's subtree has at least 2(2<sup>b−1</sup> − 1) + 1 = 2<sup>b</sup> − 1 internal nodes. Applying this at the root, whose bh is h<sub>b</sub>, gives n ≥ 2<sup>h<sub>b</sub></sup> − 1.</p>
+              <p><strong>Part 2.</strong> By axiom 2, no red node has a red child, so no two consecutive nodes on any root-to-leaf path can both be red — every red node is immediately followed (going down) by a black one. That means on any path, the black nodes are never outnumbered by the red ones: at least half of the path's nodes are black. Axiom 3 fixes the number of black nodes on <em>every</em> root-to-leaf path at exactly h<sub>b</sub>, so a path with h edges (h + 1 nodes, or h nodes if you count only internal nodes plus the final NIL — either convention gives the same asymptotic bound) has at most 2h<sub>b</sub> nodes total, hence h ≤ 2h<sub>b</sub>.</p>
+            </details>
+            <p>Combine the two facts and the O(log n) bound falls out immediately: n ≥ 2<sup>h<sub>b</sub></sup> − 1 rearranges to h<sub>b</sub> ≤ log₂(n + 1), and substituting into h ≤ 2h<sub>b</sub> gives <strong>h ≤ 2·log₂(n + 1)</strong>. Unlike a plain <a href="#/subject/algorithmics/data-structures/algo-bst">BST</a>'s height, which is only O(log n) <em>in expectation</em> over insertion orders, this bound holds unconditionally — for every red-black tree, on every input, in the worst case — because it follows from three structural axioms alone, with no appeal to randomness or "typical" behavior. That worst-case guarantee, not the constant in front of log n, is the entire reason production systems (Linux's rbtree, Java's TreeMap, C++'s std::map) use red-black trees rather than plain BSTs: an adversary who controls the insertion order still cannot force more than a 2× height penalty over the best possible balanced tree.</p>
+            <p>Of course, insertions and deletions don't arrive pre-arranged to satisfy the axioms — each one can violate them, and the axioms have to be restored. The key idea that makes this cheap is: after an ordinary BST insert or delete, <em>exactly one</em> local violation appears near the changed node, and the fixup routine is a short sequence of O(1) local transformations that either resolve the violation completely or <strong>push the exact same kind of violation one level further up the tree</strong>. Since the tree has only O(log n) levels (by the bound just proved), and each level costs O(1) work whether it resolves the violation or merely relocates it, the whole repair costs O(log n) in the worst case. This "push the problem up, one level at a time, until it either dissolves or is fixed for good" pattern is not unique to red-black trees — it is the same shape of argument that bounds splay-tree amortized cost and B-tree split/merge cascades.</p>
+            <p><strong>Try it yourself — the insertion fixup, case by case.</strong> Suppose you've just done an ordinary BST insert of a new node m, colored red. If m's parent f is black, nothing is violated and there's nothing to do. The interesting case is when f is <em>also</em> red — violating axiom 2. Because the axioms held before this insertion, f being red means f's own parent (m's grandparent, g) must be black. Let u be m's uncle: g's other child (u may be a NIL leaf, which counts as black). Work out the fix for each of these three cases:</p>
+            <p><strong>Case 1 — u is red.</strong></p>
+            <svg viewBox="0 0 200 170" width="100%" height="170" style="max-width:210px;display:inline-block;margin:0.5rem 1rem;" role="img" aria-label="Case 1 problem: black node g at top with two red children f and u; f has a red child m">
+              <g font-size="12" text-anchor="middle">
+                <line x1="85" y1="38" x2="65" y2="80" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="115" y1="38" x2="135" y2="80" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="45" y1="108" x2="35" y2="140" stroke="var(--border)" stroke-width="1.5"/>
+                <circle cx="100" cy="24" r="16" fill="none" stroke="var(--text-muted)" stroke-width="2"/>
+                <text x="100" y="29" fill="var(--text)">g</text>
+                <circle cx="55" cy="94" r="16" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="55" y="99" fill="var(--text)">f</text>
+                <circle cx="145" cy="94" r="16" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="145" y="99" fill="var(--text)">u</text>
+                <circle cx="30" cy="154" r="14" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="30" y="159" fill="var(--text)">m</text>
+              </g>
+            </svg>
+            <p><strong>Case 2 — u is black, m on the same side of f as f is of g</strong> (a straight line — e.g. m is f's left child and f is g's left child, or the mirrored right-right case).</p>
+            <svg viewBox="0 0 200 170" width="100%" height="170" style="max-width:210px;display:inline-block;margin:0.5rem 1rem;" role="img" aria-label="Case 2 problem: black node g at top with red left child f and black right child u; f has a red left child m, forming a straight line g-f-m">
+              <g font-size="12" text-anchor="middle">
+                <line x1="85" y1="38" x2="65" y2="80" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="115" y1="38" x2="135" y2="80" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="45" y1="108" x2="35" y2="140" stroke="var(--border)" stroke-width="1.5"/>
+                <circle cx="100" cy="24" r="16" fill="none" stroke="var(--text-muted)" stroke-width="2"/>
+                <text x="100" y="29" fill="var(--text)">g</text>
+                <circle cx="55" cy="94" r="16" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="55" y="99" fill="var(--text)">f</text>
+                <circle cx="145" cy="94" r="16" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="145" y="99" fill="var(--text)">u</text>
+                <circle cx="30" cy="154" r="14" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="30" y="159" fill="var(--text)">m</text>
+              </g>
+            </svg>
+            <p><strong>Case 3 — u is black, m and f on opposite sides</strong> (the zigzag — e.g. m is f's right child but f is g's left child, or the mirror).</p>
+            <svg viewBox="0 0 200 170" width="100%" height="170" style="max-width:210px;display:inline-block;margin:0.5rem 1rem;" role="img" aria-label="Case 3 problem: black node g at top with red left child f and black right child u; f has a red right child m, forming a zigzag g-f-m">
+              <g font-size="12" text-anchor="middle">
+                <line x1="85" y1="38" x2="65" y2="80" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="115" y1="38" x2="135" y2="80" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="65" y1="108" x2="75" y2="140" stroke="var(--border)" stroke-width="1.5"/>
+                <circle cx="100" cy="24" r="16" fill="none" stroke="var(--text-muted)" stroke-width="2"/>
+                <text x="100" y="29" fill="var(--text)">g</text>
+                <circle cx="55" cy="94" r="16" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="55" y="99" fill="var(--text)">f</text>
+                <circle cx="145" cy="94" r="16" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="145" y="99" fill="var(--text)">u</text>
+                <circle cx="80" cy="154" r="14" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="80" y="159" fill="var(--text)">m</text>
+              </g>
+            </svg>
+            <details><summary>Solution</summary>
+              <p><strong>Case 1 (u red).</strong> Recolor: f and u become black, g becomes red. Axiom 2 is now satisfied locally (m red, f now black), and axiom 3 still holds (f and u each gained one black node on their paths, exactly offsetting g losing one) — no rotation needed. But g is now red, and g's <em>own</em> parent might also be red, which is the exact same violation, one level higher. This is the "push it up" step: set m := g and repeat the whole case analysis from g's new position. The walk terminates within O(log n) steps, either by reaching a black parent or the root (which axiom 1 forces black regardless).</p>
+              <svg viewBox="0 0 200 170" width="100%" height="170" style="max-width:210px;display:inline-block;margin:0.5rem 1rem;" role="img" aria-label="Case 1 solution: g recolored red, f and u recolored black, m unchanged red; shape unchanged, violation may now be between g and its own parent">
+                <g font-size="12" text-anchor="middle">
+                  <line x1="85" y1="38" x2="65" y2="80" stroke="var(--border)" stroke-width="1.5"/>
+                  <line x1="115" y1="38" x2="135" y2="80" stroke="var(--border)" stroke-width="1.5"/>
+                  <line x1="45" y1="108" x2="35" y2="140" stroke="var(--border)" stroke-width="1.5"/>
+                  <circle cx="100" cy="24" r="16" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                  <text x="100" y="29" fill="var(--text)">g</text>
+                  <circle cx="55" cy="94" r="16" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                  <text x="55" y="99" fill="var(--text)">f</text>
+                  <circle cx="145" cy="94" r="16" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                  <text x="145" y="99" fill="var(--text)">u</text>
+                  <circle cx="30" cy="154" r="14" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                  <text x="30" y="159" fill="var(--text)">m</text>
+                  <text x="100" y="10" fill="var(--accent)" font-size="10">continue upward from g</text>
+                </g>
+              </svg>
+              <p><strong>Case 2 (u black, straight line).</strong> A single rotation finishes it: rotate right around g (in the mirrored right-right case, rotate left), then recolor f black and g red. f takes g's old position; g becomes f's right child; f's old right subtree (necessarily black, omitted from the diagram) becomes g's new left child; u, unaffected by a rotation around g's <em>other</em> side, stays g's right child. Axiom 2 holds (m and g are both red, but their parent f is now black), axiom 3 holds (the rotation preserves total black count on every affected path), and — critically — the subtree rooted at f now has the exact same black-height it had before the insertion, so no violation propagates upward. The walk terminates here, having done at most one rotation.</p>
+              <svg viewBox="0 0 210 170" width="100%" height="170" style="max-width:220px;display:inline-block;margin:0.5rem 1rem;" role="img" aria-label="Case 2 solution: f rotated up to the top and recolored black, m stays its red left child, g demoted to f's red right child with u remaining as g's black right child">
+                <g font-size="12" text-anchor="middle">
+                  <line x1="85" y1="38" x2="65" y2="80" stroke="var(--border)" stroke-width="1.5"/>
+                  <line x1="115" y1="38" x2="135" y2="80" stroke="var(--border)" stroke-width="1.5"/>
+                  <line x1="155" y1="108" x2="165" y2="140" stroke="var(--border)" stroke-width="1.5"/>
+                  <circle cx="100" cy="24" r="16" fill="none" stroke="var(--text-muted)" stroke-width="2"/>
+                  <text x="100" y="29" fill="var(--text)">f</text>
+                  <circle cx="55" cy="94" r="16" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                  <text x="55" y="99" fill="var(--text)">m</text>
+                  <circle cx="145" cy="94" r="16" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                  <text x="145" y="99" fill="var(--text)">g</text>
+                  <circle cx="170" cy="154" r="14" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                  <text x="170" y="159" fill="var(--text)">u</text>
+                </g>
+              </svg>
+              <p><strong>Case 3 (u black, zigzag).</strong> A zigzag can't be fixed by one rotation around g directly — rotating g would just turn it into a mirrored zigzag. Instead, first rotate around f itself (left-rotate f, in this m-is-right-child example): this pulls m up into f's old position, with f becoming m's <em>left</em> child — which is now a straight line g-m-f, i.e. exactly Case 2's shape, just with the roles of "f" and "m" swapped. Apply Case 2's fix to that shape (rotate around g, recolor the new top node black and g red) and you're done in a total of two rotations. The end state:</p>
+              <svg viewBox="0 0 210 170" width="100%" height="170" style="max-width:220px;display:inline-block;margin:0.5rem 1rem;" role="img" aria-label="Case 3 solution: m rotated up to the top and recolored black, f as its red left child, g demoted to m's red right child with u remaining as g's black right child">
+                <g font-size="12" text-anchor="middle">
+                  <line x1="85" y1="38" x2="65" y2="80" stroke="var(--border)" stroke-width="1.5"/>
+                  <line x1="115" y1="38" x2="135" y2="80" stroke="var(--border)" stroke-width="1.5"/>
+                  <line x1="155" y1="108" x2="165" y2="140" stroke="var(--border)" stroke-width="1.5"/>
+                  <circle cx="100" cy="24" r="16" fill="none" stroke="var(--text-muted)" stroke-width="2"/>
+                  <text x="100" y="29" fill="var(--text)">m</text>
+                  <circle cx="55" cy="94" r="16" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                  <text x="55" y="99" fill="var(--text)">f</text>
+                  <circle cx="145" cy="94" r="16" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                  <text x="145" y="99" fill="var(--text)">g</text>
+                  <circle cx="170" cy="154" r="14" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                  <text x="170" y="159" fill="var(--text)">u</text>
+                </g>
+              </svg>
+              <p>So: Case 1 is the only one that ever repeats (pure recoloring, no rotation, violation pushed up); Cases 2 and 3 are both terminal (one or two rotations, then done). Since a repeating Case 1 can chain all the way to the root but a terminal case only fires once at the very end of that chain, an insertion does at most <em>two</em> rotations in total, however many recolorings preceded them.</p>
+            </details>
+            <p><strong>Insert and delete as primitives built on the fixup.</strong> <strong>Insert</strong> is now just two steps: run the ordinary <a href="#/subject/algorithmics/data-structures/algo-bst">BST insert</a> to attach a new leaf, color it red (a red leaf can never violate axiom 3 — it adds nothing to any black-height — so the only possible new violation is axiom 2, exactly the case analysis above), then run the fixup from the new node upward. <strong>Delete</strong> starts the same way as plain BST delete — splice out a leaf or one-child node directly, or reduce a two-children delete to the successor-splice case exactly as in the plain-BST lesson — but removing a <em>black</em> node can leave some path short one black node, a "double-black" violation of axiom 3 rather than axiom 2. Restoring it needs an analogous but genuinely different four-case walk (keyed off the sibling's color and the colors of the sibling's children, rather than an uncle), which this lesson won't fully diagram for space — see CLRS §13.4 for the complete case analysis. The shape of the argument is identical, though: each case either terminates in O(1) rotations or pushes the same double-black violation one level up, bounding the total repair at O(log n) exactly as before.</p>
             <table class="mini-table">
               <tr><th>Operation</th><th>Cost</th><th>Why</th></tr>
-              <tr><td>Search</td><td>O(log n)</td><td>height is at most 2·log₂(n+1) by the black-height argument</td></tr>
-              <tr><td>Insert</td><td>O(log n)</td><td>O(log n) recolorings walking up, but at most 2 rotations</td></tr>
-              <tr><td>Delete</td><td>O(log n)</td><td>same walk-up structure, at most 3 rotations</td></tr>
+              <tr><td>Search</td><td>O(log n)</td><td>height is at most 2·log₂(n+1) by the black-height argument above</td></tr>
+              <tr><td>Insert</td><td>O(log n)</td><td>O(log n) possible recolorings walking up, but at most 2 rotations total</td></tr>
+              <tr><td>Delete</td><td>O(log n)</td><td>same walk-up structure, a different 4-case fixup, still O(1) rotations</td></tr>
             </table>
-            <p><strong>Try it yourself:</strong> given the claim that insertion needs at most 2 rotations no matter how deep the tree is, why doesn't the O(log n) chain of recolorings above it also need O(log n) rotations?</p>
-            <details><summary>Solution</summary>
-              <p>The recoloring case ("uncle is red") never rotates — it just repaints the parent, uncle, and grandparent and moves the problem one level up, so it can repeat all the way to the root without ever touching tree shape. A rotation only happens in the other two cases, and each of those is a terminal case: after the rotation (and, in one of them, a recoloring), the red-red violation is gone and the black-heights are restored, so the walk stops immediately. At most one non-rotating case chains upward, and at most one rotating case ends it — hence at most 2 rotations total, however many recolorings preceded them.</p>
-            </details>
-            <p><strong>Remark:</strong> the payoff for all this bookkeeping is a tree that's <em>always</em> balanced immediately after every update, unlike the <a href="#/subject/algorithmics/data-structures/algo-splay-trees">splay tree</a>, which allows a single access to cost Θ(n) and only bounds the average; when a wide branching factor matters more than exact height — because each "step down" is a disk read — the <a href="#/subject/algorithmics/data-structures/algo-b-trees">B-tree</a> restructures the same idea around nodes with many keys instead of one.</p>
-            <p><strong>Further reading:</strong> CLRS, 3rd ed., Ch. 13 (the full insertion and deletion fixup case analysis, with diagrams for every case); Guibas & Sedgewick, "A Dichromatic Framework for Balanced Trees," FOCS 1978 (the original paper introducing red-black trees as a reformulation of symmetric binary B-trees); Sedgewick, "Left-Leaning Red-Black Trees," 2008 (the simplified variant, freely available from the author's Princeton page).</p>
-            <p><em>The whole idea in one line: color the tree so no root-to-leaf path can be more than twice as long as another, then repair only the O(1)-sized neighborhood around whatever you just changed.</em></p>
+            <p><strong>Remark:</strong> the payoff for all this bookkeeping is a tree that's <em>always</em> balanced immediately after every update, unlike the <a href="#/subject/algorithmics/data-structures/algo-splay-trees">splay tree</a>, which allows a single access to cost Θ(n) and only bounds the average; when a wide branching factor matters more than exact height — because each "step down" is a disk read — the <a href="#/subject/algorithmics/data-structures/algo-b-trees">B-tree</a> restructures the same idea around nodes with many keys instead of one. And the "bound the total work by bounding how many times a violation can be pushed up before it must terminate" argument used above for the O(log n) repair cost has the same flavor as the potential-function arguments in the <a href="#/subject/algorithmics/algorithms/algo-amortized-potential-method">amortized analysis</a> lesson, even though this bound is worst-case per operation rather than amortized over a sequence.</p>
+            <p><strong>Further reading:</strong> CLRS, 3rd ed., Ch. 13 — §13.1 for the axioms and the height bound proved above, §13.2 for rotations, §13.3 for the full insertion fixup (RB-INSERT-FIXUP), §13.4 for the deletion fixup this lesson only sketched; Guibas & Sedgewick, "A Dichromatic Framework for Balanced Trees," FOCS 1978 (the original paper introducing red-black trees as a reformulation of symmetric binary B-trees).</p>
+            <p><em>The whole idea in one line: color the tree so no root-to-leaf path can be more than twice as long as another, then repair only the O(1)-sized neighborhood around whatever you just changed, one level up at a time.</em></p>
           `,
           exercises: [
-            "Work out all three insertion-fixup cases (red uncle; black uncle, zig-zag; black uncle, zig-zig) starting from a node inserted as the left child of a left child, drawing the tree before and after each case. Then state, for each case, whether the walk continues upward or terminates.",
+            "Work out all three insertion-fixup cases (red uncle; black uncle, same side; black uncle, opposite sides) starting from a node inserted as the left child of a left child, drawing the tree before and after each case. Then state, for each case, whether the walk continues upward or terminates, and how many total rotations the whole insertion can possibly perform.",
             "A red-black tree is built by inserting 1, 2, 3, ..., n in increasing order. Trace or simulate this and determine the resulting height as a function of n. Compare it to the height a plain (unbalanced) BST would have on the same input, and explain in one or two sentences why the difference is the entire point of the structure."
           ]
         },
