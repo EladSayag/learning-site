@@ -99,23 +99,71 @@
 //      an inline try-it-yourself with folded solution, and 2 real exercises, matching the existing
 //      algo-dynamic-programming lesson's own "state design" house style. algo-dynamic-programming
 //      itself was left untouched as instructed.
-//   B2 NOT STARTED (FFT, new section "Numerical & Signal Algorithms" in "algorithms" chapter).
-//   B3 NOT STARTED (Sparse Linear Algebra, same new section as B2).
-//   B4 NOT STARTED (Fast Matrix Multiplication incl. boolean variant — B5 depends on this lesson's id).
-//   B5 NOT STARTED (Seidel's APSP in "graph-algorithms", depends on B4's lesson id existing first).
+//   B2 DONE (run 5). New lesson algo-fft ("The Fast Fourier Transform") added to the "algorithms"
+//      chapter, new section "Numerical & Signal Algorithms" (inserted right after algo-greedy-matroids,
+//      the chapter's last lesson before this section), prerequisites: ["algo-sorting-lower-bound-
+//      mergesort"] — motivates via polynomial multiplication (naive Θ(n²) convolution vs the
+//      evaluate/multiply/interpolate strategy), an inline SVG diagram of the even/odd coefficient
+//      split (one level of the D&C recursion, 8-coefficient example), the T(n)=2T(n/2)+Θ(n) recurrence
+//      argument mirroring merge sort, a brief mention of the iterative in-place bit-reversal/butterfly
+//      version (named, not derived), the zero-padding-avoids-circular-convolution caveat, applications
+//      to big-integer multiplication and signal-processing convolution, a try-it-yourself on why
+//      pointwise multiplication of DFTs gives circular not linear convolution (folded solution), 2
+//      exercises (roots-of-unity squaring argument; floating-point precision vs NTT). Further reading:
+//      CLRS 3rd ed Ch 30.
+//   B3 DONE (run 5). New lesson algo-sparse-linear-algebra ("Sparse Linear Algebra") added to the
+//      same new section, prerequisites: ["algo-dynamic-arrays-amortization"] — COO/CSR/CSC formats
+//      table with tradeoffs, an inline SVG sparsity-pattern grid (4x4, 6 nonzeros) plus the matching
+//      worked CSR triple (val/col_idx/row_ptr arrays), the Θ(nnz) sparse matvec argument, a fill-in
+//      explanation of why direct Gaussian elimination is unattractive at scale (with reordering
+//      heuristics named), a one-sentence mention that conjugate gradient/Krylov methods exist for
+//      sparse SPD systems without deriving them, in-prose (no hyperlink, per the brief's safe-fallback
+//      instruction) mentions of the Data Science subject's "LU Factorization and the Role of Pivoting"
+//      and "Conditioning and Backward Stability" lessons by title. CORRECTION to the brief's premise,
+//      relevant to whichever run picks up B7's possible Lagrange-duality/KKT cross-link: js/app.js's
+//      router is actually subject-agnostic — renderLesson(subjectId, chapterId, lessonId) resolves
+//      findSubject(subjectId) straight from the URL hash, not from whichever file's content produced
+//      the <a>, so a real cross-subject hyperlink like
+//      #/subject/datascience/numerical-linear-algebra/algo-lu-pivoting written inside
+//      data-algorithmics.js content WOULD resolve correctly (checked by reading app.js's route() /
+//      renderLesson() / lessonLink(), not by live-testing in a browser — no lesson in the repo
+//      currently uses a cross-subject link as precedent, so treat this as fairly confident but
+//      unverified in practice). Left as prose here since it already reads fine either way; a future
+//      run can use a real link instead once this premise correction is accounted for.
+//      A try-it-yourself proving the star/arrowhead-matrix fill-in example (eliminate hub
+//      first = total fill-in, eliminate leaves first = none, folded solution), 2 exercises (COO→CSR
+//      via counting-sort-style bucketing in Θ(nnz+n), tying back to the counting-sort mention in
+//      algo-sorting-lower-bound-mergesort; CSR↔CSC conversion cost). Further reading: Saad (2003),
+//      Davis (2006).
+//   B4 DONE (run 5). New lesson algo-matrix-multiplication ("Fast Matrix Multiplication") added to
+//      the same new section, prerequisites: ["algo-divide-and-conquer"] — recaps Strassen's
+//      Θ(n^log₂7)≈Θ(n^2.807) by cross-linking to algo-divide-and-conquer's existing derivation rather
+//      than duplicating it, introduces BOOLEAN matrix multiplication (OR/AND semiring, same block
+//      recursion since it only needs associativity+distributivity) explicitly so B5 can depend on this
+//      lesson's id, a worked table of repeated squaring of A∨I over a 4-node path graph accumulating
+//      1-step/2-step/4-step reachability, a try-it-yourself on why the chain must start from A∨I (not
+//      A alone) and why ⌈log₂n⌉ squarings always suffice (folded solution), a closing "galactic
+//      algorithms" paragraph name-dropping Coppersmith-Winograd/Alman-Vassilevska Williams without
+//      derivation, 2 exercises (master-theorem verification + a hypothetical-6-products comparison;
+//      semiring-axiom check for (OR,AND)). Further reading: CLRS 3rd ed §4.2, Alman & Vassilevska
+//      Williams SODA 2021. NOTE for B5: this lesson's id is "algo-matrix-multiplication" — use that
+//      exact id in algo-seidel-apsp's prerequisites array.
+//   B5 NOT STARTED (Seidel's APSP in "graph-algorithms", section "Shortest Paths (general)").
+//      prerequisites should be exactly ["algo-all-pairs-shortest-paths", "algo-matrix-multiplication"]
+//      — both ids now exist. Remember the lesson must explain WHY naive repeated squaring alone only
+//      gives reachability (already covered concretely in algo-matrix-multiplication's try-it-yourself
+//      above — can cross-link back to it) and what Seidel's actual recursive trick adds to recover
+//      real distances, not just claim the O(M(n) log n) result.
 //   B6 NOT STARTED (Computational Geometry: convex hull + segment intersection, new section or
 //      new chapter — implementer's call, must update this file's header doc-comment either way).
 //   B7 NOT STARTED (Linear Programming: simplex overview + duality, same chapter-placement judgment
 //      call as B6 — keep consistent with whatever B6 decides).
-// NEXT UP OVERALL: B2 (FFT lesson: motivate via polynomial multiplication naive-O(n²)-convolution
-//   vs O(n log n) evaluate-multiply-interpolate at roots of unity, the even/odd-split D&C recurrence,
-//   a brief mention of the iterative in-place butterfly version, applications to big-integer
-//   multiplication and signal-processing convolution; new section "Numerical & Signal Algorithms" in
-//   the "algorithms" chapter; prerequisites: ["algo-sorting-lower-bound-mergesort"]). After B2, B3
-//   (Sparse Linear Algebra, same new section) is the natural next pickup since it needs no new
-//   section or cross-chapter bookkeeping either. B4 should land before B5 specifically, since B5's
-//   prerequisites array needs B4's actual lesson id. A5 (upgrading algo-splay-trees / algo-b-trees /
-//   algo-skip-lists to the deep template) remains lowest priority, only after all of B1-B7.
+// NEXT UP OVERALL: B5 (Seidel's Algorithm for APSP — see the NOT STARTED note above for the exact
+//   prerequisites array and the framing it needs). After B5, B6 and B7 remain (pick and record a
+//   consistent chapter-placement decision for both — a new "computational-geometry" chapter is
+//   probably cleanest given B6+B7 together add 4+ lessons that don't fit "algorithms" or
+//   "graph-algorithms" thematically, but re-evaluate at the time). A5 (upgrading algo-splay-trees /
+//   algo-b-trees / algo-skip-lists to the deep template) remains lowest priority, only after B1-B7.
 // ===== END DEEP PASS STATUS =====
 //
 // ----- Historical: pre-deep-pass batch history (superseded by the DEEP PASS STATUS above) -----
@@ -2093,6 +2141,167 @@ return hi                          # the least k with P(k) true</code></pre>
           exercises: [
             "Prove that the graphic matroid — S the edge set of a graph, I the acyclic subsets — satisfies the exchange property, and deduce Kruskal's correctness from the matroid greedy theorem.",
             "Give a weighted problem where greedy is provably within a factor 1 − 1/e of optimal but not optimal, prove the bound, and identify the structural property (submodularity) that replaces the matroid condition."
+          ]
+        },
+        {
+          id: "algo-fft",
+          title: "The Fast Fourier Transform",
+          section: "Numerical & Signal Algorithms",
+          prerequisites: ["algo-sorting-lower-bound-mergesort"],
+          estMinutes: 30,
+          content: `
+            <p>Given two degree-(n−1) polynomials A(x) and B(x), the product C(x) = A(x)·B(x) has degree 2n−2, and its coefficients are the <em>convolution</em> of A and B's coefficient vectors: c_k = Σ over i+j=k of a_i·b_j. Computed directly, that's Θ(n²) — one multiplication per pair (i, j). The Fast Fourier Transform gets the same answer in Θ(n log n), not by changing the arithmetic, but by changing representation.</p>
+            <p>A degree-(n−1) polynomial is fully determined either by its n coefficients, or by its values at any n distinct points — that's just polynomial interpolation. This suggests a three-stage strategy: (1) <strong>evaluate</strong> A and B at enough points, (2) <strong>multiply pointwise</strong> — C(xᵢ) = A(xᵢ)·B(xᵢ), only Θ(n) work since it's n independent scalar multiplications, (3) <strong>interpolate</strong> C back from its values to its coefficients. Stage (2) is cheap no matter which points you pick; the whole question is whether stages (1) and (3) can be done in Θ(n log n) instead of the Θ(n²) that evaluating a degree-(n−1) polynomial at n arbitrary points costs by running Horner's rule n separate times.</p>
+            <p>The FFT's answer is to choose the points with algebraic structure baked in: the n complex <strong>n-th roots of unity</strong>, ω⁰, ω¹, …, ω^(n−1), where ω = e^(2πi/n). Split A's coefficients by parity, A(x) = A_e(x²) + x·A_o(x²), where A_e collects the even-indexed coefficients and A_o the odd-indexed ones, each a polynomial of degree about n/2 − 1. Evaluating A at the n-th roots of unity reduces to evaluating A_e and A_o at the <em>squares</em> of those roots — and squaring an n-th root of unity always lands on one of only n/2 distinct (n/2)-th roots of unity, each hit by exactly two of the original n points. So evaluating A at n points costs two evaluations of half-size polynomials at n/2 points each, plus Θ(n) work to recombine:</p>
+            <svg viewBox="0 0 620 200" width="100%" height="200" style="max-width:640px;display:block;margin:0.8rem auto;" role="img" aria-label="An 8-coefficient array a0 through a7 splitting into an even-indexed sub-array a0,a2,a4,a6 and an odd-indexed sub-array a1,a3,a5,a7, one level of the FFT recursion">
+              <text x="310" y="14" text-anchor="middle" fill="var(--text-muted)" font-size="11">coefficients of a degree-7 polynomial, one level of the split</text>
+              <rect x="8" y="20" width="56" height="30" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <rect x="72" y="20" width="56" height="30" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <rect x="136" y="20" width="56" height="30" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <rect x="200" y="20" width="56" height="30" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <rect x="264" y="20" width="56" height="30" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <rect x="328" y="20" width="56" height="30" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <rect x="392" y="20" width="56" height="30" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <rect x="456" y="20" width="56" height="30" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <text x="36" y="39" text-anchor="middle" fill="var(--text)" font-size="12">a0</text>
+              <text x="100" y="39" text-anchor="middle" fill="var(--text)" font-size="12">a1</text>
+              <text x="164" y="39" text-anchor="middle" fill="var(--text)" font-size="12">a2</text>
+              <text x="228" y="39" text-anchor="middle" fill="var(--text)" font-size="12">a3</text>
+              <text x="292" y="39" text-anchor="middle" fill="var(--text)" font-size="12">a4</text>
+              <text x="356" y="39" text-anchor="middle" fill="var(--text)" font-size="12">a5</text>
+              <text x="420" y="39" text-anchor="middle" fill="var(--text)" font-size="12">a6</text>
+              <text x="484" y="39" text-anchor="middle" fill="var(--text)" font-size="12">a7</text>
+              <line x1="36" y1="50" x2="68" y2="130" stroke="var(--accent)" stroke-width="1.5"/>
+              <line x1="164" y1="50" x2="132" y2="130" stroke="var(--accent)" stroke-width="1.5"/>
+              <line x1="292" y1="50" x2="196" y2="130" stroke="var(--accent)" stroke-width="1.5"/>
+              <line x1="420" y1="50" x2="260" y2="130" stroke="var(--accent)" stroke-width="1.5"/>
+              <line x1="100" y1="50" x2="328" y2="130" stroke="var(--text-muted)" stroke-width="1.5"/>
+              <line x1="228" y1="50" x2="392" y2="130" stroke="var(--text-muted)" stroke-width="1.5"/>
+              <line x1="356" y1="50" x2="456" y2="130" stroke="var(--text-muted)" stroke-width="1.5"/>
+              <line x1="484" y1="50" x2="520" y2="130" stroke="var(--text-muted)" stroke-width="1.5"/>
+              <rect x="40" y="130" width="56" height="30" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+              <rect x="104" y="130" width="56" height="30" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+              <rect x="168" y="130" width="56" height="30" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+              <rect x="232" y="130" width="56" height="30" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+              <text x="68" y="149" text-anchor="middle" fill="var(--text)" font-size="12">a0</text>
+              <text x="132" y="149" text-anchor="middle" fill="var(--text)" font-size="12">a2</text>
+              <text x="196" y="149" text-anchor="middle" fill="var(--text)" font-size="12">a4</text>
+              <text x="260" y="149" text-anchor="middle" fill="var(--text)" font-size="12">a6</text>
+              <rect x="300" y="130" width="56" height="30" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+              <rect x="364" y="130" width="56" height="30" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+              <rect x="428" y="130" width="56" height="30" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+              <rect x="492" y="130" width="56" height="30" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+              <text x="328" y="149" text-anchor="middle" fill="var(--text)" font-size="12">a1</text>
+              <text x="392" y="149" text-anchor="middle" fill="var(--text)" font-size="12">a3</text>
+              <text x="456" y="149" text-anchor="middle" fill="var(--text)" font-size="12">a5</text>
+              <text x="520" y="149" text-anchor="middle" fill="var(--text)" font-size="12">a7</text>
+              <text x="164" y="180" text-anchor="middle" fill="var(--text-muted)" font-size="11">P_e — n/2 coefficients</text>
+              <text x="410" y="180" text-anchor="middle" fill="var(--text-muted)" font-size="11">P_o — n/2 coefficients</text>
+            </svg>
+            <p>Each half is split by parity again the same way, recursing down to single coefficients after log₂n levels — exactly the shape of merge sort's recursion, split by parity instead of by array half: T(n) = 2T(n/2) + Θ(n) = Θ(n log n). The recursion bottoms out at degree-0 "polynomials", trivially evaluated at ω⁰ = 1. Interpolation (stage 3) turns out to be the same computation run backwards — the inverse transform is a forward transform at the points ω^(−k), scaled by 1/n — so it costs the identical Θ(n log n) by the identical algorithm.</p>
+            <p>In practice, the recursive version above is rewritten as an <strong>iterative, in-place</strong> algorithm: permute the input array into bit-reversed order (reverse the binary digits of each index — exactly where the recursive splits would eventually have sent that coefficient), then repeatedly combine adjacent pairs, Θ(n) work per level for log₂n levels. Each combine step is a <strong>butterfly</strong>: read two values, multiply one by a power of ω (a "twiddle factor"), write the sum and difference back in place. This is the version real FFT libraries implement; it's mentioned here only so the name is recognizable, not derived in full.</p>
+            <p>One detail that matters in practice: evaluating at only n points and multiplying pointwise computes the <em>circular</em> convolution (indices wrap around mod n), not the ordinary polynomial product you want. Padding both inputs with zeros out to a length ≥ 2n−1 (rounded up to the next power of two, so the recursive splits stay clean) avoids the wraparound and recovers the true product.</p>
+            <p><strong>Applications.</strong> Big-integer multiplication: treat a k-digit number's digits (or digit-groups) as polynomial coefficients in some base; multiplying two big integers is exactly the polynomial-multiplication problem above, followed by a carry-propagation pass — this is how arbitrary-precision arithmetic libraries multiply numbers with millions of digits in near-linear time instead of Θ(k²). Signal processing: convolving a signal with a filter kernel is the same convolution operation, so FFT-based ("fast") convolution is the standard way to apply a large filter to a long signal without paying Θ(nm) for the direct sliding-window sum.</p>
+            <p><strong>Try it yourself:</strong> the DFT of a length-n coefficient vector is exactly its evaluation at the n-th roots of unity. Given that, explain precisely why multiplying two DFT vectors pointwise and inverse-transforming computes the circular convolution of the two original coefficient vectors, not their ordinary product — and why zero-padding fixes it.</p>
+            <details><summary>Solution</summary>
+              <p>Pointwise multiplication in the transformed domain corresponds exactly to <em>circular</em> convolution back in the coefficient domain, because the DFT is a transform over indices taken mod n (ω^n = 1, so ω^k = ω^(k mod n) for every k). An entry c_k of the circular convolution sums a_i·b_j over all i + j ≡ k (mod n) — so a term with i + j ≥ n doesn't get dropped, it aliases onto a smaller index k = i+j−n and corrupts that coefficient instead of contributing to a coefficient ≥ n, which the length-n vector has no room to store anyway. Padding both inputs with zeros out to length ≥ 2n−1 makes the true product's degree strictly less than the padded length, so no wraparound index ever collides with a genuinely nonzero coefficient — reading off the low-order entries after the inverse transform then gives exactly the ordinary (linear) convolution.</p>
+            </details>
+            <p><strong>Further reading:</strong> CLRS, 3rd ed., Ch. 30 ("Polynomials and the FFT"), specifically §30.1–30.2 for the evaluate–multiply–interpolate framework and the recursive FFT, §30.3 for the iterative in-place butterfly version.</p>
+          `,
+          exercises: [
+            "Prove that for n a power of two, the n-th roots of unity square onto the (n/2)-th roots of unity, with each (n/2)-th root hit by exactly two of the n original points. Use this fact to justify precisely why the FFT recurrence has exactly 2 subproblems of size n/2, rather than n subproblems of size n/2 as a naive 'evaluate at all n points independently' count might suggest.",
+            "Big-integer multiplication via FFT needs exact integer output coefficients, yet FFT computed with floating-point complex arithmetic accumulates rounding error. Explain, at a high level, why the true integer coefficients can still be recovered exactly by rounding each computed output to the nearest integer, given a bound on how large those true coefficients can get — and why that same bound is exactly what limits how many digits a floating-point FFT multiplication can safely handle before you'd need to switch to exact modular ('number-theoretic transform') arithmetic instead."
+          ]
+        },
+        {
+          id: "algo-sparse-linear-algebra",
+          title: "Sparse Linear Algebra",
+          section: "Numerical & Signal Algorithms",
+          prerequisites: ["algo-dynamic-arrays-amortization"],
+          estMinutes: 25,
+          content: `
+            <p>Many matrices that show up in practice — graph adjacency and incidence matrices, finite-element and finite-difference discretizations, large recommendation or design matrices — have only O(n) or O(n log n) nonzero entries out of n² total. Storing and operating on them as ordinary dense n×n arrays wastes both memory (Θ(n²) no matter how few entries are actually nonzero) and time (a dense matrix-vector product is Θ(n²) even when 99.9% of the terms being summed are zero times something).</p>
+            <p><strong>Sparse storage formats.</strong> A sparse matrix stores its nonzero pattern explicitly, in one of a few standard layouts, each making a different set of operations cheap:</p>
+            <table class="mini-table">
+              <tr><th>Format</th><th>Layout</th><th>Cheap at</th><th>Expensive at</th></tr>
+              <tr><td>COO</td><td>parallel arrays row[], col[], val[], any order</td><td>appending a new entry, O(1)</td><td>row or column access, matvec — needs a full O(nnz) scan</td></tr>
+              <tr><td>CSR</td><td>row_ptr[n+1] + col_idx[nnz] + val[nnz]</td><td>row access, matvec, both O(nnz in that row)</td><td>column access — still a full scan</td></tr>
+              <tr><td>CSC</td><td>col_ptr[n+1] + row_idx[nnz] + val[nnz]</td><td>column access, matrix-transpose-vector products</td><td>row access — still a full scan</td></tr>
+            </table>
+            <p>COO is the natural format to <em>build</em> a sparse matrix in — just append (row, col, value) triples as you discover nonzeros, in any order, then sort once at the end. CSR compresses that by row: instead of repeating a row index once per nonzero in that row, it stores one pointer per row into shared <code>col_idx</code>/<code>val</code> arrays. A concrete 4×4 example, with nonzeros at (0,0)=5, (0,2)=1, (1,1)=3, (2,2)=4, (3,0)=2, (3,3)=6:</p>
+            <svg viewBox="0 0 200 210" width="100%" height="210" style="max-width:220px;display:block;margin:0.8rem auto;" role="img" aria-label="4 by 4 grid showing a sparsity pattern with 6 filled cells out of 16">
+              <rect x="20" y="30" width="40" height="40" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <rect x="60" y="30" width="40" height="40" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <rect x="100" y="30" width="40" height="40" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <rect x="140" y="30" width="40" height="40" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <rect x="20" y="70" width="40" height="40" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <rect x="60" y="70" width="40" height="40" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <rect x="100" y="70" width="40" height="40" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <rect x="140" y="70" width="40" height="40" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <rect x="20" y="110" width="40" height="40" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <rect x="60" y="110" width="40" height="40" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <rect x="100" y="110" width="40" height="40" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <rect x="140" y="110" width="40" height="40" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <rect x="20" y="150" width="40" height="40" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <rect x="60" y="150" width="40" height="40" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <rect x="100" y="150" width="40" height="40" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <rect x="140" y="150" width="40" height="40" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+              <rect x="20" y="30" width="40" height="40" fill="var(--accent)" fill-opacity="0.18" stroke="var(--accent)" stroke-width="2"/>
+              <text x="40" y="55" text-anchor="middle" fill="var(--text)" font-size="13">5</text>
+              <rect x="100" y="30" width="40" height="40" fill="var(--accent)" fill-opacity="0.18" stroke="var(--accent)" stroke-width="2"/>
+              <text x="120" y="55" text-anchor="middle" fill="var(--text)" font-size="13">1</text>
+              <rect x="60" y="70" width="40" height="40" fill="var(--accent)" fill-opacity="0.18" stroke="var(--accent)" stroke-width="2"/>
+              <text x="80" y="95" text-anchor="middle" fill="var(--text)" font-size="13">3</text>
+              <rect x="100" y="110" width="40" height="40" fill="var(--accent)" fill-opacity="0.18" stroke="var(--accent)" stroke-width="2"/>
+              <text x="120" y="135" text-anchor="middle" fill="var(--text)" font-size="13">4</text>
+              <rect x="20" y="150" width="40" height="40" fill="var(--accent)" fill-opacity="0.18" stroke="var(--accent)" stroke-width="2"/>
+              <text x="40" y="175" text-anchor="middle" fill="var(--text)" font-size="13">2</text>
+              <rect x="140" y="150" width="40" height="40" fill="var(--accent)" fill-opacity="0.18" stroke="var(--accent)" stroke-width="2"/>
+              <text x="160" y="175" text-anchor="middle" fill="var(--text)" font-size="13">6</text>
+              <text x="100" y="15" text-anchor="middle" fill="var(--text-muted)" font-size="11">6 nonzeros out of 16 entries</text>
+            </svg>
+            <p>Its CSR triple is <code>val = [5, 1, 3, 4, 2, 6]</code>, <code>col_idx = [0, 2, 1, 2, 0, 3]</code>, <code>row_ptr = [0, 2, 3, 4, 6]</code> — row i's nonzeros live at positions <code>row_ptr[i] .. row_ptr[i+1]-1</code> in <code>val</code>/<code>col_idx</code> (row 0 owns positions 0–1: values 5, 1 at columns 0, 2; row 3 owns positions 4–5: values 2, 6 at columns 0, 3).</p>
+            <p><strong>Sparse matrix-vector product.</strong> Given A in CSR and a dense vector v, y = Av needs, for each row i, only the <code>row_ptr[i+1] − row_ptr[i]</code> actual nonzeros in that row — total work Θ(nnz) across the whole matrix, not Θ(n²). This one fact is why CSR is the default format for iterative sparse solvers: they're built almost entirely out of repeated matrix-vector products.</p>
+            <p><strong>Why direct elimination fails: fill-in.</strong> Gaussian elimination eliminates column k by subtracting a multiple of row k from every row i &gt; k with a nonzero in column k. If row k has a nonzero in column j, that subtraction can introduce a <em>new</em> nonzero at (i, j) even where A originally had a zero — "fill-in". A sparse matrix can turn nearly dense after enough elimination steps, in the worst case. Reordering the variables before elimination (minimum-degree ordering, nested dissection) reduces fill-in substantially but cannot eliminate it in general. For very large sparse systems this motivates avoiding direct factorization altogether: the conjugate gradient method solves sparse symmetric positive-definite systems using only a sequence of matrix-vector products — each Θ(nnz), with no fill-in ever, because no factorization is computed at all. Deriving conjugate gradient and the wider family of Krylov-subspace methods is real numerical-analysis content of its own (it sits alongside — and depends on — the "LU Factorization and the Role of Pivoting" and "Conditioning and Backward Stability" lessons over in the Data Science subject's numerical linear algebra material); the point to take from this lesson is narrower: fill-in is exactly <em>why</em> direct methods stop being attractive at scale, no matter how cleverly the sparse pattern is stored.</p>
+            <p><strong>Try it yourself:</strong> consider an n×n "star" matrix — nonzero only at (0,0) (the hub), every (0, j) and (j, 0) for j &gt; 0 (the hub's row and column, i.e. edges to every leaf), and the diagonal. Show that eliminating the hub (variable 0) first fills in the entire remaining (n−1)×(n−1) submatrix, while eliminating every leaf first and the hub last produces no fill-in at all.</p>
+            <details><summary>Solution</summary>
+              <p>Eliminating column 0 means subtracting (A[i][0] / A[0][0])·row 0 from every row i &gt; 0. Row 0 is nonzero in every column j (the full hub row), so this subtraction introduces a nonzero at (i, j) for every column j &gt; 0, for every leaf row i — the entire (n−1)×(n−1) trailing block, previously all zero off the diagonal, fills in completely. Eliminate leaves first instead: leaf i's row and column touch only the hub and itself (no leaf touches another leaf), so eliminating leaf i only ever modifies the hub's row/column and leaf i's own diagonal entry — no cross term between two leaves is ever created. Once every leaf is gone, the hub is a 1×1 elimination with nothing left to fill in. This one example is the seed of every fill-in-reducing ordering heuristic used in practice: eliminate low-degree ("leaf-like") variables before high-degree ("hub-like") ones.</p>
+            </details>
+            <p><strong>Further reading:</strong> Saad, <em>Iterative Methods for Sparse Linear Systems</em>, 2nd ed. (2003), for conjugate gradient and Krylov-subspace methods; Davis, <em>Direct Methods for Sparse Linear Systems</em> (SIAM, 2006), for CSR/CSC mechanics and fill-in-reducing orderings in full depth.</p>
+          `,
+          exercises: [
+            "Given a sparse matrix as unsorted COO triples (possibly with duplicate (row, col) pairs whose values should be summed), design an algorithm to build the equivalent CSR representation in Θ(nnz + n) time — not Θ(nnz log nnz) — by bucketing entries by row (a counting-sort-style pass, recalling the counting-sort idea from the comparison-sorting lower-bound lesson) rather than comparison-sorting the triples.",
+            "Prove that converting a matrix from CSR to CSC (or back) can be done in Θ(nnz + n) time by the same counting/bucketing technique as the previous exercise, applied to columns instead of rows, and explain why this means neither format is asymptotically 'better to start from' — you can always cheaply produce one from the other."
+          ]
+        },
+        {
+          id: "algo-matrix-multiplication",
+          title: "Fast Matrix Multiplication",
+          section: "Numerical & Signal Algorithms",
+          prerequisites: ["algo-divide-and-conquer"],
+          estMinutes: 28,
+          content: `
+            <p>The classical algorithm for multiplying two n×n matrices — the triple nested loop, y[i][j] += A[i][k]·B[k][j] — does Θ(n³) scalar multiplications. Whether this is actually necessary turns out to be a decades-deep open question, and the divide-and-conquer tools already used elsewhere in this course (block recursion, the master theorem) are exactly the tools behind the improvements that are known.</p>
+            <p><strong>Strassen's algorithm</strong> — already introduced as one of two canonical divide-and-conquer case studies in "Divide & Conquer Beyond Sorting: Strassen and Closest Pair" — reduces the 8 block products a naive 2×2-block split needs down to 7, giving T(n) = 7T(n/2) + Θ(n²) = Θ(n^log₂7) ≈ Θ(n^2.807) by the master theorem's case 1. See that lesson (and its exercise verifying the seven identities by hand) for the full derivation; what matters here is just the resulting exponent, since it's about to reappear.</p>
+            <p><strong>Boolean matrix multiplication.</strong> Replace the usual (+, ×) with (OR, AND) over {0, 1}: (A ⊙ B)[i][j] = OR over k of (A[i][k] AND B[k][j]). This is ordinary matrix multiplication with addition saturating at 1 instead of accumulating — and it inherits <em>exactly</em> the same block-recursive structure Strassen's algorithm relies on, because that recursion only ever uses associativity and distributivity of its two operations, and (OR, AND) satisfies both (it forms a semiring, just not a ring — OR has no inverse). So Boolean matrix multiplication also runs in Θ(n^ω) time, where ω is whichever matrix-multiplication exponent you have available (ω ≈ 2.807 via Strassen, or better with the algorithms mentioned below) — a genuinely useful fact, because Boolean matrix multiplication is exactly the computation behind one-step graph reachability.</p>
+            <p>Take a directed graph's adjacency matrix A, and let I be the identity (so A ∨ I marks every vertex as "reachable from itself in 0 steps" in addition to A's real edges). Repeated Boolean squaring accumulates reachability:</p>
+            <table class="mini-table">
+              <tr><th>Matrix</th><th>Represents reachability within</th><th>On a path graph 1→2→3→4</th></tr>
+              <tr><td>M = A ∨ I</td><td>1 step</td><td>1→2, 2→3, 3→4 (+ every i→i)</td></tr>
+              <tr><td>M² (= M ⊙ M)</td><td>2 steps</td><td>+ 1→3, 2→4</td></tr>
+              <tr><td>M⁴ (= M² ⊙ M²)</td><td>4 steps</td><td>+ 1→4 — now every reachable pair is marked</td></tr>
+            </table>
+            <p>Since any simple path in an n-vertex graph has fewer than n edges, M^(2^⌈log₂n⌉) already captures full reachability — only ⌈log₂n⌉ repeated squarings, each one Θ(n^ω) Boolean matrix multiplication, for Θ(n^ω log n) total. This is exactly the technique the next lesson builds on for computing shortest paths, not just reachability, in unweighted graphs.</p>
+            <p><strong>Try it yourself:</strong> using the table above, explain why the squaring chain starts from A ∨ I rather than from A alone, and why ⌈log₂n⌉ squarings always suffice regardless of the graph's actual diameter.</p>
+            <details><summary>Solution</summary>
+              <p>If you squared A alone, A²'s entries would mark paths of <em>exactly</em> 2 edges — a path of length 1 would never appear in any later power, since composing exact-length reachability only ever produces other exact lengths. You'd need to separately OR together A, A², A³, … to accumulate anything, defeating the point of repeated squaring. Adding the identity makes every diagonal entry "reachable in 0 steps", so once a pair is marked reachable within k steps it stays marked at every larger power too — (A∨I) raised to any exponent ≥ k still has that entry set, since squaring an already-1 diagonal only ever adds 1s, never removes any. Reachability accumulates monotonically rather than resetting at each level. Because any simple path has at most n−1 edges, (A∨I)^(n−1) already captures full reachability, and doubling the exponent at each squaring (1, 2, 4, 8, …) reaches ≥ n−1 after ⌈log₂n⌉ squarings regardless of the graph's actual (possibly much smaller) diameter — you always pay for the worst case, but that worst case is still only Θ(log n) matrix multiplications.</p>
+            </details>
+            <p>Strassen's ω ≈ 2.807 is not the end of the story, though the rest is mostly theoretical interest rather than engineering: Coppersmith and Winograd's 1990 algorithm reached ω ≈ 2.376, and a sequence of refinements since (Stothers, Vassilevska Williams, Le Gall, and most recently Alman & Vassilevska Williams) have pushed the exponent to roughly 2.37. These are "galactic algorithms" — asymptotically faster in a precise mathematical sense that only becomes real for matrix sizes vastly beyond anything ever actually multiplied on a computer, because of enormous hidden constants and impractical recursion overhead. Nobody runs Coppersmith–Winograd in production; Strassen is the practical ceiling. The smallest possible value of ω is still an open problem — many suspect the true answer is ω = 2, but nobody has proved it.</p>
+            <p><strong>Further reading:</strong> CLRS, 3rd ed., §4.2 for Strassen's derivation in full; Alman & Vassilevska Williams, "A Refined Laser Method and Faster Matrix Multiplication," SODA 2021, for the current record exponent (no need to read it in full — just that it exists and roughly where the frontier sits).</p>
+          `,
+          exercises: [
+            "Verify the master-theorem computation showing T(n) = 7T(n/2) + Θ(n²) gives Θ(n^log₂7). Then redo it for a hypothetical block algorithm using only 6 block products instead of 7 (no such 2×2-block algorithm is actually known to exist — this is a pure exercise in the recurrence), and compare the resulting exponent to Strassen's.",
+            "State the semiring axioms and verify that ({0,1}, OR, AND) satisfies them, identifying specifically which ring axiom it fails to satisfy (and why that particular failure doesn't matter for the block-multiplication recursion, which only ever invokes associativity and distributivity)."
           ]
         }
       ]
