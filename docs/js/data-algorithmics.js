@@ -6,9 +6,65 @@
 // field-by-field doc (id/title/section/prerequisites/estMinutes/content/exercises); same rules
 // apply here, ids just use the "algo-" prefix instead of "phys-".
 //
-// STATUS (2026-09-01, batch 7): THE ENTIRE FILE IS NOW COMPLETE. Every lesson in every chapter
-// (Data Structures, Algorithms, Graph Algorithms) has full content — no placeholders remain
-// anywhere in js/data-algorithmics.js. There is no NEXT UP; this authoring pass is finished.
+// STATUS (2026-09-01, batch 7): the file reached "every lesson has full content, no
+// placeholders" — see the bucket list below, which is now historical background only.
+// A NEW, DEEPER pass started 2026-09-02 (site owner reviewed batch-7 content and asked for
+// concrete proof exercises, multi-case diagrams, and several new topics — see the scheduled
+// task prompt for this pass's exact spec if you need the original wording). That pass is
+// tracked below; treat THIS block, not the bucket list further down, as the live status.
+//
+// ===== DEEP PASS STATUS (updated 2026-09-02, run 1) =====
+// PART A (structural/style fixes), by sub-item:
+//   A1 DONE (run 1). Added 5 "Exercises: <cluster>" nodes to the data-structures chapter, each a
+//      one-sentence intro + a numbered problem list (no new teaching prose), prerequisites set to
+//      every lesson in that section cluster: algo-exercises-foundations (after algo-linked-lists),
+//      algo-exercises-hashing-search-trees (after algo-persistent-data-structures, prereqs include
+//      the new algo-bst from A2 below), algo-exercises-heaps (after algo-van-emde-boas),
+//      algo-exercises-amortized-structures (after algo-union-find), algo-exercises-tries-range-queries
+//      (after algo-suffix-trees-arrays, closing the chapter). Also rewrote
+//      algo-what-is-a-data-structure's opening per the site owner's exact wording (names the List
+//      ADT and its 4 operations in plain language before the dynamic-array/linked-list diagram,
+//      diagram unchanged, "two consequences" paragraph kept verbatim as instructed), removed its
+//      inline Try-it-yourself block and its 2 array exercises entirely (exercises: [] now), folding
+//      all of that content (adapted) into algo-exercises-foundations instead, alongside new material.
+//   A2 DONE (run 1). New lesson algo-bst ("Binary Search Trees") inserted between algo-bst-balance's
+//      predecessor position and algo-bst-balance itself (section "Hashing & Search Trees",
+//      prerequisites: ["algo-linked-lists"]) — full deep template (goal, BST-property diagram with
+//      in-order traversal, search/insert/delete incl. two-children successor-splice case, complexity
+//      table incl. expected-O(log n)-random vs Θ(n)-sorted, a rotation-primitive diagram + closing
+//      forward-reference to algo-red-black-trees, try-it-yourself = O(1)-extra-space predecessor,
+//      2 array exercises). algo-bst-balance's prerequisites updated to
+//      ["algo-what-is-a-data-structure", "algo-bst"] as instructed.
+//   A3 NOT STARTED — NEXT UP. Rewrite algo-red-black-trees to the new deep template from the task
+//      spec (3 numbered axioms as formal definition, valid-tree SVG, a combined "prove h ≤ 2h_b and
+//      n ≥ 2^h_b − 1" try-it-yourself, a repair-strategy-as-general-pattern paragraph, then the
+//      CENTERPIECE: a 3-case insert-fixup try-it-yourself — uncle red / black-same-side /
+//      black-opposite-side — each with its own small SVG in both the problem and the folded
+//      solution (6 SVGs total for that block), then brief insert/delete-as-primitives closing,
+//      cross-links, further reading, slogan). IMPORTANT CORRECTION for whoever picks this up: the
+//      task prompt that seeded this pass describes algo-red-black-trees as "currently a placeholder"
+//      — that is NOT true as of run 1; it already has full bucket-2 content (diagram, case-analysis
+//      list, table, try-it-yourself, 2 exercises). Do the A3 rewrite anyway — the new template
+//      (numbered axioms, the h≤2h_b proof exercise, the 3-case cased diagrams) is a genuine
+//      upgrade the current version lacks — just don't be confused expecting an empty lesson.
+//   A4 NOT STARTED. New lesson algo-avl-trees, same deep template, section "Hashing & Search Trees",
+//      prerequisites: ["algo-bst", "algo-amortized-potential-method"]. (algo-bst now exists, so this
+//      prereq is valid whenever A4 is picked up.) NOTE: once A4 lands, also add algo-avl-trees to
+//      algo-exercises-hashing-search-trees's prerequisites array (currently does NOT include it,
+//      since A4 hasn't happened yet) so that ex-lesson keeps covering the full section cluster.
+//   A5 NOT STARTED (lower priority, only if budget allows after A1-A4 and all of Part B).
+// PART B (new topics) — NOT STARTED, gated on A1-A4 per the task spec (do not start until A3+A4
+//   are done). B1 (4 new DP lessons), B2 (FFT), B3 (sparse linear algebra), B4 (fast matrix
+//   multiplication incl. boolean variant), B5 (Seidel's APSP, depends on B4's lesson id), B6
+//   (computational geometry: convex hull + segment intersection), B7 (linear programming: simplex +
+//   duality) — none begun.
+// NEXT UP: A3 (red-black trees rewrite) is the very next task for the next fire.
+// ===== END DEEP PASS STATUS =====
+//
+// ----- Historical: pre-deep-pass batch history (superseded by the DEEP PASS STATUS above) -----
+// As of 2026-09-01 batch 7: THE ENTIRE FILE WAS complete under the pre-deep-pass standard. Every
+// lesson in every chapter (Data Structures, Algorithms, Graph Algorithms) had full content — no
+// placeholders remained anywhere in js/data-algorithmics.js under that standard.
 // This file covers Data Structures / Algorithms / Graph Algorithms only.
 // The five chapters that used to follow "graph-algorithms" here (numerical-linear-algebra,
 // optimization, probability-statistics, time-series, classical-ml) were moved verbatim to
@@ -82,12 +138,13 @@ const ALGORITHMICS_SUBJECT = {
           prerequisites: [],
           estMinutes: 15,
           content: `
-            <p>Every data structure in this course answers two separate questions, and most of the early confusion in this area comes from answering them at once. The first question is <em>what can you do with it</em> — which operations exist, and what do they promise: insert a key, remove the minimum, find a value, iterate in order? That is the <strong>abstract data type</strong> (ADT): a contract stated purely in terms of behavior, with no commitment to memory layout. The second question is <em>how is it actually built</em> — arrays, pointers, hashing — and that is the <strong>data structure</strong> proper: one concrete realization of the contract, with its own time and space costs.</p>
-            <p>The diagram below makes the split concrete for the simplest interesting ADT, the List (insert at a position, get by position, remove by position). Two structures implement the exact same interface with opposite performance profiles:</p>
+            <p>Let us look at the simplest interesting ADT — the <strong>list</strong>. Its goal is to implement an ordered list of elements. The operations we'd like this ADT to support are: change the data in position i, get the data in position i, remove a position, add a position. That's the whole contract, stated with no commitment yet to how any of it is actually built.</p>
+            <p>Every data structure in this course answers two separate questions, and most of the early confusion in this area comes from answering them at once. The first question is <em>what can you do with it</em> — the four operations just named are exactly that: a promise about behavior, with no mention of arrays, pointers, or memory layout. That promise, stated purely in terms of behavior, is the <strong>abstract data type</strong> (ADT). The second question is <em>how is it actually built</em> — arrays, pointers, hashing — and that is the <strong>data structure</strong> proper: one concrete realization of the contract, with its own time and space costs.</p>
+            <p>The diagram below makes the split concrete. Two structures implement the exact same List interface with opposite performance profiles:</p>
             <svg viewBox="0 0 520 220" width="100%" height="220" style="max-width:520px;display:block;margin:0.8rem auto;" role="img" aria-label="A List ADT box at top, with arrows down to two implementation boxes: dynamic array (fast get, slow front-insert) and linked list (slow get, fast front-insert)">
               <rect x="160" y="10" width="200" height="60" rx="8" fill="none" stroke="var(--accent)" stroke-width="2"/>
               <text x="260" y="35" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="600">List ADT</text>
-              <text x="260" y="55" text-anchor="middle" fill="var(--text-muted)" font-size="11">insert(i,x)   get(i)   remove(i)</text>
+              <text x="260" y="55" text-anchor="middle" fill="var(--text-muted)" font-size="11">get(i)   set(i,x)   insert(i,x)   remove(i)</text>
               <line x1="220" y1="70" x2="100" y2="128" stroke="var(--border)" stroke-width="1.5"/>
               <line x1="300" y1="70" x2="420" y2="128" stroke="var(--border)" stroke-width="1.5"/>
               <rect x="10" y="130" width="180" height="72" rx="8" fill="none" stroke="var(--border)" stroke-width="1.5"/>
@@ -99,6 +156,7 @@ const ALGORITHMICS_SUBJECT = {
               <text x="420" y="172" text-anchor="middle" fill="var(--text-muted)" font-size="11">get(i): O(n)</text>
               <text x="420" y="189" text-anchor="middle" fill="var(--text-muted)" font-size="11">insert(0,x): O(1)</text>
             </svg>
+            <p>Both are covered in full in their own lessons — <a href="#/subject/algorithmics/data-structures/algo-dynamic-arrays-amortization">dynamic arrays</a> and <a href="#/subject/algorithmics/data-structures/algo-linked-lists">linked lists</a> — but the shape of the trade-off is already visible above: one buys O(1) random access, the other buys O(1) front-insertion, and no structure gets both for free.</p>
             <p>Two consequences follow immediately, and they recur in every later lesson. First, you can swap implementations without changing any code that only talks to the ADT — this is the entire justification for a database index switching from a B-tree to a hash index, or for choosing Python's <code>list</code> versus <code>collections.deque</code>. Second, "which structure is best" is not answerable without knowing the operation mix: a workload dominated by random access wants the array; one dominated by front-insertion wants the list.</p>
             <table class="mini-table">
               <tr><th>Operation</th><th>Dynamic array</th><th>Linked list</th><th>Why</th></tr>
@@ -107,18 +165,11 @@ const ALGORITHMICS_SUBJECT = {
             </table>
             <p>Every later lesson in this chapter is filling in a row of a much bigger version of the table above — the same handful of ADTs (list, set, map, priority queue), an increasing number of implementations, each buying a different point on the time/space trade-off curve.</p>
             <p><strong>Remark:</strong> a structure's <strong>invariant</strong> is the standing property its operations must preserve — sortedness for a sorted array, the heap property for a heap, no cycles for a tree — and it's worth naming up front because every lesson from here on leans on it without saying so again.</p>
-            <p><strong>Try it yourself:</strong> a stack (push/pop from one end) and a queue (enqueue at one end, dequeue from the other) are both, in ADT terms, restricted versions of the List above. Which one can be implemented with O(1) worst-case operations using <em>only</em> a dynamic array with no shifting ever — and which one genuinely needs either a second index trick or a linked structure to avoid O(n) shifts?</p>
-            <details><summary>Solution</summary>
-              <p>A stack is free: push and pop both happen at the same end (the array's tail), so a dynamic array with amortized-O(1) append already gives O(1) push/pop with no shifting, ever. A queue is the hard case, because enqueue and dequeue happen at <em>opposite</em> ends — dequeuing from index 0 of a plain array means shifting everything left, which is O(n). That's precisely why queues need either the circular-buffer trick (advance a head index instead of shifting) or a linked list, while stacks never do. The asymmetry is the ADT's fault, not the array's: it's baked into which end each operation touches.</p>
-            </details>
             <p><strong>Remark:</strong> reading any new structure well means asking three questions in order: what is the invariant, why does maintaining it make some operation cheap, and what does maintaining it cost on the operations that don't benefit. That question triage is the actual skill this chapter is teaching; the specific structures — starting with <a href="#/subject/algorithmics/data-structures/algo-stacks">stacks</a> and <a href="#/subject/algorithmics/data-structures/algo-queues">queues</a> next — are the practice material.</p>
             <p><strong>Further reading:</strong> CLRS, 3rd ed., Ch. 10 introduction (stacks/queues/lists as the first worked instances of implementing an ADT); Sedgewick & Wayne, <em>Algorithms</em>, 4th ed., §1.2 ("Data Types") for the clearest short treatment of the ADT/implementation split specifically; Pat Morin, <em>Open Data Structures</em> (free, opendatastructures.org), Ch. 1, for the same ground with runnable code in several languages if you want to see interfaces expressed as code rather than prose.</p>
             <p><em>The whole idea in one line: the contract is what it promises, the structure is how it pays for that promise.</em></p>
           `,
-          exercises: [
-            "The Python list and collections.deque both implement something close to the List ADT. Look up (or measure) the cost of appendleft on each. Explain the discrepancy in terms of the underlying data structure, not the interface.",
-            "Define an ADT for a 'multiset' (a collection allowing duplicates, supporting insert, remove-one-instance, and count(x)). Give two different data structures implementing it, and describe a workload where each wins."
-          ]
+          exercises: []
         },
         {
           id: "algo-stacks",
@@ -263,6 +314,25 @@ const ALGORITHMICS_SUBJECT = {
           ]
         },
         {
+          id: "algo-exercises-foundations",
+          title: "Exercises: Foundations",
+          section: "Foundations",
+          prerequisites: ["algo-what-is-a-data-structure", "algo-stacks", "algo-queues", "algo-linked-lists"],
+          estMinutes: 35,
+          content: `
+            <p>Six problems drawing on the List ADT and its first three implementations — stacks, queues, and linked lists — from most concrete to most open-ended.</p>
+            <ol>
+              <li>Define an ADT for a <strong>multiset</strong> (a collection allowing duplicates, supporting insert, remove-one-instance, and count(x)). Give two different data structures implementing it, and describe a workload where each wins.</li>
+              <li>The Python <code>list</code> and <code>collections.deque</code> both implement something close to the List ADT. Look up (or measure) the cost of <code>appendleft</code> on each. Explain the discrepancy in terms of the underlying data structure, not the interface.</li>
+              <li>A stack (push/pop from one end) and a queue (enqueue at one end, dequeue from the other) are both, in ADT terms, restricted versions of the List ADT. Which one can be implemented with O(1) worst-case operations using <em>only</em> a plain dynamic array with no shifting ever — and which one genuinely needs either a circular-buffer index trick or a linked structure to avoid O(n) shifts? Justify the asymmetry from the ADT's access pattern, not from either implementation.</li>
+              <li>A linked-list-backed stack never resizes and so has O(1) <em>worst-case</em> push/pop, while a dynamic-array-backed stack has O(1) only <em>amortized</em> — some individual push triggers a full O(n) resize. Describe a real-time system where amortized O(1) is not an acceptable guarantee, and argue whether switching to the linked-list stack actually solves the problem or merely relocates the same worst-case cost into the memory allocator's <code>malloc</code> call.</li>
+              <li>Prove that a naive array-backed queue — which shifts every remaining element left by one on each dequeue — can cost Θ(n²) total over a sequence of n interleaved enqueues and dequeues. Then explain precisely how the circular-buffer fix (advancing head/tail indices modulo capacity instead of shifting) reduces this to O(1) per operation in the <em>worst case</em>, not merely on average.</li>
+              <li>Design a data structure supporting <code>push</code>, <code>pop</code>, and <code>findMin</code>, all in O(1) worst-case time, built only out of stacks (no other structure, no per-element bound on values). Prove that your <code>findMin</code> is always correct, including immediately after a sequence of pops that removes the current minimum.</li>
+            </ol>
+          `,
+          exercises: []
+        },
+        {
           id: "algo-hashing-universal-families",
           title: "Hash Tables and Universal Hash Families",
           section: "Hashing & Search Trees",
@@ -281,10 +351,121 @@ const ALGORITHMICS_SUBJECT = {
           ]
         },
         {
+          id: "algo-bst",
+          title: "Binary Search Trees",
+          section: "Hashing & Search Trees",
+          prerequisites: ["algo-linked-lists"],
+          estMinutes: 28,
+          content: `
+            <p>A binary search tree stores keys in a pointer structure — the same node-and-pointers idea as a linked list, now with two pointers per node instead of one — arranged so that search, insert, delete, and sorted iteration all fall out of a single ordering rule, with no shifting and no fixed capacity.</p>
+            <p>The rule is the <strong>BST property</strong>: at every node x, every key in x's left subtree is less than x's key, and every key in x's right subtree is greater. Applied recursively, that one local rule at every node forces the whole tree into a single global order:</p>
+            <svg viewBox="0 0 400 230" width="100%" height="230" style="max-width:420px;display:block;margin:0.8rem auto;" role="img" aria-label="A binary search tree with root 8, left child 3, right child 10, 3's children 1 and 6, 10's right child 14, and below it the sorted sequence 1 3 6 8 10 14 with an in-order traversal arrow">
+              <g font-size="13" text-anchor="middle">
+                <line x1="200" y1="30" x2="100" y2="90" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="200" y1="30" x2="300" y2="90" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="100" y1="90" x2="50" y2="150" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="100" y1="90" x2="150" y2="150" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="300" y1="90" x2="350" y2="150" stroke="var(--border)" stroke-width="1.5"/>
+                <circle cx="200" cy="20" r="17" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="200" y="25" fill="var(--text)">8</text>
+                <circle cx="100" cy="90" r="16" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="100" y="95" fill="var(--text)">3</text>
+                <circle cx="300" cy="90" r="16" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="300" y="95" fill="var(--text)">10</text>
+                <circle cx="50" cy="150" r="14" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="50" y="154" fill="var(--text)">1</text>
+                <circle cx="150" cy="150" r="14" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="150" y="154" fill="var(--text)">6</text>
+                <circle cx="350" cy="150" r="14" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="350" y="154" fill="var(--text)">14</text>
+              </g>
+              <g font-size="12" text-anchor="middle" fill="var(--text-muted)">
+                <text x="50" y="200">1</text>
+                <text x="120" y="200">3</text>
+                <text x="190" y="200">6</text>
+                <text x="260" y="200">8</text>
+                <text x="330" y="200">10</text>
+                <text x="380" y="200">14</text>
+              </g>
+              <defs><marker id="bstarrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker></defs>
+              <line x1="40" y1="212" x2="385" y2="212" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#bstarrow)"/>
+              <text x="215" y="228" text-anchor="middle" fill="var(--accent)" font-size="11">in-order traversal</text>
+            </svg>
+            <p>That last claim — in-order traversal (recursively: visit left subtree, visit this node, visit right subtree) always produces the keys in sorted order — is a direct induction on the BST property: everything visited before x is either in x's left subtree (all smaller) or an ancestor whose own left subtree x sits in (also smaller by the same rule applied one level up), and symmetrically for everything visited after.</p>
+            <p>The operations are all a single downward walk, or a walk plus one splice:</p>
+            <ul>
+              <li><strong>Search(k)</strong> — start at the root; if k equals the current key, done; if k is smaller go left, if larger go right; repeat until found or a null pointer is reached (not present).</li>
+              <li><strong>Insert(k)</strong> — search for k; when the walk falls off the tree (hits null), attach a new node with key k exactly there. The tree only ever grows at its fringe.</li>
+              <li><strong>Delete(k)</strong> — three cases. A leaf is just unlinked from its parent. A node with one child is spliced out, its parent linking directly to that one child. A node with <em>two</em> children cannot simply be removed without breaking the ordering on both sides, so instead: find its in-order <strong>successor</strong> (the leftmost node of its right subtree — the next key up in sorted order), copy that successor's key into the node being "deleted", then delete the successor instead, which by construction has no left child and so falls into one of the first two cases.</li>
+            </ul>
+            <p><strong>Remark:</strong> the two-children delete case is the one place a beginner's implementation usually goes wrong — the fix is never to physically remove a node with two children, only ever a node with at most one.</p>
+            <table class="mini-table">
+              <tr><th>Operation</th><th>Cost</th><th>Why</th></tr>
+              <tr><td>Search / insert / delete</td><td>O(h)</td><td>each is one downward walk (delete: plus one O(h) successor search), h = tree height</td></tr>
+              <tr><td>In-order traversal</td><td>O(n)</td><td>every node visited exactly once</td></tr>
+              <tr><td>h, random insertion order</td><td>O(log n) expected</td><td>a randomly built BST has expected height O(log n) (CLRS §12.4)</td></tr>
+              <tr><td>h, sorted insertion order</td><td>Θ(n) worst case</td><td>inserting 1,2,3,…,n in order degenerates into a linked list — no rebalancing happens on its own</td></tr>
+            </table>
+            <p>That last row is the entire motivation for the next few lessons: nothing in the BST property itself prevents the tree from turning into a linked list under an adversarial or merely unlucky insertion order, and O(n) search defeats the whole point of using a tree.</p>
+            <p>The fix, when it comes, will not be a different tree shape bolted on from outside — it will be a single local primitive applied opportunistically during ordinary inserts and deletes. That primitive is <strong>rotation</strong>: a single rotation changes which of two adjacent nodes is on top, without touching anything outside that pair, and — this is the part worth staring at — <em>without changing the in-order sequence at all</em>:</p>
+            <svg viewBox="0 0 480 220" width="100%" height="220" style="max-width:480px;display:block;margin:0.8rem auto;" role="img" aria-label="Before: node y on top with left child x and right child C, x has children A and B. After a right rotation: node x on top with left child A and right child y, y has children B and C.">
+              <g font-size="13" text-anchor="middle">
+                <text x="100" y="14" fill="var(--text-muted)" font-size="11">before</text>
+                <line x1="110" y1="30" x2="60" y2="90" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="110" y1="30" x2="160" y2="90" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="60" y1="90" x2="30" y2="150" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="60" y1="90" x2="90" y2="150" stroke="var(--border)" stroke-width="1.5"/>
+                <circle cx="110" cy="20" r="16" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="110" y="25" fill="var(--text)">y</text>
+                <circle cx="60" cy="90" r="16" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="60" y="95" fill="var(--text)">x</text>
+                <circle cx="160" cy="90" r="14" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="160" y="95" fill="var(--text)">C</text>
+                <circle cx="30" cy="150" r="14" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="30" y="155" fill="var(--text)">A</text>
+                <circle cx="90" cy="150" r="14" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="90" y="155" fill="var(--text)">B</text>
+              </g>
+              <defs><marker id="bstrotarrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker></defs>
+              <line x1="205" y1="90" x2="255" y2="90" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#bstrotarrow)"/>
+              <text x="230" y="80" text-anchor="middle" fill="var(--accent)" font-size="11">rotate right</text>
+              <g font-size="13" text-anchor="middle">
+                <text x="390" y="14" fill="var(--text-muted)" font-size="11">after</text>
+                <line x1="390" y1="30" x2="340" y2="90" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="390" y1="30" x2="440" y2="90" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="440" y1="90" x2="410" y2="150" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="440" y1="90" x2="470" y2="150" stroke="var(--border)" stroke-width="1.5"/>
+                <circle cx="390" cy="20" r="16" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="390" y="25" fill="var(--text)">x</text>
+                <circle cx="340" cy="90" r="14" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="340" y="95" fill="var(--text)">A</text>
+                <circle cx="440" cy="90" r="16" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+                <text x="440" y="95" fill="var(--text)">y</text>
+                <circle cx="410" cy="150" r="14" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="410" y="155" fill="var(--text)">B</text>
+                <circle cx="470" cy="150" r="14" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="470" y="155" fill="var(--text)">C</text>
+              </g>
+            </svg>
+            <p>Before and after, the in-order sequence is identical — A, x, B, y, C — because B (the one subtree that changes parents) still sits between x and y in sorted order either way; only the tree's <em>shape</em> changed, in O(1) pointer reassignments. A rotation is a primitive, not a complete balancing scheme by itself — it is the single move that <a href="#/subject/algorithmics/data-structures/algo-red-black-trees">red-black trees</a> and later balanced-tree lessons in this chapter apply, over and over, according to their own bookkeeping rules, to keep height provably logarithmic no matter the insertion order.</p>
+            <p><strong>Try it yourself:</strong> given a pointer to a node x in a BST (nodes store only <code>left</code> and <code>right</code> pointers, no parent pointer, no extra per-node bookkeeping) and a pointer to the tree's root, find x's in-order <strong>predecessor</strong> — the node that would come immediately before x in sorted order — using only O(1) extra space beyond the walk itself.</p>
+            <details><summary>Solution</summary>
+              <p>Two cases, exactly mirroring the successor definition used above in delete. If x has a left subtree, the predecessor is the <em>rightmost</em> node of that subtree — walk <code>left</code> once, then <code>right</code> until a null right pointer, in O(h) time and O(1) space. If x has no left subtree, the predecessor is the nearest ancestor for which x lies in the right subtree — and without parent pointers, that means finding it via one walk down from the root: keep a variable <code>candidate = null</code>; starting at the root, at each step compare the current node's key to x's key — if x's key is smaller, go left; if larger, set <code>candidate</code> to the current node (it's a valid "x is in my right subtree" ancestor so far) and go right; if equal, stop. When the walk reaches x, <code>candidate</code> holds the answer (or null, if x is the overall minimum key and has no predecessor). Both branches are a single downward walk with one extra pointer-sized variable — O(h) time, O(1) extra space, no parent pointers and no recursion stack required.</p>
+            </details>
+            <p><strong>Remark:</strong> everything above holds for an arbitrary, unbalanced BST — nothing here assumed anything about height beyond "whatever it happens to be". <a href="#/subject/algorithmics/data-structures/algo-bst-balance">Balanced search trees</a> pick up exactly where the table above left off: which local invariant, repaired with rotations after every insert and delete, forces h = O(log n) regardless of input order.</p>
+            <p><strong>Further reading:</strong> CLRS, 3rd ed., Ch. 12 (§12.1–12.3 for the BST property, traversal, search, insert and delete; §12.4 for the expected-O(log n)-height theorem on a randomly built BST).</p>
+            <p><em>The whole idea in one line: one ordering rule, applied at every node, turns "where does this key belong" into a single walk down, and "list everything in order" into a walk you were already doing.</em></p>
+          `,
+          exercises: [
+            "Prove by induction on subtree size that in-order traversal of a BST visits keys in strictly increasing order, using only the BST property (every node's left subtree is entirely smaller, right subtree entirely larger).",
+            "Trace the deletion of a node with two children from a concrete 7-node BST of your choosing, showing the tree before and after, and explicitly identify the in-order successor at each step. Then explain why using the in-order <em>predecessor</em> instead (leftmost of... rather rightmost of the left subtree) would work exactly as well, and why real implementations sometimes alternate between the two to avoid always skewing the tree in the same direction."
+          ]
+        },
+        {
           id: "algo-bst-balance",
           title: "Balanced Search Trees: Why Rotations Suffice",
           section: "Hashing & Search Trees",
-          prerequisites: ["algo-what-is-a-data-structure"],
+          prerequisites: ["algo-what-is-a-data-structure", "algo-bst"],
           estMinutes: 25,
           content: `
             <p>A binary search tree keeps the in-order traversal sorted, so it supports predecessor/successor and range queries that a hash table cannot. Its cost is the tree height, and unbalanced insertion of a sorted sequence degenerates to a linked list. Every balanced-BST scheme is therefore an answer to one question: which local invariant, repairable in O(1) work per level, forces height O(log n)?</p>
@@ -708,6 +889,25 @@ const ALGORITHMICS_SUBJECT = {
           ]
         },
         {
+          id: "algo-exercises-hashing-search-trees",
+          title: "Exercises: Hashing & Search Trees",
+          section: "Hashing & Search Trees",
+          prerequisites: ["algo-hashing-universal-families", "algo-bst", "algo-bst-balance", "algo-red-black-trees", "algo-b-trees", "algo-splay-trees", "algo-skip-lists", "algo-bloom-filters", "algo-kd-trees", "algo-persistent-data-structures"],
+          estMinutes: 45,
+          content: `
+            <p>Six problems that compare and combine structures across this whole section, rather than drilling any one of them in isolation.</p>
+            <ol>
+              <li>A "sorted dictionary with range queries" workload needs both fast point lookup and fast <code>rangeScan(lo, hi)</code>. Explain precisely why a hash table cannot serve this workload no matter how good its hash family is, then compare a plain BST, a red-black tree, and a B+-tree for it, and state which wins when the data is memory-resident versus disk-resident, and why.</li>
+              <li>A skip list's expected O(log n) height is a high-probability guarantee, not a worst-case one; a red-black tree's O(log n) height is a hard worst-case guarantee. Describe one application where that difference is decisive (name the failure mode the probabilistic guarantee permits) and one where it genuinely does not matter.</li>
+              <li>Design a two-level structure using a Bloom filter in front of a hash table to reduce expensive lookups (e.g. disk reads) for a key-value store where most queries are for keys that do not exist. Give the expected number of expensive lookups per query as a function of the Bloom filter's false-positive rate p, and explain why the filter must never produce a false <em>negative</em> for this design to be correct.</li>
+              <li>A financial system needs a sorted index it can query as of any past point in time (an audit requirement) while still supporting fast range scans on the <em>current</em> version only. Propose a structure combining ideas from the persistent-data-structures and B+-tree lessons, and identify the one place path copying gets more expensive when applied to a wide node (branching factor t) instead of a binary one.</li>
+              <li>Explain precisely why a plain BST cannot be generalized to 2-D range queries just by using (x, y) as a single compound sort key. Then describe what a k-d tree does differently at each level of recursion to make range and nearest-neighbor queries efficient in a way the compound-key BST cannot match.</li>
+              <li>Splay trees have no invariant to check at all — only a "move the accessed node to the root" rule applied after every access — yet their amortized cost matches a balanced tree's. Give one concrete access sequence where a red-black tree clearly outperforms a splay tree, and one where a splay tree clearly outperforms a red-black tree, justifying each with the actual per-operation cost.</li>
+            </ol>
+          `,
+          exercises: []
+        },
+        {
           id: "algo-binary-heaps",
           title: "Binary Heaps and the Linear-Time Build",
           section: "Heaps",
@@ -904,6 +1104,24 @@ const ALGORITHMICS_SUBJECT = {
           ]
         },
         {
+          id: "algo-exercises-heaps",
+          title: "Exercises: Heaps",
+          section: "Heaps",
+          prerequisites: ["algo-binary-heaps", "algo-priority-queue-adt", "algo-fibonacci-heap", "algo-van-emde-boas"],
+          estMinutes: 30,
+          content: `
+            <p>Five problems on the priority-queue family, from a single heap to the trade-offs between its more exotic variants.</p>
+            <ol>
+              <li>Dijkstra's algorithm with a binary heap costs O(E log V) overall; with a Fibonacci heap it drops to O(E + V log V). State exactly which single operation's amortized cost the Fibonacci heap improves to make this possible, and explain why that operation — not extract-min — is the one whose cost is multiplied by E rather than by V in the total.</li>
+              <li>Implement a "meldable" priority queue (merge two priority queues into one) using a binary heap, a Fibonacci heap, and a plain sorted linked list. State the cost of meld for each, and explain why the binary heap's implicit array-indexing trick (children of i at 2i+1, 2i+2) makes O(1) meld structurally impossible without abandoning that representation.</li>
+              <li>A job scheduler updates job priorities constantly (decrease-key-heavy) but calls extract-min rarely. Write the total-cost formula for n decrease-keys and m extract-mins under a binary heap and under a Fibonacci heap, then determine, as a function of n and m, the point at which the Fibonacci heap's better asymptotics actually overcome its larger constant factors in practice.</li>
+              <li>Prove the amortized O(1) bound for Fibonacci-heap decrease-key using the potential function Φ = (number of trees) + 2·(number of marked nodes). In particular, explain why the marking scheme guarantees a cascading cut can never run for more than O(1) amortized steps, even though a single decrease-key can in principle trigger a long chain of cuts.</li>
+              <li>A van Emde Boas tree gives O(log log u) operations but costs Θ(u) space in its direct-indexed form (or expected O(log log u) with Θ(n) space, hashed). Describe a concrete workload where this beats a Fibonacci heap outright, and one where the universe size u makes it strictly worse, even before accounting for constant factors.</li>
+            </ol>
+          `,
+          exercises: []
+        },
+        {
           id: "algo-dynamic-arrays-amortization",
           title: "Dynamic Arrays: Growth Factors and Amortized Cost",
           section: "Amortized Structures",
@@ -946,6 +1164,23 @@ const ALGORITHMICS_SUBJECT = {
             "Prove that union by rank alone gives worst-case O(log n) per operation, by showing that any root of rank r has at least 2^r descendants. Then construct a sequence of unions and finds showing this is tight.",
             "Prove that path compression alone (no union by rank) gives O(log n) amortized cost per operation using a potential function of your choice. Then implement both heuristics and empirically measure average path length for 10^6 random unions — does it match the α(n) prediction?"
           ]
+        },
+        {
+          id: "algo-exercises-amortized-structures",
+          title: "Exercises: Amortized Structures",
+          section: "Amortized Structures",
+          prerequisites: ["algo-dynamic-arrays-amortization", "algo-union-find"],
+          estMinutes: 25,
+          content: `
+            <p>Four problems contrasting the two amortized-analysis case studies in this section — a resizing array and a union-find forest — to sharpen what "amortized" is actually paying for in each.</p>
+            <ol>
+              <li>Give the aggregate-method proof (not a potential function) that n dynamic-array appends with doubling cost O(n) total. Explain why the aggregate method is easy here, then explain precisely why it stops being adequate once shrinking (deletion with capacity contraction) is added back into the mix, forcing a move to the potential method.</li>
+              <li>Union-find with path compression alone (no union by rank) still gives O(log n) amortized cost per operation. Construct a concrete sequence of unions that forces some node's path to the root to reach Θ(log n) depth before any find is called on it, then trace what path compression does to that same path on the very next find.</li>
+              <li>A dynamic array and a union-find forest both hide an expensive operation behind cheap ones via amortized analysis, but the expensive operation has a different physical cause in each: a copy-everything resize versus an unbroken long parent chain. State, in one sentence each, what triggers the expensive case in each structure, and explain concretely why path compression cannot be "ported" to fix the dynamic array's resize cost (what would the analogous operation even mean there?).</li>
+              <li>Prove that a dynamic array which grows by a fixed additive amount c on overflow (capacity m → m + c), rather than a multiplicative factor γ &gt; 1, makes n appends cost Θ(n²) total, not O(n). Identify exactly where the geometric-series argument that works for multiplicative growth fails for additive growth.</li>
+            </ol>
+          `,
+          exercises: []
         },
         {
           id: "algo-segment-fenwick-trees",
@@ -1086,6 +1321,24 @@ const ALGORITHMICS_SUBJECT = {
             "Given the suffix tree for a string T of length n, describe an O(n) algorithm to find the longest substring of T that occurs at least twice, and justify the bound in terms of the tree's internal nodes.",
             "Given a suffix array SA and its LCP array for a string T, describe how to test whether a pattern P occurs in T in O(|P| log n) time via binary search over SA, using the LCP array to skip redundant character comparisons. Contrast this with the O(|P|) suffix-tree walk and explain the trade-off."
           ]
+        },
+        {
+          id: "algo-exercises-tries-range-queries",
+          title: "Exercises: Tries & Range Queries",
+          section: "Tries",
+          prerequisites: ["algo-segment-fenwick-trees", "algo-tries", "algo-suffix-trees-arrays"],
+          estMinutes: 35,
+          content: `
+            <p>Five problems spanning range-query structures and string-indexing structures, the two families that close out this chapter.</p>
+            <ol>
+              <li>A Fenwick tree supports point-update / prefix-sum in O(log n) with far less code and a smaller constant than a segment tree. Name a query type a plain Fenwick tree cannot support directly but a segment tree can (e.g. range minimum), and state precisely which structural property of sum — invertibility (a − b undoes adding b) — the Fenwick tree's trick relies on that range-min lacks.</li>
+              <li>Build a trie over a large word list and compare its total memory to a hash set storing the same words, accounting for shared prefixes. Under what vocabulary characteristics (many short words with heavy prefix overlap, versus many long words with little overlap) does the trie win on space, and when does it lose?</li>
+              <li>A segment tree supporting <em>range</em>-update as well as range-query needs "lazy propagation." State exactly what invariant lazy propagation maintains between a node's stored aggregate and the pending, not-yet-pushed-down updates sitting at that node, and explain why naively pushing every update all the way down immediately would destroy the O(log n) bound.</li>
+              <li>Compare trie-based autocomplete (walk down to the prefix, then enumerate the subtree) against a sorted array of strings with binary search for the same task. Give the exact cost of retrieving all k completions of a prefix of length p out of n total strings for both representations, and identify the regime of (n, p, k) where each wins.</li>
+              <li>Using a suffix array and LCP array built over T$reverse(T)# (T concatenated with its own reverse, separated by distinct sentinels), sketch how comparing suffixes from the two halves lets you find, for every candidate center, the longest palindromic substring of T centered there — and state the overall time bound this gives once the suffix array itself is built in O(n log n).</li>
+            </ol>
+          `,
+          exercises: []
         }
       ]
     },
