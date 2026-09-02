@@ -193,28 +193,42 @@
 //      and triple-intersection degenerate cases). Both lessons verified to exist with no dangling
 //      prerequisite references (checked programmatically this run — 63 total lessons, 0 duplicate ids,
 //      0 missing prerequisite ids across the whole file).
-//   B7 NOT STARTED (Linear Programming: simplex overview + LP duality). CHAPTER-PLACEMENT DECISION for
-//      the next run: do NOT put B7 into the new "computational-geometry" chapter — linear programming
-//      is not a geometry topic (the feasible-polytope picture is an illustration, not the discipline),
-//      and stretching that chapter's name to cover it would make the chapter name misleading. Instead
-//      add a new section "Linear Programming" to the existing "algorithms" chapter (same chapter,
-//      alongside "Dynamic Programming" / "Numerical & Signal Algorithms" / etc. — LP genuinely is an
-//      algorithmic technique in the same sense those are), with at least two lessons as the brief
-//      specifies: (a) LP formulation + geometric intuition + Simplex overview (vertices of the feasible
-//      polytope, pivoting, exponential worst case vs. fast in practice), prerequisites:
-//      ["algo-greedy-matroids"] (reasonable "advanced technique" gate, matching the brief's suggestion)
-//      — consider a small inline SVG of a 2D feasible polytope with an optimal vertex highlighted; (b)
-//      LP Duality (weak/strong duality, complementary slackness), prerequisites: the simplex lesson's
-//      id once assigned — note in prose (no hyperlink needed, this is intra-file so a real link IS
-//      possible per algo-sparse-linear-algebra's app.js-routing correction, but the Data Science
-//      subject's Lagrange Duality/KKT lesson lives in a different file/subject, so still name it in
-//      prose only unless a cross-subject link is deliberately added).
-// NEXT UP OVERALL: B7 (Linear Programming — see the CHAPTER-PLACEMENT DECISION note directly above for
-//   exactly where it goes and why). After B7, only A5 remains (upgrading algo-splay-trees /
-//   algo-b-trees / algo-skip-lists to the deep template where their mechanism fits it — lowest
-//   priority, do it last). Once A5 is either done or deliberately skipped as out of budget, the ENTIRE
-//   v2 deep pass is complete — a future run should confirm both B7 and A5's status explicitly before
-//   declaring completion, then stop inventing new scope per this pass's own rules.
+//   B7 DONE (run 7). Added a new section "Linear Programming" to the existing "algorithms" chapter
+//      (kept out of "computational-geometry" per the prior run's placement note — LP is not a geometry
+//      topic), inserted directly after algo-matrix-multiplication (the chapter's prior last lesson), two
+//      lessons: (a) algo-linear-programming-simplex ("Linear Programming and the Simplex Method"),
+//      prerequisites: ["algo-greedy-matroids"] — standard-form LP, the half-space/convex-polytope
+//      geometric picture, the vertex-optimum theorem (stated and justified, not fully proved), a worked
+//      2D example (max x+2y over a 5-vertex pentagon) with an inline SVG of the polytope + highlighted
+//      optimal vertex (1,3) plus a full vertex/objective-value table, a simplex-as-vertex-walk narrative
+//      tracing one improving path (0,0)→(3,0)→(3,1)→(1,3) through that same example, worst-case
+//      exponential behavior (Klee-Minty, named not derived) vs. fast-in-practice contrasted with
+//      ellipsoid/interior-point as alternative polynomial-time methods (named only), a try-it-yourself
+//      justifying why checking only the vertices suffices (folded solution), 2 exercises (bipartite
+//      matching's natural LP relaxation; a second small polytope to solve by hand). (b) algo-lp-duality
+//      ("LP Duality"), prerequisites: ["algo-linear-programming-simplex"] — the mechanical primal/dual
+//      construction table, continues the SAME worked example from (a) so every number is cross-checked
+//      (dual = min 4y1+3y2+3y3 s.t. y1+y2≥1, y1+y3≥2, y≥0; dual optimum y=(1,0,1) verified to equal the
+//      primal optimum 7 exactly), weak duality proved directly by the two-inequality-chain algebraic
+//      argument (both steps identified explicitly), strong duality stated (proof deferred to further
+//      reading, honestly flagged as such), complementary slackness derived by chasing where weak
+//      duality's inequalities become equalities and checked pair-by-pair against the running example, a
+//      try-it-yourself using a dual-feasible-but-suboptimal point from (a)'s weak-duality check to show
+//      concretely which complementary-slackness pair fails and why that's exactly what disqualifies it
+//      from being dual-optimal (folded solution), 2 exercises (general weak-duality proof; complementary-
+//      slackness consequences of a zero primal variable / an all-slack dual). One in-prose (no hyperlink,
+//      per the brief's explicit fallback) mention that LP duality is the linear case of the Data Science
+//      subject's "Lagrange Duality and the KKT Conditions" lesson (exact title checked against that
+//      file). Verified programmatically this run: 65 total lessons across 4 chapters, 0 duplicate ids, 0
+//      dangling prerequisite references file-wide (including these two new ids).
+// NEXT UP OVERALL: A5 (upgrading algo-splay-trees / algo-b-trees / algo-skip-lists to the deep template
+//   where their mechanism fits it — splay trees: zig/zig-zig/zig-zag cased exercise + amortized-access
+//   sketch; B-trees: split-on-overflow/merge-or-rotate-on-underflow cased exercise; skip lists: crisp
+//   geometric-level-count formal definition only, no forced cases exercise, per the brief). This is the
+//   ONLY item left in the entire pass. Once A5 is done (or a run deliberately judges it out of remaining
+//   budget and says so explicitly in this header), the ENTIRE v2 deep pass is complete — a future run
+//   should confirm A5's status explicitly before declaring completion, then stop inventing new scope per
+//   this pass's own rules.
 // ===== END DEEP PASS STATUS =====
 //
 // ----- Historical: pre-deep-pass batch history (superseded by the DEEP PASS STATUS above) -----
@@ -2354,6 +2368,88 @@ return hi                          # the least k with P(k) true</code></pre>
           exercises: [
             "Verify the master-theorem computation showing T(n) = 7T(n/2) + Θ(n²) gives Θ(n^log₂7). Then redo it for a hypothetical block algorithm using only 6 block products instead of 7 (no such 2×2-block algorithm is actually known to exist — this is a pure exercise in the recurrence), and compare the resulting exponent to Strassen's.",
             "State the semiring axioms and verify that ({0,1}, OR, AND) satisfies them, identifying specifically which ring axiom it fails to satisfy (and why that particular failure doesn't matter for the block-multiplication recursion, which only ever invokes associativity and distributivity)."
+          ]
+        },
+        {
+          id: "algo-linear-programming-simplex",
+          title: "Linear Programming and the Simplex Method",
+          section: "Linear Programming",
+          prerequisites: ["algo-greedy-matroids"],
+          estMinutes: 30,
+          content: `
+            <p>A linear program optimizes a linear objective subject to linear constraints. In standard form: maximize c^T x subject to Ax ≤ b and x ≥ 0. That's a deceptively small template — max-flow, bipartite matching, and shortest paths can all be written this way (a specialized combinatorial algorithm usually still beats calling a generic LP solver on them, but the fact that they embed at all is why LP sits underneath so much of algorithm design). The content of this lesson is what makes LP solvable at all: the geometry of the feasible region, and the method — simplex — that walks it.</p>
+            <p><strong>Geometric intuition.</strong> Each inequality a_i^T x ≤ b_i carves out a half-space; x ≥ 0 adds one half-space per coordinate. The intersection of finitely many half-spaces is a convex polytope — the feasible region. The objective c^T x is a linear functional, so its level sets {x : c^T x = k} are parallel hyperplanes; maximizing c^T x is sliding that hyperplane in the direction of increasing k until it is about to leave the polytope entirely. Because the polytope is convex and its boundary is made of flat faces, the last point the hyperplane touches can always be taken to be a <strong>vertex</strong> (an extreme point — a feasible point that isn't a convex combination of two other feasible points): if an LP has an optimal solution, it has one at a vertex of the feasible polytope. That single fact collapses the search space from an infinite continuum down to a finite — if possibly huge — set of vertices.</p>
+            <p>Concretely: maximize x + 2y subject to x + y ≤ 4, x ≤ 3, y ≤ 3, x ≥ 0, y ≥ 0. The feasible region is a pentagon with vertices (0,0), (3,0), (3,1), (1,3), (0,3):</p>
+            <svg viewBox="0 0 300 260" width="100%" height="260" style="max-width:320px;display:block;margin:0.8rem auto;" role="img" aria-label="Pentagon feasible region with vertices at the origin, (3,0), (3,1), (1,3) and (0,3), the vertex (1,3) highlighted as optimal, with an arrow indicating the direction of increasing objective">
+              <line x1="40" y1="220" x2="280" y2="220" stroke="var(--text-muted)" stroke-width="1.5"/>
+              <line x1="40" y1="220" x2="40" y2="20" stroke="var(--text-muted)" stroke-width="1.5"/>
+              <text x="285" y="224" fill="var(--text-muted)" font-size="11">x</text>
+              <text x="30" y="18" fill="var(--text-muted)" font-size="11">y</text>
+              <polygon points="40,220 160,220 160,180 80,100 40,100" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="40" cy="220" r="4" fill="var(--text)"/>
+              <circle cx="160" cy="220" r="4" fill="var(--text)"/>
+              <circle cx="160" cy="180" r="4" fill="var(--text)"/>
+              <circle cx="40" cy="100" r="4" fill="var(--text)"/>
+              <circle cx="80" cy="100" r="7" fill="var(--accent)"/>
+              <text x="40" y="236" text-anchor="middle" fill="var(--text-muted)" font-size="11">(0,0)</text>
+              <text x="160" y="236" text-anchor="middle" fill="var(--text-muted)" font-size="11">(3,0)</text>
+              <text x="196" y="180" text-anchor="middle" fill="var(--text-muted)" font-size="11">(3,1)</text>
+              <text x="90" y="90" text-anchor="middle" fill="var(--text)" font-size="11">(1,3) — optimal</text>
+              <text x="10" y="104" text-anchor="middle" fill="var(--text-muted)" font-size="11">(0,3)</text>
+              <line x1="230" y1="60" x2="180" y2="90" stroke="var(--text)" stroke-width="2" marker-end="url(#lparrow)"/>
+              <defs><marker id="lparrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--text)"/></marker></defs>
+              <text x="255" y="55" text-anchor="middle" fill="var(--text-muted)" font-size="10">increasing x+2y</text>
+            </svg>
+            <table class="mini-table">
+              <tr><th>Vertex</th><th>x + 2y</th></tr>
+              <tr><td>(0,0)</td><td>0</td></tr>
+              <tr><td>(3,0)</td><td>3</td></tr>
+              <tr><td>(3,1)</td><td>5</td></tr>
+              <tr><td>(1,3)</td><td><strong>7 — optimal</strong></td></tr>
+              <tr><td>(0,3)</td><td>6</td></tr>
+            </table>
+            <p><strong>The simplex method</strong> exploits the vertex theorem directly rather than checking every vertex: start at some feasible vertex (algebraically, a "basic feasible solution" — a choice of which variables are pinned to 0), then repeatedly <strong>pivot</strong> to an adjacent vertex along an edge of the polytope that doesn't decrease the objective (the entering variable is chosen by its reduced cost — how much the objective would improve per unit increase; the leaving variable is chosen by a minimum-ratio test that finds the first constraint the move would violate). Stop when no adjacent vertex improves the objective. Because the polytope is convex and the objective linear, a vertex with no improving neighbor is not just a local optimum — it is the global one. Starting from (0,0) above, one valid simplex path is (0,0) → (3,0) → (3,1) → (1,3), improving 0 → 3 → 5 → 7 at each pivot and stopping at (1,3), since neither of its two neighbors, (3,1) and (0,3), improves on 7.</p>
+            <p><strong>Complexity.</strong> Simplex is not polynomial in the worst case: the Klee–Minty construction is a family of polytopes (perturbed hypercubes) on which a natural pivoting rule visits every one of its 2ⁿ vertices before terminating. Yet in practice, on real-world LPs, simplex routinely converges in a small multiple of the number of variables — one of the starkest gaps between worst-case and practical behavior in algorithm design. Two other families of methods guarantee polynomial worst-case time — the ellipsoid method (Khachiyan, 1979, mostly of theoretical interest) and interior-point methods (Karmarkar, 1984, which cut <em>through</em> the polytope's interior rather than walking its boundary, and are genuinely competitive with simplex in production solvers) — both worth knowing by name even without deriving them here.</p>
+            <p><strong>Try it yourself:</strong> using the vertex table above, explain why it is enough to check only the five vertices to find the LP's optimum, rather than needing to check every point of the (infinite) feasible region.</p>
+            <details><summary>Solution</summary>
+              <p>The objective x + 2y is linear, so its level sets over the plane are parallel lines; restricted to the feasible pentagon (a convex polygon), the maximum of a linear function over a convex polygon is always attained at a vertex — if it were attained only at some interior point p of an edge or of the polygon's interior, p would be a strict convex combination of two other feasible points on either side of it along the level line's direction, at least one of which would have to give a value ≥ the value at p, contradicting that p was where a strictly-interior maximum occurred. So the search really is finite: five candidates, one strictly best.</p>
+            </details>
+            <p><strong>Further reading:</strong> CLRS, 3rd ed., Ch. 29 ("Linear Programming"), §29.1-29.3 for standard/slack form and the simplex method itself; Bertsimas & Tsitsiklis, <em>Introduction to Linear Optimization</em>, Ch. 2-3, for the geometric view developed at length.</p>
+          `,
+          exercises: [
+            "The maximum bipartite matching problem can be formulated as an LP: maximize Σ x_e over edges e, subject to Σ over edges incident to v of x_e ≤ 1 for every vertex v, and x_e ≥ 0. Explain in words what this LP's feasible region represents, and why an integral optimal vertex solution (one where every x_e ∈ {0,1}) corresponds exactly to a maximum matching — you do not need to prove that an optimal vertex is always integral here (that's a deeper fact about bipartite graphs specifically), just explain what integrality of a vertex would mean if it held.",
+            "Construct, by hand, the feasible polytope and vertex list for maximize 2x + y subject to x + 3y ≤ 9, 3x + y ≤ 9, x ≥ 0, y ≥ 0, and identify the optimal vertex and objective value the same way the worked example above did."
+          ]
+        },
+        {
+          id: "algo-lp-duality",
+          title: "LP Duality",
+          section: "Linear Programming",
+          prerequisites: ["algo-linear-programming-simplex"],
+          estMinutes: 25,
+          content: `
+            <p>Every linear program (the "primal") has a companion linear program (the "dual") built mechanically from the same data, with one dual variable per primal constraint and one dual constraint per primal variable. The pair is far more useful together than either alone: the dual gives certificates that bound the primal's optimum without solving it, and at optimality the two values coincide exactly.</p>
+            <table class="mini-table">
+              <tr><th>Primal</th><th>Dual</th></tr>
+              <tr><td>max c^T x</td><td>min b^T y</td></tr>
+              <tr><td>Ax ≤ b</td><td>A^T y ≥ c</td></tr>
+              <tr><td>x ≥ 0</td><td>y ≥ 0</td></tr>
+              <tr><td>n variables, m constraints</td><td>m variables, n constraints</td></tr>
+            </table>
+            <p>Continuing the previous lesson's example — maximize x + 2y subject to x + y ≤ 4, x ≤ 3, y ≤ 3, x, y ≥ 0, with A the 3×2 matrix of those three constraints' coefficients, b = (4, 3, 3), c = (1, 2) — the dual, with one variable y₁, y₂, y₃ per primal constraint, is: minimize 4y₁ + 3y₂ + 3y₃ subject to y₁ + y₂ ≥ 1, y₁ + y₃ ≥ 2, y₁, y₂, y₃ ≥ 0 (the two dual constraints come from A^T's two rows, matching the primal's two variables x and y).</p>
+            <p><strong>Weak duality.</strong> For any primal-feasible x and dual-feasible y: c^T x ≤ (A^T y)^T x = y^T (A x) ≤ y^T b, using A^T y ≥ c and x ≥ 0 for the first inequality, and A x ≤ b and y ≥ 0 for the second. So <em>every</em> dual-feasible y gives an upper bound b^T y on the primal optimum, and every primal-feasible x gives a lower bound c^T x on the dual optimum — with no need to solve either LP to optimality first. Take y = (2, 0, 0) in the example: feasible (y₁+y₂ = 2 ≥ 1, y₁+y₃ = 2 ≥ 2), giving bound b^T y = 4·2 = 8 ≥ 7, the true primal optimum found in the previous lesson.</p>
+            <p><strong>Strong duality</strong> (stated here, proved via the simplex method's own final state in a full treatment — see further reading) says that whenever both LPs are feasible and bounded, this gap closes exactly: the primal optimum equals the dual optimum, with no slack between them. In the running example, the primal optimum was 7 at x = (1, 3); the dual optimum is y = (1, 0, 1), giving b^T y = 4·1 + 3·0 + 3·1 = 7 — an exact match, not merely a tight bound.</p>
+            <p><strong>Complementary slackness</strong> falls out of chasing exactly where weak duality's two inequalities above must become equalities at a strong-duality-achieving pair (x*, y*): for every i, either constraint i of Ax ≤ b is tight (a_i^T x* = b_i) or y_i* = 0 (or both); for every j, either x_j* > 0 or the corresponding dual constraint is tight. Checking the example: primal constraint x+y≤4 is tight (1+3=4) and its dual variable y₁=1 ≠ 0 — consistent; x≤3 is slack (1<3) and its dual variable y₂=0 — required by complementary slackness, and indeed that's what we found; y≤3 is tight (3=3) and y₃=1 ≠ 0 — consistent again. Every pair lines up exactly as the theorem demands.</p>
+            <p><strong>Try it yourself:</strong> using y = (2, 0, 0) from the weak-duality check above (dual-feasible but not dual-optimal, bound 8), verify directly that complementary slackness fails for this pair paired with the primal optimum x* = (1, 3) — i.e. find a primal constraint that is slack at x* while its corresponding dual variable under y is nonzero (or vice versa), confirming that y is not the true dual optimum.</p>
+            <details><summary>Solution</summary>
+              <p>At x* = (1, 3), the constraint x ≤ 3 is slack (1 &lt; 3, with slack 2). Complementary slackness at a true optimal pair would require the matching dual variable, y₂, to be exactly 0. But y = (2, 0, 0) already has y₂ = 0, so that particular pair is fine — the failure shows up elsewhere: y₁ = 2 ≠ 0 requires its primal constraint x + y ≤ 4 to be tight, and it is (1+3=4, consistent); but complementary slackness also runs the other direction on variables — x* has both x=1>0 and y=3>0, which forces <em>both</em> dual constraints (y₁+y₂≥1 and y₁+y₃≥2) to be exactly tight at the true dual optimum. Here y₁+y₂ = 2+0 = 2 ≠ 1 — that dual constraint is slack while its matching primal variable x=1 is strictly positive, violating complementary slackness. That single mismatch is exactly why y=(2,0,0), though dual-feasible, is not dual-optimal: only y=(1,0,1) makes every pair line up, matching the 7=7 strong-duality equality found above.</p>
+            </details>
+            <p>LP duality is the linear special case of a much more general theory: Lagrangian duality for convex programs, where the dual is built by relaxing each inequality constraint into the objective with a nonnegative multiplier, and complementary slackness becomes one of the KKT conditions — see "Lagrange Duality and the KKT Conditions" in the Data Science subject if you've encountered that material; the LP dual constructed here is exactly what that general machinery produces when every function involved happens to be linear.</p>
+            <p><strong>Further reading:</strong> CLRS, 3rd ed., §29.4 (LP duality, including a full proof of strong duality via the simplex method's terminal tableau); Bertsimas & Tsitsiklis, <em>Introduction to Linear Optimization</em>, Ch. 4-5, for duality and complementary slackness developed at length with more worked examples.</p>
+          `,
+          exercises: [
+            "Prove weak duality in general (not just for the running numerical example): for any m×n matrix A, any primal-feasible x (Ax ≤ b, x ≥ 0) and any dual-feasible y (A^T y ≥ c, y ≥ 0), show c^T x ≤ b^T y, being explicit about exactly which step uses x ≥ 0 and which uses y ≥ 0.",
+            "Suppose a primal LP's optimal solution x* has x_j* = 0 for some variable j. What, if anything, does complementary slackness let you conclude about the corresponding dual constraint? Now suppose instead that a dual-feasible y has every dual constraint strictly slack (not tight) — what does that tell you about every primal-optimal x*'s corresponding variables, and why does that make y unable to be dual-optimal unless the primal optimum is x* = 0?"
           ]
         }
       ]
