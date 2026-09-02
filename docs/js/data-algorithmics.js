@@ -148,29 +148,81 @@
 //      semiring-axiom check for (OR,AND)). Further reading: CLRS 3rd ed §4.2, Alman & Vassilevska
 //      Williams SODA 2021. NOTE for B5: this lesson's id is "algo-matrix-multiplication" — use that
 //      exact id in algo-seidel-apsp's prerequisites array.
-//   B5 NOT STARTED (Seidel's APSP in "graph-algorithms", section "Shortest Paths (general)").
-//      prerequisites should be exactly ["algo-all-pairs-shortest-paths", "algo-matrix-multiplication"]
-//      — both ids now exist. Remember the lesson must explain WHY naive repeated squaring alone only
-//      gives reachability (already covered concretely in algo-matrix-multiplication's try-it-yourself
-//      above — can cross-link back to it) and what Seidel's actual recursive trick adds to recover
-//      real distances, not just claim the O(M(n) log n) result.
-//   B6 NOT STARTED (Computational Geometry: convex hull + segment intersection, new section or
-//      new chapter — implementer's call, must update this file's header doc-comment either way).
-//   B7 NOT STARTED (Linear Programming: simplex overview + duality, same chapter-placement judgment
-//      call as B6 — keep consistent with whatever B6 decides).
-// NEXT UP OVERALL: B5 (Seidel's Algorithm for APSP — see the NOT STARTED note above for the exact
-//   prerequisites array and the framing it needs). After B5, B6 and B7 remain (pick and record a
-//   consistent chapter-placement decision for both — a new "computational-geometry" chapter is
-//   probably cleanest given B6+B7 together add 4+ lessons that don't fit "algorithms" or
-//   "graph-algorithms" thematically, but re-evaluate at the time). A5 (upgrading algo-splay-trees /
-//   algo-b-trees / algo-skip-lists to the deep template) remains lowest priority, only after B1-B7.
+//   B5 DONE (run 6). New lesson algo-seidel-apsp ("Seidel's Algorithm for APSP") inserted into the
+//      "graph-algorithms" chapter, section "Shortest Paths (general)", directly after
+//      algo-all-pairs-shortest-paths (before algo-mst-cut-property), prerequisites: ["algo-all-pairs-
+//      shortest-paths", "algo-matrix-multiplication"] — explains concretely why naive Boolean squaring
+//      of A∨I (from algo-matrix-multiplication's own try-it-yourself, cross-linked) only ever recovers
+//      reachability, never real distances, since OR-accumulation is monotonic and throws away exact hop
+//      count; states the recursive relation T[i][j] = ⌈D[i][j]/2⌉ between G's true distances D and the
+//      "squared graph" G⁽²⁾'s distances T; derives (at textbook-summary level, explicitly flagged as
+//      such rather than a full re-derivation of the 1995 proof) the parity-recovery test X[i][j] ≥
+//      T[i][j]·deg(j) using one extra ordinary (non-Boolean) matrix product X = T·A, with the
+//      "handoff neighbor" intuition for why that test decides the even/odd branch; a 2-row worked
+//      table on the path graph 1–2–3–4 computing both the even case (i,j)=(1,3) and setting up the odd
+//      case (i,j)=(1,4) fully verified by hand; a small inline SVG comparing the path graph to its
+//      squared graph (only the 1–4 pair stays non-adjacent after squaring); try-it-yourself = redo the
+//      (1,4) odd-case computation from raw definitions (folded solution, all arithmetic verified); 2
+//      exercises (prove the T[i][k] ≥ T[i][j]−1 neighbor inequality the test relies on; explain which
+//      step breaks for directed or weighted graphs). Further reading: Seidel JCSS 1995, CLRS Problem
+//      25-2. Ends with an explicit "honest scope" remark distinguishing mechanism-level understanding
+//      from a full correctness-proof reproduction, per the brief's instruction to state the result
+//      honestly when summarizing rather than fully re-deriving.
+//   B6 DONE (run 6). Added a brand-new chapter, id "computational-geometry" / name "Computational
+//      Geometry", inserted as the fourth and last chapter (after "graph-algorithms") in
+//      ALGORITHMICS_SUBJECT.chapters — chosen over cramming into "algorithms" because convex hull and
+//      segment intersection are a distinct discipline from the existing chapters' contents, matching
+//      this file's own historical precedent of splitting by discipline (see the datascience-split note
+//      below). Two lessons, both section "Computational Geometry": (1) algo-convex-hull ("Convex
+//      Hull"), prerequisites: ["algo-sorting-lower-bound-mergesort"] — Graham scan via pivot-select +
+//      angular sort + push/pop-on-right-turn scan, an inline SVG of a traced hull over a point scatter,
+//      a second inline SVG anchoring the cross-product orientation test, the O(n log n) cost table
+//      (sort dominates; scan is O(n) amortized via the push-once/pop-once argument), a numeric
+//      try-it-yourself computing one orientation test by hand (folded solution), cross-links to
+//      algo-divide-and-conquer's closest-pair coverage as a sibling geometry technique plus a one-line
+//      mention that a divide-and-conquer hull variant also exists at the same O(n log n). (2)
+//      algo-segment-intersection ("Line Segment Intersection"), prerequisites: ["algo-convex-hull",
+//      "algo-binary-heaps"] — the Bentley-Ottmann sweep: event queue (priority queue, cross-linked to
+//      algo-binary-heaps) ordered by x, status structure (balanced BST) ordered by each active
+//      segment's y at the sweep line, the three event types (left endpoint / right endpoint /
+//      intersection swap) and what each tests, an inline SVG of three segments at a sweep position
+//      with the resulting status order labeled, the "only adjacent pairs can intersect" lemma stated
+//      and justified in prose, the O((n+k) log n) output-sensitive complexity vs O(n²) brute force
+//      table, a try-it-yourself walking through which pairs the diagram's own sweep tests first
+//      (folded solution), 2 exercises (prove the adjacency lemma properly; handle the vertical-segment
+//      and triple-intersection degenerate cases). Both lessons verified to exist with no dangling
+//      prerequisite references (checked programmatically this run — 63 total lessons, 0 duplicate ids,
+//      0 missing prerequisite ids across the whole file).
+//   B7 NOT STARTED (Linear Programming: simplex overview + LP duality). CHAPTER-PLACEMENT DECISION for
+//      the next run: do NOT put B7 into the new "computational-geometry" chapter — linear programming
+//      is not a geometry topic (the feasible-polytope picture is an illustration, not the discipline),
+//      and stretching that chapter's name to cover it would make the chapter name misleading. Instead
+//      add a new section "Linear Programming" to the existing "algorithms" chapter (same chapter,
+//      alongside "Dynamic Programming" / "Numerical & Signal Algorithms" / etc. — LP genuinely is an
+//      algorithmic technique in the same sense those are), with at least two lessons as the brief
+//      specifies: (a) LP formulation + geometric intuition + Simplex overview (vertices of the feasible
+//      polytope, pivoting, exponential worst case vs. fast in practice), prerequisites:
+//      ["algo-greedy-matroids"] (reasonable "advanced technique" gate, matching the brief's suggestion)
+//      — consider a small inline SVG of a 2D feasible polytope with an optimal vertex highlighted; (b)
+//      LP Duality (weak/strong duality, complementary slackness), prerequisites: the simplex lesson's
+//      id once assigned — note in prose (no hyperlink needed, this is intra-file so a real link IS
+//      possible per algo-sparse-linear-algebra's app.js-routing correction, but the Data Science
+//      subject's Lagrange Duality/KKT lesson lives in a different file/subject, so still name it in
+//      prose only unless a cross-subject link is deliberately added).
+// NEXT UP OVERALL: B7 (Linear Programming — see the CHAPTER-PLACEMENT DECISION note directly above for
+//   exactly where it goes and why). After B7, only A5 remains (upgrading algo-splay-trees /
+//   algo-b-trees / algo-skip-lists to the deep template where their mechanism fits it — lowest
+//   priority, do it last). Once A5 is either done or deliberately skipped as out of budget, the ENTIRE
+//   v2 deep pass is complete — a future run should confirm both B7 and A5's status explicitly before
+//   declaring completion, then stop inventing new scope per this pass's own rules.
 // ===== END DEEP PASS STATUS =====
 //
 // ----- Historical: pre-deep-pass batch history (superseded by the DEEP PASS STATUS above) -----
 // As of 2026-09-01 batch 7: THE ENTIRE FILE WAS complete under the pre-deep-pass standard. Every
 // lesson in every chapter (Data Structures, Algorithms, Graph Algorithms) had full content — no
 // placeholders remained anywhere in js/data-algorithmics.js under that standard.
-// This file covers Data Structures / Algorithms / Graph Algorithms only.
+// This file covers Data Structures / Algorithms / Graph Algorithms only (as of pre-deep-pass batch 7;
+// the deep pass added a fourth chapter, Computational Geometry — see DEEP PASS STATUS above, B6).
 // The five chapters that used to follow "graph-algorithms" here (numerical-linear-algebra,
 // optimization, probability-statistics, time-series, classical-ml) were moved verbatim to
 // js/data-datascience.js / DATASCIENCE_SUBJECT — that material is numerical linear algebra, convex
@@ -2793,6 +2845,69 @@ for (u,v,w) in E:
           ]
         },
         {
+          id: "algo-seidel-apsp",
+          title: "Seidel's Algorithm for APSP",
+          section: "Shortest Paths (general)",
+          prerequisites: ["algo-all-pairs-shortest-paths", "algo-matrix-multiplication"],
+          estMinutes: 32,
+          content: `
+            <p>For unweighted, <em>undirected</em> graphs specifically, Floyd-Warshall's Θ(n³) is not the end of the story. Seidel's algorithm computes the full all-pairs distance matrix in O(n<sup>ω</sup> log n) time, where ω &lt; 2.373 is the exponent of fast matrix multiplication from the previous lesson — asymptotically faster than Θ(n³) for every known value of ω, at the cost of being restricted to this one special case (unweighted, undirected, no edge weights to preserve).</p>
+            <p>The previous lesson's try-it-yourself already showed the trap: repeatedly Boolean-squaring A ∨ I tells you <em>whether</em> i can reach j within 2<sup>k</sup> steps, but not the actual distance — once a pair is marked reachable it stays marked at every larger power, so the exact hop count is thrown away by the OR. Naive repeated squaring alone genuinely cannot recover real distances; getting them back is Seidel's actual contribution, not just an application of fast Boolean matrix multiplication.</p>
+            <p><strong>The recursive idea.</strong> Given adjacency matrix A of graph G, form A<sup>(2)</sup> = the Boolean square of A ∨ I (one fast matrix multiplication, as in the previous lesson) and read it as the adjacency matrix of a new graph G<sup>(2)</sup> on the <em>same</em> n vertices, with an edge i–j exactly when i and j are within distance 2 in G. Recursively compute G<sup>(2)</sup>'s own distance matrix T. Because every distance-2 step in G becomes one step in G<sup>(2)</sup>, T is related to G's true distance matrix D by:</p>
+            <p style="text-align:center"><code>T[i][j] = ⌈ D[i][j] / 2 ⌉</code></p>
+            <p>so T already pins D down to one of two candidates, D[i][j] = 2·T[i][j] or D[i][j] = 2·T[i][j] − 1 — the recursion halves the problem, but leaves one bit of parity per entry undetermined. Recovering that bit without re-deriving D from scratch is the whole trick.</p>
+            <svg viewBox="0 0 340 150" width="100%" height="150" style="max-width:360px;display:block;margin:0.8rem auto;" role="img" aria-label="Path graph 1-2-3-4 on the left with only consecutive edges, and the same four vertices on the right with edges 1-2, 1-3, 2-3, 2-4, 3-4 — every pair except 1 and 4 now directly connected, since squaring merges any two vertices within distance 2">
+              <text x="80" y="16" text-anchor="middle" fill="var(--text-muted)" font-size="11">G (path)</text>
+              <line x1="30" y1="70" x2="80" y2="70" stroke="var(--border)" stroke-width="1.5"/>
+              <line x1="80" y1="70" x2="130" y2="70" stroke="var(--border)" stroke-width="1.5"/>
+              <line x1="130" y1="70" x2="180" y2="70" stroke="var(--border)" stroke-width="1.5"/>
+              <circle cx="30" cy="70" r="14" fill="none" stroke="var(--text)" stroke-width="2"/>
+              <circle cx="80" cy="70" r="14" fill="none" stroke="var(--text)" stroke-width="2"/>
+              <circle cx="130" cy="70" r="14" fill="none" stroke="var(--text)" stroke-width="2"/>
+              <circle cx="180" cy="70" r="14" fill="none" stroke="var(--text)" stroke-width="2"/>
+              <text x="30" y="74" text-anchor="middle" fill="var(--text)" font-size="11">1</text>
+              <text x="80" y="74" text-anchor="middle" fill="var(--text)" font-size="11">2</text>
+              <text x="130" y="74" text-anchor="middle" fill="var(--text)" font-size="11">3</text>
+              <text x="180" y="74" text-anchor="middle" fill="var(--text)" font-size="11">4</text>
+              <text x="260" y="16" text-anchor="middle" fill="var(--text-muted)" font-size="11">G⁽²⁾ (squared)</text>
+              <path d="M210,55 Q235,15 260,55" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+              <line x1="210" y1="70" x2="260" y2="70" stroke="var(--accent)" stroke-width="1.5"/>
+              <line x1="260" y1="70" x2="310" y2="70" stroke="var(--accent)" stroke-width="1.5"/>
+              <path d="M260,55 Q285,15 310,55" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+              <line x1="210" y1="80" x2="310" y2="130" stroke="var(--border)" stroke-width="1" stroke-dasharray="3,3"/>
+              <circle cx="210" cy="70" r="14" fill="none" stroke="var(--text)" stroke-width="2"/>
+              <circle cx="260" cy="70" r="14" fill="none" stroke="var(--text)" stroke-width="2"/>
+              <circle cx="310" cy="70" r="14" fill="none" stroke="var(--text)" stroke-width="2"/>
+              <circle cx="310" cy="130" r="14" fill="none" stroke="var(--text)" stroke-width="2"/>
+              <text x="210" y="74" text-anchor="middle" fill="var(--text)" font-size="11">1</text>
+              <text x="260" y="74" text-anchor="middle" fill="var(--text)" font-size="11">2</text>
+              <text x="310" y="74" text-anchor="middle" fill="var(--text)" font-size="11">3</text>
+              <text x="310" y="134" text-anchor="middle" fill="var(--text)" font-size="11">4</text>
+              <text x="255" y="145" text-anchor="middle" fill="var(--text-muted)" font-size="10">only 1–4 stays non-adjacent</text>
+            </svg>
+            <p><strong>Recovering the parity.</strong> For a fixed source i, every neighbor k of j in G satisfies T[i][k] ≥ T[i][j] − 1 (removing the last hop into j can only shorten the G<sup>(2)</sup>-distance by at most 1). D[i][j] is even exactly when <em>some</em> neighbor k of j already achieves the better value T[i][k] = T[i][j] — a "handoff" vertex one real step closer that lets the path close evenly — and odd when every neighbor of j is stuck at T[i][j] − 1. Testing that with one more fast matrix multiplication: let X = T · A (ordinary integer matrix product, deg(j) = the j-th column sum of A). Since every neighbor k contributes T[i][k] ≥ T[i][j] − 1 to the sum X[i][j] = Σ<sub>k</sub> T[i][k]·A[k][j], the sum is at least deg(j)·(T[i][j] − 1) always, and strictly larger exactly when at least one neighbor achieves T[i][k] = T[i][j] instead of T[i][j] − 1. So:</p>
+            <p style="text-align:center"><code>D[i][j] = 2·T[i][j]</code> if X[i][j] ≥ T[i][j]·deg(j), else <code>D[i][j] = 2·T[i][j] − 1</code></p>
+            <p>Two fast matrix multiplications per recursion level (one Boolean square to build G<sup>(2)</sup>, one integer product to test parity), recursing on a graph whose diameter has roughly halved. The recursion bottoms out once the graph becomes complete (diameter 1), where the distance matrix is just A itself. Since a graph's diameter is at most n − 1, halving it repeatedly reaches 1 within O(log n) levels regardless of the actual starting diameter, so the total cost is O(M(n) log n) = O(n<sup>ω</sup> log n) — better than Floyd-Warshall's Θ(n³) for any known ω, and the whole reason Boolean matrix multiplication earned its own lesson.</p>
+            <table class="mini-table">
+              <tr><th>i, j</th><th>D[i][j] (true)</th><th>T[i][j] = ⌈D/2⌉</th><th>X[i][j] = ΣT[i][k]A[k][j]</th><th>T[i][j]·deg(j)</th><th>test result</th></tr>
+              <tr><td>1, 3</td><td>2 (even)</td><td>1</td><td>T[1][2]·1 + T[1][4]·1 = 1+2 = 3</td><td>1·2 = 2</td><td>3 ≥ 2 → D = 2·1 = 2 ✓</td></tr>
+              <tr><td>1, 4</td><td>3 (odd)</td><td>2</td><td>T[1][3]·1 = 1</td><td>2·1 = 2</td><td>1 &lt; 2 → D = 2·2−1 = 3 ✓</td></tr>
+            </table>
+            <p>(Using deg(3) = 2, deg(4) = 1 in the path graph 1–2–3–4, and T read off the G<sup>(2)</sup> distances shown in the diagram above: T[1][2] = T[1][3] = 1, T[1][4] = 2.)</p>
+            <p><strong>Try it yourself:</strong> the table above works out the correction for (i,j) = (1,3) — the even case, where a handoff vertex exists. Redo the same computation for (i,j) = (1,4) by hand from the raw definitions (don't just read the second table row), confirming X[1][4] = 1 and that the test correctly falls into the odd branch.</p>
+            <details><summary>Solution</summary>
+              <p>T[1][4] = 2, the G<sup>(2)</sup>-distance from 1 to 4 (path 1–2–4 in G<sup>(2)</sup>, since 2–4 is an edge there). X[1][4] = Σ<sub>k</sub> T[1][k]·A[k][4], and A[k][4] = 1 only for k = 3 (the only real G-neighbor of vertex 4), so X[1][4] = T[1][3]·1 = 1·1 = 1. deg(4) = 1 (vertex 4's only real neighbor is 3), so the threshold T[1][4]·deg(4) = 2·1 = 2. Since 1 &lt; 2, the test falls into the odd branch: D[1][4] = 2·T[1][4] − 1 = 2·2 − 1 = 3 — which matches the true path distance 1→2→3→4.</p>
+            </details>
+            <p><strong>Remark:</strong> this lesson summarizes Seidel's algorithm at the level of "why the mechanism works," not a full re-derivation of the 1995 paper's proofs (in particular, the T[i][k] ≥ T[i][j] − 1 inequality used above deserves its own short triangle-inequality-style argument, left as an exercise). The honest scope here is understanding what problem naive squaring fails to solve and what specific extra computation Seidel's algorithm adds to solve it, not reproducing the original correctness proof line by line.</p>
+            <p><strong>Further reading:</strong> Seidel, R., "On the All-Pairs-Shortest-Path Problem in Unweighted Undirected Graphs," <em>Journal of Computer and System Sciences</em>, 51(3), 1995 (the original algorithm and full correctness proof); CLRS, 3rd ed., Problem 25-2 (a guided version of the same construction); the previous lesson's <a href="#/subject/algorithmics/algorithms/algo-matrix-multiplication">Fast Matrix Multiplication</a> for the Boolean-squaring machinery this algorithm is built on.</p>
+            <p><em>The whole idea in one line: squaring the graph halves every distance, and one extra matrix product recovers the bit that squaring alone threw away.</em></p>
+          `,
+          exercises: [
+            "Prove T[i][k] ≥ T[i][j] − 1 for every G-neighbor k of j, where T is the G⁽²⁾-distance matrix: use the fact that a shortest i–j path in G⁽²⁾ composed with the single real edge (k,j) gives an i–k walk in G⁽²⁾ of length at most T[i][j] + 1 (justify why one real G-edge corresponds to at most one G⁽²⁾ step). Then use this to justify the threshold test X[i][j] ≥ T[i][j]·deg(j) precisely as stated in the lesson.",
+            "Seidel's algorithm as presented requires the graph to be undirected and unweighted. Explain concretely which step breaks first if the graph is directed (consider what 'neighbor' and the parity handoff argument assume about edges being usable in both directions), and separately why assigning arbitrary positive integer weights defeats the recursion's halving structure entirely."
+          ]
+        },
+        {
           id: "algo-mst-cut-property",
           title: "Minimum Spanning Trees and the Cut Property",
           section: "Spanning Trees",
@@ -2926,6 +3041,119 @@ for (u,v,w) in E:
           exercises: [
             "Prove the integrality theorem for this specific construction: show that if all capacities are integers, some maximum flow assigns an integer value to every edge, and explain why this guarantees the max-flow value equals the maximum matching size exactly (not just an upper bound).",
             "State König's theorem precisely and prove it using the max-flow min-cut theorem applied to the source/sink construction above: show that a minimum s-t cut in the flow network corresponds to a minimum vertex cover in the original bipartite graph, and that their sizes are equal."
+          ]
+        }
+      ]
+    },
+    {
+      id: "computational-geometry",
+      name: "Computational Geometry",
+      lessons: [
+        {
+          id: "algo-convex-hull",
+          title: "Convex Hull",
+          section: "Computational Geometry",
+          prerequisites: ["algo-sorting-lower-bound-mergesort"],
+          estMinutes: 28,
+          content: `
+            <p>The convex hull of a set of points is the smallest convex polygon containing all of them — think of stretching a rubber band around a scatter of pins and letting it snap taut. It's the geometric primitive underneath collision detection, shape simplification, and (as this course's own <a href="#/subject/algorithmics/algorithms/algo-divide-and-conquer">closest-pair lesson</a> shows for a different problem) a recurring test case for divide-and-conquer geometric algorithms generally.</p>
+            <svg viewBox="0 0 300 220" width="100%" height="220" style="max-width:320px;display:block;margin:0.8rem auto;" role="img" aria-label="A scatter of points with the convex hull traced as a polygon around the outermost points, and three interior points left unconnected inside it">
+              <polygon points="50,190 140,205 230,180 260,90 190,40 100,55" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="50" cy="190" r="5" fill="var(--accent)"/>
+              <circle cx="140" cy="205" r="5" fill="var(--accent)"/>
+              <circle cx="230" cy="180" r="5" fill="var(--accent)"/>
+              <circle cx="260" cy="90" r="5" fill="var(--accent)"/>
+              <circle cx="190" cy="40" r="5" fill="var(--accent)"/>
+              <circle cx="100" cy="55" r="5" fill="var(--accent)"/>
+              <circle cx="150" cy="110" r="4" fill="var(--text-muted)"/>
+              <circle cx="170" cy="140" r="4" fill="var(--text-muted)"/>
+              <circle cx="130" cy="150" r="4" fill="var(--text-muted)"/>
+              <text x="140" y="220" text-anchor="middle" fill="var(--text-muted)" font-size="10">p₀ (pivot: bottommost point)</text>
+            </svg>
+            <p><strong>Graham scan.</strong> Pick the pivot p₀ = the point with the smallest y-coordinate (breaking ties by smallest x) — it's guaranteed to be a hull vertex, since nothing can be "below" it. Sort every other point by polar angle around p₀ (this is the O(n log n) that dominates the algorithm's cost). Then walk the sorted points, maintaining a stack: before pushing the next point, check whether the last three points on the stack (the two on top, plus the candidate) make a left turn (counterclockwise) or a right turn (clockwise). A right turn means the point currently on top of the stack is not actually a hull vertex — it pokes inward relative to where the scan is heading next — so pop it and re-check, repeating until a left turn holds or only one point remains. Then push.</p>
+            <svg viewBox="0 0 300 130" width="100%" height="130" style="max-width:320px;display:block;margin:0.8rem auto;" role="img" aria-label="Two vectors p to q and q to r making a counterclockwise left turn, with the cross product of the two vectors positive, labeled as the orientation test">
+              <defs><marker id="chullarrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker></defs>
+              <line x1="40" y1="110" x2="140" y2="110" stroke="var(--accent)" stroke-width="2" marker-end="url(#chullarrow)"/>
+              <line x1="140" y1="110" x2="100" y2="30" stroke="var(--accent)" stroke-width="2" marker-end="url(#chullarrow)"/>
+              <circle cx="40" cy="110" r="4" fill="var(--text)"/>
+              <circle cx="140" cy="110" r="4" fill="var(--text)"/>
+              <circle cx="100" cy="30" r="4" fill="var(--text)"/>
+              <text x="40" y="125" text-anchor="middle" fill="var(--text)" font-size="11">p</text>
+              <text x="140" y="125" text-anchor="middle" fill="var(--text)" font-size="11">q</text>
+              <text x="100" y="20" text-anchor="middle" fill="var(--text)" font-size="11">r</text>
+              <text x="220" y="70" text-anchor="middle" fill="var(--text-muted)" font-size="11">cross((q−p),(r−q)) &gt; 0 → left turn (CCW)</text>
+            </svg>
+            <p>The turn test itself is one 2D cross product: for vectors (q−p) and (r−q), the sign of (q.x−p.x)(r.y−q.y) − (q.y−p.y)(r.x−q.x) tells you the turn direction — positive is a left turn, negative a right turn, zero means the three points are collinear (handled by a tie-breaking convention, e.g. keep only the farthest of several collinear points). No trigonometry needed anywhere in the scan itself, only in the initial angle sort (and even that sort is usually done by comparing cross products directly, rather than computing actual angles).</p>
+            <p><strong>Why it's correct.</strong> The stack invariant is: at every point during the scan, the stack holds exactly the hull vertices of the points processed <em>so far</em>, in counterclockwise order. Adding the next point (sorted by angle, so it's always "further around" than everything already processed) can only ever violate convexity at the most recent turn — never further back — because every earlier turn was already verified convex against the state at the time. So a single pop-while-right-turn loop, checking only the top of the stack, suffices; there's never a need to look deeper. Each point is pushed exactly once and popped at most once, so the scan itself (excluding the initial sort) is O(n) amortized.</p>
+            <table class="mini-table">
+              <tr><th>Step</th><th>Cost</th><th>Why</th></tr>
+              <tr><td>Find pivot p₀</td><td>O(n)</td><td>one linear scan for smallest y (ties: smallest x)</td></tr>
+              <tr><td>Sort by polar angle around p₀</td><td>O(n log n)</td><td>dominates total cost</td></tr>
+              <tr><td>Scan with push/pop</td><td>O(n) amortized</td><td>each point pushed once, popped at most once</td></tr>
+              <tr><td>Total</td><td>O(n log n)</td><td>the sort is the bottleneck</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> for p = (0,0), q = (4,0), r = (4,3), compute the orientation test by hand and state whether p→q→r is a left turn, a right turn, or collinear.</p>
+            <details><summary>Solution</summary>
+              <p>(q−p) = (4,0), (r−q) = (0,3). Cross product = (4)(3) − (0)(0) = 12 − 0 = 12 &gt; 0, so it's a left turn (counterclockwise) — matching the visual: from p, go right to q, then turn upward to r, which is indeed a leftward bend. If instead r had been (4,−3), the cross product would flip sign to −12, a right turn; if r had been (8,0) (collinear with p and q on the x-axis), the cross product would be exactly 0.</p>
+            </details>
+            <p><strong>Remark:</strong> Graham scan is a cousin, algorithmically, of <a href="#/subject/algorithmics/algorithms/algo-divide-and-conquer">closest pair</a>'s divide-and-conquer strip trick — both are geometric problems where the right preprocessing sort (by angle here, by x then y there) turns an apparently quadratic problem into an O(n log n) one, with the geometry doing the work of ruling out most candidate comparisons before they're ever made. A divide-and-conquer hull algorithm exists too (split by x-coordinate, recursively hull each half, then merge with upper/lower tangent lines), with the same O(n log n) total cost by the master theorem — Graham scan is simply the more common one to implement.</p>
+            <p><strong>Further reading:</strong> Graham, R.L., "An efficient algorithm for determining the convex hull of a finite planar set," <em>Information Processing Letters</em>, 1(4), 1972; de Berg, van Kreveld, Overmars, Schwarzkopf, <em>Computational Geometry: Algorithms and Applications</em>, 3rd ed., Ch. 1 (convex hulls, including the divide-and-conquer variant); CLRS, 3rd ed., §33.3 (Graham's scan, with the stack-invariant proof).</p>
+            <p><em>The whole idea in one line: sort by angle around a guaranteed hull vertex, then throw away any point that makes the walk bend the wrong way.</em></p>
+          `,
+          exercises: [
+            "Prove the stack invariant precisely by induction on the number of points processed: after processing the first k points (in angular order), the stack contains exactly the convex hull vertices of {p₀, ..., p_k}, in counterclockwise order. Use this to conclude the final stack (after all n points) is the convex hull of the whole set.",
+            "Describe exactly how to handle points collinear with the pivot during the angle sort (several points at the exact same polar angle from p₀): which of them can safely be discarded before the scan even starts, and why keeping the wrong one could make the scan produce an incorrect hull. Then describe the analogous collinear case that can arise mid-scan (three consecutive stack points with cross product exactly 0) and how your tie-breaking convention should treat it."
+          ]
+        },
+        {
+          id: "algo-segment-intersection",
+          title: "Line Segment Intersection",
+          section: "Computational Geometry",
+          prerequisites: ["algo-convex-hull", "algo-binary-heaps"],
+          estMinutes: 30,
+          content: `
+            <p>Given n line segments in the plane, report every pair that intersects. Checking all C(n,2) pairs directly costs O(n²) regardless of how few intersections actually exist; the sweep-line technique (the Bentley-Ottmann algorithm) gets this down to O((n+k) log n), where k is the actual number of intersection points found — genuinely output-sensitive, cheap when the segments barely cross and only as expensive as it has to be when they cross a lot.</p>
+            <p><strong>The sweep.</strong> Imagine a vertical line sweeping left to right across the plane, stopping at a sequence of <strong>events</strong>. Two data structures drive it: an <strong>event queue</strong>, a priority queue (see <a href="#/subject/algorithmics/data-structures/algo-binary-heaps">binary heaps</a>) ordered by x-coordinate, holding upcoming segment endpoints and — discovered as the sweep proceeds — intersection points; and a <strong>status structure</strong>, a balanced BST ordered by each active segment's current y-coordinate at the sweep line's x-position, holding exactly the segments the sweep line currently crosses.</p>
+            <svg viewBox="0 0 300 210" width="100%" height="210" style="max-width:320px;display:block;margin:0.8rem auto;" role="img" aria-label="Three segments crossed by a vertical sweep line: a rising diagonal, a falling diagonal, and a horizontal segment, with the status order at the sweep line labeled top to bottom as segment 1, segment 3, segment 2">
+              <line x1="30" y1="60" x2="270" y2="190" stroke="var(--accent)" stroke-width="2"/>
+              <line x1="30" y1="190" x2="270" y2="60" stroke="var(--accent)" stroke-width="2"/>
+              <line x1="30" y1="120" x2="270" y2="120" stroke="var(--accent)" stroke-width="2"/>
+              <line x1="110" y1="15" x2="110" y2="205" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="4,3"/>
+              <text x="110" y="10" text-anchor="middle" fill="var(--text-muted)" font-size="10">sweep line</text>
+              <circle cx="110" cy="105" r="4" fill="var(--text)"/>
+              <circle cx="110" cy="120" r="4" fill="var(--text)"/>
+              <circle cx="110" cy="135" r="4" fill="var(--text)"/>
+              <text x="20" y="55" fill="var(--text-muted)" font-size="10">seg 1</text>
+              <text x="20" y="200" fill="var(--text-muted)" font-size="10">seg 2</text>
+              <text x="20" y="115" fill="var(--text-muted)" font-size="10">seg 3</text>
+              <text x="130" y="103" fill="var(--text)" font-size="11">1</text>
+              <text x="130" y="138" fill="var(--text)" font-size="11">3</text>
+              <text x="130" y="150" fill="var(--text)" font-size="11">2</text>
+              <text x="150" y="30" text-anchor="middle" fill="var(--text-muted)" font-size="10">status order top→bottom: seg 1, seg 3, seg 2</text>
+            </svg>
+            <p>Three kinds of events, each handled in O(log n):</p>
+            <ul>
+              <li><strong>Left endpoint</strong> of a segment — insert it into the status structure; test it against its new immediate neighbors above and below for intersection, and if found, schedule that intersection as a future event (if not already scheduled).</li>
+              <li><strong>Right endpoint</strong> — remove the segment from the status structure; its former neighbors above and below become newly adjacent to each other, so test <em>that</em> pair for intersection.</li>
+              <li><strong>Intersection point</strong> — the two crossing segments swap order in the status structure (the one that was above is now below, and vice versa); each swapped segment has a new neighbor on the far side, so test those two new adjacent pairs.</li>
+            </ul>
+            <p><strong>Why only adjacent pairs need checking.</strong> Two segments can only possibly intersect while they are adjacent in the status order at some x — if segment A is always separated from segment C by segment B (never directly next to it) between A and C's shared x-range, then A and C can't cross without B being caught in between, which the geometry of non-crossing separation rules out. So it is always safe to test only newly-adjacent pairs at each event, and every actual intersection is guaranteed to be discovered exactly at the moment its two segments first become neighbors.</p>
+            <table class="mini-table">
+              <tr><th>Approach</th><th>Complexity</th><th>Note</th></tr>
+              <tr><td>Brute force, all pairs</td><td>O(n²)</td><td>ignores how many intersections actually exist</td></tr>
+              <tr><td>Sweep line (Bentley-Ottmann)</td><td>O((n+k) log n)</td><td>output-sensitive; k = actual intersection count</td></tr>
+            </table>
+            <p><strong>Try it yourself:</strong> using the three segments in the diagram above (seg 1 rising left-to-right, seg 2 falling left-to-right, seg 3 horizontal through the middle, all spanning the same x-range), which pairs does the sweep test for intersection at the moment the sweep line first reaches their shared left endpoints (x = 30), before any intersection has yet been found?</p>
+            <details><summary>Solution</summary>
+              <p>At x = 30 all three segments start together, so all three left-endpoint events fire at (conceptually) the same x — processed in some fixed tie-breaking order, but the status order right after all three insertions is by their y-coordinate an instant later: seg 1 (rising, starts near the top) is adjacent to seg 3 (horizontal, middle), and seg 3 is adjacent to seg 2 (falling, starts near the bottom). So the sweep tests (seg 1, seg 3) and (seg 3, seg 2) — but not (seg 1, seg 2) directly, since they aren't yet adjacent (seg 3 separates them). Only once seg 3's crossings with seg 1 and seg 2 occur, and the order shuffles, do seg 1 and seg 2 ever become adjacent and get tested against each other.</p>
+            </details>
+            <p><strong>Remark:</strong> like <a href="#/subject/algorithmics/computational-geometry/algo-convex-hull">convex hull</a>, this is a problem where the obvious approach is quadratic and a smarter order of processing — sweeping through events by x rather than checking all pairs blindly — turns geometric structure directly into an asymptotic win; both lessons are entries in the same computational-geometry toolkit as the <a href="#/subject/algorithmics/algorithms/algo-divide-and-conquer">closest-pair</a> technique covered earlier in the course.</p>
+            <p><strong>Further reading:</strong> Bentley, J.L., Ottmann, T.A., "Algorithms for reporting and counting geometric intersections," <em>IEEE Transactions on Computers</em>, C-28(9), 1979 (the original algorithm); de Berg, van Kreveld, Overmars, Schwarzkopf, <em>Computational Geometry: Algorithms and Applications</em>, 3rd ed., Ch. 2 (line segment intersection, with the full event-handling case analysis).</p>
+            <p><em>The whole idea in one line: two segments can't cross without first becoming neighbors, so only ever test the neighbors.</em></p>
+          `,
+          exercises: [
+            "Prove the adjacency lemma stated in the lesson: if two segments A and C intersect at some point, then immediately before that x-coordinate, A and C are adjacent in the status order (no third active segment's y-value lies strictly between theirs at that x). Argue by contradiction using the intermediate segment's own non-crossing behavior against A and C in the interval just before the crossing.",
+            "Describe precisely how the algorithm must be adapted to correctly handle two degenerate cases: (a) a vertical segment (undefined slope, so its 'current y at the sweep line' isn't a single interpolated value in the usual sense), and (b) three or more segments that all cross at exactly the same point (so multiple 'new adjacent pairs' become the same single event). For each, state what breaks in the algorithm as described and how you'd fix it."
           ]
         }
       ]
