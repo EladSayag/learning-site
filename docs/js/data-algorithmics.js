@@ -79,17 +79,43 @@
 //      algo-exercises-hashing-search-trees's prerequisites array so that ex-lesson's gating covers
 //      the full section cluster again.
 //   A5 NOT STARTED (lower priority, only if budget allows after A1-A4 and all of Part B).
-// PART B (new topics) — NOT STARTED YET, now UNBLOCKED (A1-A4 are all done as of run 3). B1 (4 new
-//   DP lessons), B2 (FFT), B3 (sparse linear algebra), B4 (fast matrix multiplication incl. boolean
-//   variant), B5 (Seidel's APSP, depends on B4's lesson id), B6 (computational geometry: convex
-//   hull + segment intersection), B7 (linear programming: simplex + duality) — none begun.
-// NEXT UP OVERALL: B1 (the 4 new Dynamic Programming lessons — Longest Increasing Subsequence incl.
-//   O(n log n) patience-sorting, DP on Trees, Bitmask DP / TSP, plus one more of the implementer's
-//   choice such as digit DP or a monotonic-queue/convex-hull-trick optimization), in the
-//   "algorithms" chapter, section "Dynamic Programming", prerequisites: ["algo-dynamic-programming"]
-//   each. A5 (upgrading algo-splay-trees / algo-b-trees / algo-skip-lists to the deep template) is
-//   still open and lower priority than all of Part B per the task spec — only pick it up if a run
-//   finishes all of B1-B7 with budget still left over, which is not expected for a while.
+// PART B (new topics), by sub-item:
+//   B1 DONE (run 4). Added 4 new lessons to the "algorithms" chapter, section "Dynamic Programming",
+//      each prerequisites: ["algo-dynamic-programming"], inserted directly after algo-dynamic-
+//      programming and before algo-greedy-matroids: algo-longest-increasing-subsequence (both the
+//      Θ(n²) ending-at-i DP and the Θ(n log n) patience-sorting method with a worked tails-array
+//      table over [3,1,4,1,5,9,2,6], try-it-yourself = reconstructing the actual subsequence via
+//      parent pointers, 2 proof/adaptation exercises); algo-dp-on-trees (postorder tree DP framed
+//      via maximum-weight independent set, dp[v][0]/dp[v][1] recurrence, a small annotated SVG tree
+//      worked by hand, try-it-yourself connecting it to minimum vertex cover via the independent-
+//      set/vertex-cover complement relation, 2 exercises incl. designing the tree-diameter DP);
+//      algo-bitmask-dp-tsp (Held-Karp dp[S][j] over subsets, recurrence + complexity, a small
+//      4-city worked instance with a stated optimal tour, try-it-yourself = tour reconstruction via
+//      parent[S][j], 2 exercises incl. adapting to Hamiltonian path); algo-digit-dp (tight-flag +
+//      pos + extra-state formulation, a hand-verified digit-sum-≤4-over-[0,23] worked example,
+//      try-it-yourself = no-two-adjacent-equal-digits variant, 2 exercises incl. the [L,R] range
+//      trick via f(R)-f(L)). Per the task brief these are lighter than the A3/A4 full deep template
+//      (no formal-axiom section, no multi-case centerpiece) but each has a diagram-or-worked-table,
+//      an inline try-it-yourself with folded solution, and 2 real exercises, matching the existing
+//      algo-dynamic-programming lesson's own "state design" house style. algo-dynamic-programming
+//      itself was left untouched as instructed.
+//   B2 NOT STARTED (FFT, new section "Numerical & Signal Algorithms" in "algorithms" chapter).
+//   B3 NOT STARTED (Sparse Linear Algebra, same new section as B2).
+//   B4 NOT STARTED (Fast Matrix Multiplication incl. boolean variant — B5 depends on this lesson's id).
+//   B5 NOT STARTED (Seidel's APSP in "graph-algorithms", depends on B4's lesson id existing first).
+//   B6 NOT STARTED (Computational Geometry: convex hull + segment intersection, new section or
+//      new chapter — implementer's call, must update this file's header doc-comment either way).
+//   B7 NOT STARTED (Linear Programming: simplex overview + duality, same chapter-placement judgment
+//      call as B6 — keep consistent with whatever B6 decides).
+// NEXT UP OVERALL: B2 (FFT lesson: motivate via polynomial multiplication naive-O(n²)-convolution
+//   vs O(n log n) evaluate-multiply-interpolate at roots of unity, the even/odd-split D&C recurrence,
+//   a brief mention of the iterative in-place butterfly version, applications to big-integer
+//   multiplication and signal-processing convolution; new section "Numerical & Signal Algorithms" in
+//   the "algorithms" chapter; prerequisites: ["algo-sorting-lower-bound-mergesort"]). After B2, B3
+//   (Sparse Linear Algebra, same new section) is the natural next pickup since it needs no new
+//   section or cross-chapter bookkeeping either. B4 should land before B5 specifically, since B5's
+//   prerequisites array needs B4's actual lesson id. A5 (upgrading algo-splay-trees / algo-b-trees /
+//   algo-skip-lists to the deep template) remains lowest priority, only after all of B1-B7.
 // ===== END DEEP PASS STATUS =====
 //
 // ----- Historical: pre-deep-pass batch history (superseded by the DEEP PASS STATUS above) -----
@@ -1929,6 +1955,124 @@ return hi                          # the least k with P(k) true</code></pre>
           exercises: [
             "Prove optimal substructure for the 0/1 knapsack problem with a cut-and-paste argument, then show explicitly where the same argument fails for the longest-simple-path problem in a directed graph.",
             "Design a DP for the following: given daily returns r₁,…,r_T and a maximum of k round-trip trades with a fixed cost c per trade, compute the maximum achievable total return. State your state space, prove the recurrence, give the complexity, and reduce the space to O(k)."
+          ]
+        },
+        {
+          id: "algo-longest-increasing-subsequence",
+          title: "Longest Increasing Subsequence",
+          section: "Dynamic Programming",
+          prerequisites: ["algo-dynamic-programming"],
+          estMinutes: 25,
+          content: `
+            <p>Given a sequence a₁,…,a_n, find the length of the longest strictly increasing subsequence (elements need not be contiguous, just in increasing order and in their original relative order). The obvious DP is state design at its plainest: let dp[i] be the length of the longest increasing subsequence <em>ending exactly at</em> index i. Then dp[i] = 1 + max{dp[j] : j &lt; i, a[j] &lt; a[i]}, or 1 if no such j exists — Θ(n²) time to fill the table, Θ(n) space, answer = max over all dp[i].</p>
+            <p>A second, less obvious state gets the same answer in Θ(n log n). Maintain an array <code>tails</code> where <code>tails[k]</code> is the <em>smallest possible tail value</em> of any increasing subsequence of length k+1 built from the prefix seen so far. Process elements left to right: for each a[i], binary-search <code>tails</code> for the leftmost position whose value is ≥ a[i] and overwrite it (or append, if a[i] is larger than every current tail). The final length of <code>tails</code> is the answer. The name "patience sorting" comes from a card-game analogy — dealing cards onto piles where each pile is kept increasing, always placing on the leftmost legal pile.</p>
+            <table class="mini-table">
+              <tr><th>Element</th><th>Action</th><th>tails after</th></tr>
+              <tr><td>3</td><td>append (first pile)</td><td>[3]</td></tr>
+              <tr><td>1</td><td>replace tails[0]</td><td>[1]</td></tr>
+              <tr><td>4</td><td>append</td><td>[1, 4]</td></tr>
+              <tr><td>1</td><td>replace tails[0] (no change)</td><td>[1, 4]</td></tr>
+              <tr><td>5</td><td>append</td><td>[1, 4, 5]</td></tr>
+              <tr><td>9</td><td>append</td><td>[1, 4, 5, 9]</td></tr>
+              <tr><td>2</td><td>replace tails[1]</td><td>[1, 2, 5, 9]</td></tr>
+              <tr><td>6</td><td>replace tails[3]</td><td>[1, 2, 5, 6]</td></tr>
+            </table>
+            <p>Sequence [3, 1, 4, 1, 5, 9, 2, 6] finishes with <code>tails</code> of length 4, matching the true LIS length (e.g. 1, 4, 5, 9 or 3, 4, 5, 9). Note that <code>tails</code> itself is <em>not</em> always an actual subsequence of the input — only its <em>length</em> is meaningful; the array is a bookkeeping device, not the answer.</p>
+            <p><strong>Try it yourself:</strong> the table above only tracks the length. How would you also recover one actual longest increasing subsequence, not just its length?</p>
+            <details><summary>Solution</summary>
+              <p>Keep a second array <code>idx[k]</code> recording which input index currently occupies pile k in <code>tails</code>, and a <code>parent[i]</code> array set at the moment element i is placed at pile k: <code>parent[i] = idx[k-1]</code> (or "none" if k = 0). Once the pass finishes, the length is <code>len = tails.length</code>, the last element of the LIS is at index <code>idx[len-1]</code>, and walking <code>parent</code> pointers backward from there reconstructs the whole subsequence in reverse. This is the same "keep a parent pointer at the moment you commit" trick used to reconstruct actual shortest paths from BFS distances, not just their lengths.</p>
+            </details>
+            <p><strong>Further reading:</strong> CLRS, 3rd ed., §15.4 exercises (LIS as a special case of LCS, giving an easy but suboptimal Θ(n log n)-unaware Θ(n²) route); the patience-sorting formulation is originally due to Fredman and Aho–Hirschberg, and is the standard competitive-programming presentation.</p>
+          `,
+          exercises: [
+            "Prove the invariant that makes patience sorting correct: at every point during the scan, tails is strictly increasing, and tails[k] equals the smallest possible last element among all increasing subsequences of length k+1 seen so far. Use it to justify that the binary search for a[i]'s replacement position is well-defined and that tails.length never decreases.",
+            "The problem above asks for strictly increasing subsequences. Adapt the Θ(n log n) algorithm to find the longest non-decreasing subsequence instead (equal consecutive values allowed), explaining precisely which binary search changes from a lower-bound search to an upper-bound search, and why."
+          ]
+        },
+        {
+          id: "algo-dp-on-trees",
+          title: "Dynamic Programming on Trees",
+          section: "Dynamic Programming",
+          prerequisites: ["algo-dynamic-programming"],
+          estMinutes: 25,
+          content: `
+            <p>DP is not confined to sequences. When a problem's subproblems correspond to a tree's subtrees, the same "define the state, prove the recurrence, combine" discipline applies, with recursion replaced by a postorder traversal: compute every child's answer before combining them into the parent's, exactly the visiting order DFS's finish times already give you for free.</p>
+            <p>The canonical instance is the <strong>maximum-weight independent set on a tree</strong>: given a tree with a weight on every vertex, choose a subset of vertices, no two adjacent, of maximum total weight. Define two states per vertex v: <code>dp[v][1]</code> = best achievable in v's subtree if v is <em>included</em>, and <code>dp[v][0]</code> = best if v is <em>excluded</em>. Since including v forbids including any child, while excluding v leaves each child free:</p>
+            <table class="mini-table">
+              <tr><th>State</th><th>Recurrence</th></tr>
+              <tr><td>dp[v][1]</td><td>weight(v) + Σ over children c of dp[c][0]</td></tr>
+              <tr><td>dp[v][0]</td><td>Σ over children c of max(dp[c][0], dp[c][1])</td></tr>
+            </table>
+            <svg viewBox="0 0 300 220" width="100%" height="220" style="max-width:340px;display:block;margin:0.8rem auto;" role="img" aria-label="Small weighted tree with root R (weight 3) having children A (weight 5) and B (weight 1), A having child C (weight 4); each node annotated with its dp0/dp1 pair">
+              <line x1="150" y1="45" x2="90" y2="105" stroke="var(--accent)" stroke-width="2"/>
+              <line x1="150" y1="45" x2="220" y2="105" stroke="var(--accent)" stroke-width="2"/>
+              <line x1="90" y1="125" x2="90" y2="175" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="150" cy="30" r="20" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="90" cy="110" r="20" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="220" cy="110" r="20" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="90" cy="190" r="20" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <text x="150" y="34" text-anchor="middle" fill="var(--text)" font-size="13">R:3</text>
+              <text x="90" y="114" text-anchor="middle" fill="var(--text)" font-size="13">A:5</text>
+              <text x="220" y="114" text-anchor="middle" fill="var(--text)" font-size="13">B:1</text>
+              <text x="90" y="194" text-anchor="middle" fill="var(--text)" font-size="13">C:4</text>
+              <text x="150" y="60" text-anchor="middle" fill="var(--text-muted)" font-size="11">dp0=6, dp1=7</text>
+              <text x="60" y="140" text-anchor="middle" fill="var(--text-muted)" font-size="11">dp0=4, dp1=5</text>
+              <text x="255" y="130" text-anchor="middle" fill="var(--text-muted)" font-size="11">dp0=0, dp1=1</text>
+              <text x="90" y="220" text-anchor="middle" fill="var(--text-muted)" font-size="11">dp0=0, dp1=4</text>
+            </svg>
+            <p>C is a leaf: dp[C][1] = 4, dp[C][0] = 0. A has only child C: dp[A][1] = 5 + dp[C][0] = 5, dp[A][0] = max(0, 4) = 4. B is a leaf: dp[B][1] = 1, dp[B][0] = 0. R has children A, B: dp[R][1] = 3 + dp[A][0] + dp[B][0] = 3 + 4 + 0 = 7, dp[R][0] = max(4, 5) + max(0, 1) = 5 + 1 = 6. The answer is max(dp[R][0], dp[R][1]) = 7, achieved by the set {R, C} — note this correctly rejects A even though A has the single largest weight, because A is adjacent to both R and C and can't coexist with either.</p>
+            <p>Every vertex is visited once and does O(children) work combining its already-computed children, so the whole DP runs in Θ(n) time and space — postorder recursion turns what looks like it should be exponential (2ⁿ possible subsets) into linear work, the same overlapping-subproblems payoff as any other DP, just organized by tree structure instead of by array index.</p>
+            <p><strong>Try it yourself:</strong> a closely related problem is the <strong>minimum vertex cover</strong> of a tree (smallest set of vertices touching every edge). How does its DP relate to the independent-set DP above?</p>
+            <details><summary>Solution</summary>
+              <p>On any graph, a set is a vertex cover exactly when its complement is an independent set (every edge must have at least one endpoint in the cover, i.e. not both endpoints can be outside it). So on an unweighted tree, minimum vertex cover size = n − (maximum independent set size), computed by the exact same dp[v][0]/dp[v][1] recurrence above with every weight(v) = 1. No new DP is needed — it's the same state, reinterpreted.</p>
+            </details>
+            <p><strong>Further reading:</strong> CLRS, 3rd ed., §15 general framing applies directly (the exercises there include tree-shaped variants); this pattern — postorder combine of independent-set-style states — is also the standard approach to tree diameter (track, per vertex, the two largest child-to-leaf depths) and to the "house robber III" family of problems in practice interview sets.</p>
+          `,
+          exercises: [
+            "Prove the maximum-weight independent-set recurrence correct with a cut-and-paste argument: given an optimal independent set for the whole tree, show it must restrict to an optimal choice within each child's subtree, conditioned on whether the parent is included.",
+            "Design a DP that computes the diameter of a tree (the longest path between any two vertices, measured in edge count). State the per-vertex quantity you compute in postorder, the recurrence that combines children, how the global answer is extracted (it is not simply the root's own value), and the overall complexity."
+          ]
+        },
+        {
+          id: "algo-bitmask-dp-tsp",
+          title: "Bitmask DP: The Traveling Salesman Problem",
+          section: "Dynamic Programming",
+          prerequisites: ["algo-dynamic-programming"],
+          estMinutes: 30,
+          content: `
+            <p>The Traveling Salesman Problem — visit every city exactly once and return to the start, minimizing total travel cost — has no known polynomial algorithm (it's NP-hard), but brute-force enumeration of all n! orderings is far from the best exact approach. The Held–Karp algorithm gets the exact answer in Θ(2ⁿ n²) time by using each city's <em>presence in a subset</em>, not its position in a permutation, as the piece of state that matters.</p>
+            <p>Fix city 0 as the start. Let S range over subsets of {0,…,n−1} that contain 0, and define dp[S][j] = the minimum cost of a path that starts at 0, visits exactly the cities in S, and ends at city j ∈ S. The recurrence peels off the last step: dp[S][j] = min over k ∈ S∖{j} of dp[S∖{j}][k] + cost(k, j), with base case dp[{0}][0] = 0. The final answer is min over j of dp[full set][j] + cost(j, 0), closing the tour back to the start. There are 2ⁿ subsets and n choices of j, each transition scanning up to n predecessors — Θ(2ⁿ n²) time, Θ(2ⁿ n) space to store the table, representing each subset as an n-bit integer (the "bitmask").</p>
+            <p>Concretely, on a 4-city instance with cost(0,1)=10, cost(0,2)=15, cost(0,3)=20, cost(1,2)=35, cost(1,3)=25, cost(2,3)=30 (symmetric), the base row is dp[{0,1}][1] = 10, dp[{0,2}][2] = 15, dp[{0,3}][3] = 20 — one hop from the start. The table has 2⁴×4 = 64 entries in total; working the rest out by hand is mechanical but tedious, so we won't reproduce it all here — the optimum this instance converges to is a tour of cost 80, achieved by 0 → 1 → 3 → 2 → 0 (10 + 25 + 30 + 15 = 80).</p>
+            <p><strong>Try it yourself:</strong> the DP as stated above only computes the minimum <em>cost</em>. How would you recover the actual optimal tour, i.e. the sequence of cities?</p>
+            <details><summary>Solution</summary>
+              <p>Alongside dp[S][j], store parent[S][j] = the city k that achieved the minimum in dp[S][j]'s recurrence. To reconstruct, start at (S = full set, j = argmin_j dp[full][j] + cost(j,0)), then repeatedly set j ← parent[S][j] and S ← S∖{j_old}, prepending each visited city, until S = {0}. This is the same "remember who you came from, then walk it back" idea used to reconstruct BFS shortest paths and the LIS above — reconstructing an optimal object from a DP that only computed its value is always this same extra bookkeeping layer, never a new algorithm.</p>
+            </details>
+            <p><strong>Further reading:</strong> Held & Karp, "A Dynamic Programming Approach to Sequencing Problems," <em>J. SIAM</em>, 1962 (the original paper); CLRS does not cover TSP directly but §34.5 (Hamiltonian cycle, NP-completeness) explains why no polynomial algorithm is expected to exist, which is exactly why Θ(2ⁿ n²) — exponential, but far below n! — is the best known exact approach.</p>
+          `,
+          exercises: [
+            "Prove the Held–Karp recurrence is correct: show that if a path visiting exactly S and ending at j is optimal, then removing its last step must leave an optimal path visiting S∖{j} and ending at whichever city preceded j — i.e. verify the optimal-substructure property for this state definition, and explain why the subset (rather than the visiting order) is exactly the information the recurrence needs to remain valid.",
+            "Adapt the DP to the Minimum Hamiltonian Path problem: visit every city exactly once starting at city 0, but do NOT return to the start (the path may end anywhere). State precisely which one part of the recurrence and final-answer formula changes, and which stays identical."
+          ]
+        },
+        {
+          id: "algo-digit-dp",
+          title: "Digit DP",
+          section: "Dynamic Programming",
+          prerequisites: ["algo-dynamic-programming"],
+          estMinutes: 25,
+          content: `
+            <p>Digit DP counts (or sums over) all integers in a range that satisfy some digit-level constraint — no two adjacent equal digits, digit sum below a threshold, a specific digit appearing an even number of times — without ever enumerating the range directly. Direct enumeration over [0, N] costs Θ(N); digit DP costs Θ(D × extra-states), where D is the number of decimal digits of N, typically ~18 for 64-bit integers — a change from "linear in the value" to "linear in the number of digits of the value," an enormous difference for large N.</p>
+            <p>Write N's digits as d₁ d₂ … d_D, most significant first, and process positions left to right. The key piece of state beyond "which position" is a boolean <strong>tight</strong> flag: tight = true means every digit chosen so far exactly matches N's corresponding digit, so the current digit is still bounded above by d_pos (choosing anything larger would exceed N); tight = false means some earlier digit was chosen strictly below N's digit, so the number built so far is already guaranteed less than N regardless of what comes next, and every remaining digit is free to range over 0–9. Any problem-specific bookkeeping (running digit sum, last digit used, parity of a count) becomes additional state alongside pos and tight: dp(pos, tight, extra) = number of ways to complete the number from here satisfying the target condition, and the top-level answer is dp(1, tight=true, extra=initial).</p>
+            <p>Take counting integers in [0, 23] with digit sum ≤ 4, N = "23", extra = running digit sum so far. At position 1 (tens digit), tight = true bounds the first digit to 0, 1, or 2 (d₁ = 2): choosing 0 or 1 immediately makes tight = false for position 2 (free digits 0–9, subject to the sum-so-far budget); choosing 2 keeps tight = true, so position 2 is bounded by d₂ = 3. Enumerating by hand confirms the count is 12: {0,1,2,3,4} (five one-digit numbers), {10,11,12,13} (sum ≤ 4 with tens digit 1), {20,21,22} (sum ≤ 4 with tens digit 2, bounded further by ≤ 23) — 5 + 4 + 3 = 12.</p>
+            <p><strong>Try it yourself:</strong> design the digit DP for counting integers in [0, N] that have <em>no two adjacent equal digits</em> (e.g. 121 is fine, 122 is not).</p>
+            <details><summary>Solution</summary>
+              <p>Extra state = the last digit placed so far (or a sentinel "none" before any digit is placed, since a number's own leading digit has nothing to its left to compare against). Transition dp(pos, tight, last) → dp(pos+1, tight', c) is only taken for a candidate digit c ≠ last (any c is fine when last = "none"), with tight' = tight AND (c == d_pos) exactly as before. The state space is Θ(D × 2 × 11) — 11 rather than 10 to account for the "none" sentinel — still Θ(D) overall, so the technique costs nothing extra over the plain digit-sum version above; only the transition's filter condition changed.</p>
+            </details>
+            <p><strong>Further reading:</strong> this technique doesn't have a single canonical textbook name or CLRS section — it's standard folklore in competitive programming (see, e.g., Halim & Halim, <em>Competitive Programming</em>, the "Digit DP" section) but the underlying idea — bound-tracking state plus memoised left-to-right construction — is the exact same "state design" discipline as every other DP in this section, just with a state that tracks distance-from-the-boundary instead of a prefix length.</p>
+          `,
+          exercises: [
+            "Prove the claimed state-space bound: with D digits, a binary tight flag, and an 'extra' component ranging over at most k values (e.g. k = 37 for a digit-sum-so-far state bounded by 9×D), the total number of distinct (pos, tight, extra) states is O(D × k), and each is computed in O(10) time from already-computed states — hence the whole DP runs in O(10 · D · k). Explain concretely why tight only ever needs 2 values rather than growing with position.",
+            "Given a digit DP function f(N) that counts integers in [0, N] satisfying some condition, describe how to count integers in [L, R] (inclusive) satisfying the same condition using two calls to f. Handle the edge case L = 0 explicitly, and explain why f(R) − f(L) alone would be wrong."
           ]
         },
         {
