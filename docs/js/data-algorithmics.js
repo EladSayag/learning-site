@@ -78,7 +78,32 @@
 //      flagging this as pending), and added "algo-avl-trees" to
 //      algo-exercises-hashing-search-trees's prerequisites array so that ex-lesson's gating covers
 //      the full section cluster again.
-//   A5 NOT STARTED (lower priority, only if budget allows after A1-A4 and all of Part B).
+//   A5 DONE (run 8). Upgraded algo-splay-trees and algo-b-trees with cased try-it-yourself
+//      centerpieces, matching the brief's "where it fits their actual mechanism" guidance:
+//      algo-splay-trees got a new Try-it-yourself right after the existing prose description of
+//      zig/zig-zig/zig-zag, posing all 3 cases as small before-state SVGs (2 new inline SVGs: one
+//      problem grid with the 3 before-configurations, one folded-solution grid with the 3
+//      after-configurations), with the solution explaining why zig-zig produces a shorter staircase
+//      (not a flattened tree) while zig-zag produces the balanced two-children shape, cross-linking
+//      the AVL LR/RL double-rotation lesson for the shape parallel; the existing working-set
+//      try-it-yourself, table, remarks, and both array exercises were left untouched (they still fit
+//      and don't duplicate the new material). algo-b-trees got a new Try-it-yourself after the
+//      "why not just use a red-black tree" remark and before the complexity table: a concrete t=2
+//      worked example with 2 new inline SVGs (problem: a full leaf about to overflow on insert, side
+//      by side with a parent/3-children underflow-on-delete setup where neither sibling has a spare
+//      key; solution: the resulting split-around-median state, side by side with the resulting
+//      merge state), folded solution walking split, merge, AND the cheaper rotate alternative (rotate
+//      described in prose only, no separate diagram, since it's the simpler non-cascading case —
+//      mirrors how A4's AVL lesson kept RR/RL as prose-only mirrors of LL/LR); tightened the second
+//      array exercise (previously near-duplicated the new inline example almost verbatim) to instead
+//      ask for the general-t argument plus the internal-node (not just leaf) case, which the inline
+//      example doesn't cover. algo-skip-lists was reviewed and left unchanged: its existing
+//      "flip a coin... probability 1/2 per extra level, so a node reaches level k with probability
+//      1/2^k" sentence already states the geometric level-count distribution crisply, and per the
+//      brief's own explicit guidance no cases-exercise was forced onto a structure that has no repair
+//      procedure to case-split on. Verified programmatically this run: 65 total lessons across 4
+//      chapters, 0 duplicate ids, 0 dangling prerequisite references file-wide, and the whole file
+//      still parses as valid JS (checked via new Function(src)).
 // PART B (new topics), by sub-item:
 //   B1 DONE (run 4). Added 4 new lessons to the "algorithms" chapter, section "Dynamic Programming",
 //      each prerequisites: ["algo-dynamic-programming"], inserted directly after algo-dynamic-
@@ -221,14 +246,12 @@
 //      subject's "Lagrange Duality and the KKT Conditions" lesson (exact title checked against that
 //      file). Verified programmatically this run: 65 total lessons across 4 chapters, 0 duplicate ids, 0
 //      dangling prerequisite references file-wide (including these two new ids).
-// NEXT UP OVERALL: A5 (upgrading algo-splay-trees / algo-b-trees / algo-skip-lists to the deep template
-//   where their mechanism fits it — splay trees: zig/zig-zig/zig-zag cased exercise + amortized-access
-//   sketch; B-trees: split-on-overflow/merge-or-rotate-on-underflow cased exercise; skip lists: crisp
-//   geometric-level-count formal definition only, no forced cases exercise, per the brief). This is the
-//   ONLY item left in the entire pass. Once A5 is done (or a run deliberately judges it out of remaining
-//   budget and says so explicitly in this header), the ENTIRE v2 deep pass is complete — a future run
-//   should confirm A5's status explicitly before declaring completion, then stop inventing new scope per
-//   this pass's own rules.
+// NEXT UP OVERALL: NONE — A5 is now DONE (run 8, see above), which was the last unfinished item in
+//   the pass. Every sub-item A1-A5 and B1-B7 (with all of B1/B6/B7's named sub-lessons) is complete.
+//   THE ENTIRE v2 DEEP PASS IS COMPLETE. A future scheduled run should read this far, see there is no
+//   unfinished sub-item left in the A→B order, and stop immediately without inventing new scope, per
+//   this pass's own rules — do not start a new pass or add topics beyond what the site owner's
+//   original feedback (reproduced in the scheduled task prompt) specified.
 // ===== END DEEP PASS STATUS =====
 //
 // ----- Historical: pre-deep-pass batch history (superseded by the DEEP PASS STATUS above) -----
@@ -997,6 +1020,61 @@ const ALGORITHMICS_SUBJECT = {
               <li><strong>B*-tree</strong> — delays a split by first trying to redistribute keys with a neighboring sibling, keeping nodes closer to full (around 2/3 rather than 1/2 in the worst case) at the cost of touching an extra sibling node on every near-overflow.</li>
             </ul>
             <p><strong>Remark:</strong> the "why not just use a red-black tree" answer is entirely about the constant hidden inside O(log n) — a binary tree of a billion keys is about 30 levels deep, each potentially a separate disk seek, while a B-tree with t≈100 covers the same billion keys in 3-4 seeks.</p>
+            <p><strong>Try it yourself:</strong> below are the two structural repairs that keep a B-tree's invariant intact, using minimum degree t=2 for concreteness. On the left, a full leaf is about to take one more key than it can hold. On the right, a deletion has just emptied a node, and neither neighboring sibling has a spare key to lend. What does the tree look like right after each repair?</p>
+            <svg viewBox="0 0 480 190" width="100%" height="190" style="max-width:500px;display:block;margin:0.8rem auto;" role="img" aria-label="Left: a parent above a full leaf [10, 20, 30] with a new key 25 arriving. Right: a parent [20, 40] above three children L=[10], M=empty, R=[50], none with a spare key">
+              <defs><marker id="btinsarrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--text-muted)"/></marker></defs>
+              <g font-size="12" text-anchor="middle">
+                <rect x="45" y="10" width="130" height="24" rx="3" fill="none" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="3,3"/>
+                <text x="110" y="26" fill="var(--text-muted)" font-size="10">… parent (other keys omitted) …</text>
+                <line x1="110" y1="34" x2="110" y2="58" stroke="var(--border)" stroke-width="1.5"/>
+                <rect x="55" y="58" width="110" height="28" rx="3" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="110" y="77" fill="var(--text)">10 | 20 | 30</text>
+                <line x1="230" y1="74" x2="172" y2="74" stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#btinsarrow)"/>
+                <text x="200" y="64" fill="var(--text-muted)" font-size="11">+25</text>
+                <text x="110" y="112" fill="var(--text)" font-weight="600">Insert: overflow</text>
+                <text x="110" y="128" fill="var(--text-muted)" font-size="10">leaf already has 2t−1 = 3 keys</text>
+                <rect x="300" y="10" width="110" height="26" rx="3" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="355" y="27" fill="var(--text)">20 | 40</text>
+                <line x1="330" y1="36" x2="300" y2="66" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="355" y1="36" x2="355" y2="66" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="380" y1="36" x2="410" y2="66" stroke="var(--border)" stroke-width="1.5"/>
+                <rect x="280" y="66" width="40" height="26" rx="3" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="300" y="83" fill="var(--text)">10</text>
+                <rect x="335" y="66" width="40" height="26" rx="3" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="355" y="83" fill="var(--text)">∅</text>
+                <rect x="390" y="66" width="40" height="26" rx="3" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="410" y="83" fill="var(--text)">50</text>
+                <text x="355" y="112" fill="var(--text)" font-weight="600">Delete: underflow</text>
+                <text x="355" y="128" fill="var(--text-muted)" font-size="10">M has 0 keys; L and R are both at the t−1 minimum</text>
+              </g>
+            </svg>
+            <details><summary>Solution</summary>
+              <svg viewBox="0 0 480 150" width="100%" height="150" style="max-width:500px;display:block;margin:0.8rem auto;" role="img" aria-label="Left: the parent now holds 20 between two new children [10] and [25, 30], the median having been pushed up. Right: the parent now holds only 40, above a merged child [10, 20] and the unchanged sibling R=[50]">
+                <g font-size="12" text-anchor="middle">
+                  <rect x="45" y="10" width="130" height="26" rx="3" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                  <text x="110" y="27" fill="var(--text)">… 20 …</text>
+                  <line x1="80" y1="36" x2="55" y2="66" stroke="var(--border)" stroke-width="1.5"/>
+                  <line x1="140" y1="36" x2="150" y2="66" stroke="var(--border)" stroke-width="1.5"/>
+                  <rect x="25" y="66" width="60" height="26" rx="3" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                  <text x="55" y="83" fill="var(--text)">10</text>
+                  <rect x="105" y="66" width="90" height="26" rx="3" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                  <text x="150" y="83" fill="var(--text)">25 | 30</text>
+                  <text x="110" y="118" fill="var(--text-muted)" font-size="10">median 20 pushed up; leaf split around it</text>
+                  <rect x="325" y="10" width="60" height="26" rx="3" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                  <text x="355" y="27" fill="var(--text)">40</text>
+                  <line x1="340" y1="36" x2="310" y2="66" stroke="var(--border)" stroke-width="1.5"/>
+                  <line x1="370" y1="36" x2="400" y2="66" stroke="var(--border)" stroke-width="1.5"/>
+                  <rect x="270" y="66" width="80" height="26" rx="3" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                  <text x="310" y="83" fill="var(--text)">10 | 20</text>
+                  <rect x="380" y="66" width="40" height="26" rx="3" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                  <text x="400" y="83" fill="var(--text)">50</text>
+                  <text x="345" y="118" fill="var(--text-muted)" font-size="10">L, separator 20, and M fuse into one node</text>
+                </g>
+              </svg>
+              <p><strong>Insert:</strong> the leaf can't hold a fourth key, so before inserting, split it around its median (the 2nd of its 3 keys, 20): the median moves up into the parent as a new separator, and the two remaining keys — 10 and 30 — become the roots of two new leaves with room to spare. Only then does 25 get inserted, landing in the right one of the two ([30] becomes [25, 30]). If the parent itself is already full, it splits too, in the same way, and the split can propagate all the way to the root — which is the one place a B-tree grows in height, by splitting a full root into two children under a brand-new one-key root.</p>
+              <p><strong>Delete:</strong> here neither sibling of the emptied node M has a key to spare (L and R are both already at the minimum t−1=1), so a rotate — the cheaper fix, described below — isn't available, forcing a <strong>merge</strong>: pull the separating key between L and M (20) down out of the parent, and fuse it together with L's and M's keys into a single node, [10, 20]. The parent loses both that separator and its edge to M, so it shrinks by one key and one child, exactly undoing what an insert-time split did — and if that leaves the parent itself underflowing, the same repair recurses one level up, which is why deletion, like insertion, only ever changes the tree's height at the root.</p>
+              <p>Had R instead held a spare key (say [50, 60], more than the t−1 minimum), the fix would have been a cheaper <strong>rotate</strong> instead of a merge: move the parent's separator (40) down into M, and move R's smallest key (50) up to take its place as the new separator — one key changes hands, no node is deleted, and the parent's key count is untouched.</p>
+            </details>
             <table class="mini-table">
               <tr><th>Operation</th><th>Cost</th><th>Why</th></tr>
               <tr><td>Search</td><td>O(log_t n) node accesses</td><td>height shrinks as branching factor t grows</td></tr>
@@ -1013,7 +1091,7 @@ const ALGORITHMICS_SUBJECT = {
           `,
           exercises: [
             "Give the precise minimum and maximum number of keys a B-tree node of minimum degree t can hold, and use it to derive a tight lower bound on the height of a B-tree with n keys and minimum degree t ≥ 2, matching the style of the worked example above.",
-            "Describe the split and merge operations for insertion and deletion in full: what happens when a leaf overflows past 2t−1 keys, what happens when that propagates all the way to a full root, and what happens on deletion when a node drops below t−1 keys and neither neighboring sibling has a key to spare."
+            "Generalize the split-on-overflow and merge-on-underflow worked example above from t=2 to an arbitrary minimum degree t: state exactly which key becomes the new median on a split of a 2t−1-key node, and repeat the argument for an internal (non-leaf) node that overflows or underflows, where child pointers, not just keys, have to be redistributed along with the keys."
           ]
         },
         {
@@ -1048,6 +1126,72 @@ const ALGORITHMICS_SUBJECT = {
               </g>
             </svg>
             <p>The mechanism is a chain of rotations, chosen by pattern rather than by any balance measurement. Let x be the accessed node, y its parent, z its grandparent (if any). Repeat until x is the root: if x has no grandparent, do one ordinary rotation of x with y ("zig"); if x and y are both left children or both right children of their parents ("zig-zig"), rotate y with z, then x with y; if one is a left child and the other a right child ("zig-zag"), rotate x with y, then x with z. The zig-zig case is the crucial one — rotating the grandparent first, not the parent, is what gives the amortized bound; doing the two rotations in the naive order (x-with-y, then x-with-z) still moves x to the root but loses the guarantee entirely.</p>
+            <p><strong>Try it yourself:</strong> below are the three local configurations a splay step can find x in (x is the highlighted node in each). Work out, for each one, where x, y, and z end up after one splay step touching x.</p>
+            <svg viewBox="0 0 480 190" width="100%" height="190" style="max-width:500px;display:block;margin:0.8rem auto;" role="img" aria-label="Three before-configurations: Zig has y above x; Zig-Zig has z above y above x in a straight diagonal line, all left children; Zig-Zag has z above y above x in a zigzag, y a left child of z and x a right child of y">
+              <g font-size="12" text-anchor="middle">
+                <line x1="82" y1="55" x2="60" y2="88" stroke="var(--border)" stroke-width="1.5"/>
+                <circle cx="82" cy="42" r="14" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="82" y="46" fill="var(--text)">y</text>
+                <circle cx="58" cy="100" r="14" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="58" y="104" fill="var(--text)">x</text>
+                <text x="70" y="150" fill="var(--text)" font-weight="600">Zig</text>
+                <text x="70" y="168" fill="var(--text-muted)" font-size="10">x has no grandparent</text>
+                <line x1="238" y1="38" x2="220" y2="70" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="216" y1="82" x2="200" y2="112" stroke="var(--border)" stroke-width="1.5"/>
+                <circle cx="240" cy="26" r="14" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="240" y="30" fill="var(--text)">z</text>
+                <circle cx="216" cy="82" r="14" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="216" y="86" fill="var(--text)">y</text>
+                <circle cx="196" cy="126" r="14" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="196" y="130" fill="var(--text)">x</text>
+                <text x="230" y="150" fill="var(--text)" font-weight="600">Zig-Zig</text>
+                <text x="230" y="168" fill="var(--text-muted)" font-size="10">x and y both left children</text>
+                <line x1="398" y1="38" x2="380" y2="70" stroke="var(--border)" stroke-width="1.5"/>
+                <line x1="384" y1="82" x2="400" y2="112" stroke="var(--border)" stroke-width="1.5"/>
+                <circle cx="400" cy="26" r="14" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="400" y="30" fill="var(--text)">z</text>
+                <circle cx="376" cy="82" r="14" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                <text x="376" y="86" fill="var(--text)">y</text>
+                <circle cx="404" cy="126" r="14" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                <text x="404" y="130" fill="var(--text)">x</text>
+                <text x="390" y="150" fill="var(--text)" font-weight="600">Zig-Zag</text>
+                <text x="390" y="168" fill="var(--text-muted)" font-size="10">x is a right child of left child y</text>
+              </g>
+            </svg>
+            <details><summary>Solution</summary>
+              <svg viewBox="0 0 480 170" width="100%" height="170" style="max-width:500px;display:block;margin:0.8rem auto;" role="img" aria-label="After each splay step: Zig ends with x on top and y as x's right child; Zig-Zig ends with x on top, y as x's right child, and z as y's right child, a staircase; Zig-Zag ends with x on top, y as x's left child, and z as x's right child">
+                <g font-size="12" text-anchor="middle">
+                  <line x1="82" y1="52" x2="102" y2="84" stroke="var(--border)" stroke-width="1.5"/>
+                  <circle cx="80" cy="38" r="14" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                  <text x="80" y="42" fill="var(--text)">x</text>
+                  <circle cx="104" cy="96" r="14" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                  <text x="104" y="100" fill="var(--text)">y</text>
+                  <text x="90" y="140" fill="var(--text)" font-weight="600">Zig</text>
+                  <text x="90" y="158" fill="var(--text-muted)" font-size="10">one rotation, x is root</text>
+                  <line x1="238" y1="38" x2="262" y2="68" stroke="var(--border)" stroke-width="1.5"/>
+                  <line x1="266" y1="82" x2="284" y2="108" stroke="var(--border)" stroke-width="1.5"/>
+                  <circle cx="236" cy="26" r="14" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                  <text x="236" y="30" fill="var(--text)">x</text>
+                  <circle cx="264" cy="80" r="14" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                  <text x="264" y="84" fill="var(--text)">y</text>
+                  <circle cx="288" cy="122" r="14" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                  <text x="288" y="126" fill="var(--text)">z</text>
+                  <text x="255" y="150" fill="var(--text)" font-weight="600">Zig-Zig</text>
+                  <text x="255" y="164" fill="var(--text-muted)" font-size="10">a shorter staircase, not a flat tree</text>
+                  <line x1="386" y1="42" x2="366" y2="72" stroke="var(--border)" stroke-width="1.5"/>
+                  <line x1="414" y1="42" x2="434" y2="72" stroke="var(--border)" stroke-width="1.5"/>
+                  <circle cx="400" cy="28" r="14" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                  <text x="400" y="32" fill="var(--text)">x</text>
+                  <circle cx="362" cy="86" r="14" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                  <text x="362" y="90" fill="var(--text)">y</text>
+                  <circle cx="438" cy="86" r="14" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+                  <text x="438" y="90" fill="var(--text)">z</text>
+                  <text x="400" y="130" fill="var(--text)" font-weight="600">Zig-Zag</text>
+                  <text x="400" y="148" fill="var(--text-muted)" font-size="10">y and z become x's two children</text>
+                </g>
+              </svg>
+              <p>Zig is one plain rotation: x swaps places with its parent y, y drops to become x's right child (mirrored if x was a right child). Zig-zig rotates the grandparent edge first (z-with-y), then the parent edge (x-with-y) — the net effect is x on top with y as its right child and z as y's right child, a staircase leaning the same way the original chain leaned, just one node shorter and rooted higher up, not a flattened tree. Zig-zag rotates x-with-y then x-with-z, which is what actually balances the local structure: y and z end up as x's two separate children, one on each side — the same shape a double rotation produces in an <a href="#/subject/algorithmics/data-structures/algo-avl-trees">AVL tree</a>'s LR/RL case. Note the subtrees hanging off y and z (omitted above for clarity) get reattached in the usual rotation way — see the general before/after diagram above for how a single rotation moves a subtree across.</p>
+            </details>
             <p>The amortized analysis uses the same potential-function machinery as the <a href="#/subject/algorithmics/data-structures/algo-fibonacci-heap">Fibonacci heap</a>: define the potential as the sum, over all nodes, of the log of each node's subtree size, and show that each splay step's actual cost is paid for by a large enough drop in potential — the zig-zig case in particular either does O(1) real work while dropping potential a lot, or does a lot of work while dropping potential by at least as much. The result is that any sequence of m operations on a tree of n nodes costs O(m log n) total, matching a balanced tree in the aggregate despite guaranteeing nothing about any single operation.</p>
             <ul>
               <li><strong>Bottom-up splaying</strong> — the recursive formulation above; easiest to state and to prove the amortized bound for.</li>
